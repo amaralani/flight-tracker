@@ -1,0 +1,123 @@
+<!DOCTYPE html >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>ویرایش فروشگاه ها</title>
+</head>
+<body>
+<!--/*/ <th:block th:include="partials/menu :: menu"></th:block> /*/-->
+<div class="ui very padded segment">
+    <table id="business-table" class="ui very padded table">
+        <thead>
+        <tr>
+            <th th:name="name" data-notnull="true">نام</th>
+            <th th:name="address">آدرس</th>
+            <th th:name="category">دسته بندی</th>
+            <th th:name="${_csrf.parameterName}" style="display: none"></th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <th:block th:each="business : ${businesses}">
+            <!--/*@thymesVar id="business" type="ir.mfava.modfava.model.Business"*/-->
+            <tr th:id="${business.id}" th:attr="csrf=${_csrf.token}">
+                <td><span th:text="${business.name}">John Lilki</span></td>
+                <td><span th:text="${business.address}">John Lilki</span></td>
+                <td data-type="select" data-options="getAllCategories"
+                    th:text="${business.businessCategory.id}">jhlilk22@yahoo .com
+                </td>
+                <td th:text="${_csrf.token}" style="display: none"></td>
+            </tr>
+        </th:block>
+
+        </tbody>
+    </table>
+    <button class="ui new labeled icon positive button">
+        <i class="plus icon"></i>
+        جدید
+    </button>
+</div>
+<div class="ui modal">
+    <div class="header right-text">فروشگاه جدید</div>
+    <div class="content">
+        <p>
+        <form class="ui form">
+            <div class="field">
+                <div class="two fields">
+                    <div class="field">
+                        <label>نام</label>
+                        <input class="form-control" type="text" name="name" id="new-name"/>
+                    </div>
+                    <div class="field">
+                        <label>آدرس</label>
+                        <input class="form-control" type="text" name="address" id="new-address"/>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>دسته بندی</label>
+                    <select class="form-control" name="category" id="new-category">
+                        <th:block th:each="category : ${categories}">
+                            <option th:value="${category.id}" th:text="${category.title}">category title</option>
+                        </th:block>
+                    </select>
+                </div>
+                <input th:type="hidden" th:value="${_csrf.token}" id="csrf"/>
+            </div>
+        </form>
+        </p>
+    </div>
+    <div class="actions">
+        <div class="ui approve positive button">ثبت</div>
+        <div class="ui cancel negative button">انصراف</div>
+    </div>
+</div>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+<script th:src="@{/simple-editable-table-plugin/semantic.editableRecord.js}"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var categoryObjects = [[${categories}]];
+    var categories = [];
+    for (var i = 0; i < categoryObjects.length; i++) {
+        categories.push({text: categoryObjects[i].title, value: categoryObjects[i].id})
+    }
+    /*]]>*/
+
+</script>
+<script>
+    $('#business-table').editableRecord({
+        idName: 'id',
+        saveUrl: '/admin/business/save',
+        deleteUrl: '/admin/business/remove',
+        detailButton: '',
+        newButton: ''
+    });
+    function getAllCategories() {
+        return categories;
+    }
+    $('.ui.modal').modal('attach events', '.new.button', 'show')
+            .modal({
+                onApprove : function() {
+                    $.ajax({
+                        url: '/admin/business/save',
+                        type : 'POST',
+                        data: {
+                            name : $("#new-name").val(),
+                            address : $("#new-address").val(),
+                            category : $("#new-category").val(),
+                            _csrf : $("#csrf").val()
+                        },
+                        cache : false,
+                        dataType : 'json',
+                        success: function(result){
+                            window.location.reload();
+                        },
+                        error: function(result){
+
+                        }
+                    })
+                }
+            });
+</script>
+</body>
+</html>

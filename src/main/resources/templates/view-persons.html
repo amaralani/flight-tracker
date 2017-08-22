@@ -1,0 +1,214 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>مدیریت پرسنل</title>
+</head>
+<body>
+<div class="edit-person-dialog" id="editPersonDialog" style="display: none">
+
+</div>
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+    function oneForAll(value, filter, obj) {
+        if (equals(obj.perno, filter)) return true;
+        if (equals(obj.firstName, filter)) return true;
+        return !!equals(obj.lastName, filter);
+    }
+
+
+    webix.ui({
+        id: "edit-person",
+        container: "editPersonDialog",
+        view: "form",
+        cols: [
+            {
+                type: "form",
+                borderless: true,
+                width: 400,
+                rows: [
+                    {template: "ویرایش مشخصات", type: "header"},
+                    {
+                        id: 'code',
+                        view: "text",
+                        label: "کد پرسنلی",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        disabled: true
+                    },
+                    {
+                        id: "firstName", view: "text", label: "نام", labelAlign: 'right', textAlign: 'right'
+                    },
+                    {
+                        id: "lastName", view: "text", label: "نام خانوادگی", labelAlign: 'right', textAlign: 'right'
+                    },
+                    {
+                        inputWidth: 100,
+                        view: "button",
+                        type: "form",
+                        value: "ثبت",
+                        align: "left",
+                        click: function () {
+                            var code = {name: "perno", value: $$("code").getValue().trim()};
+                            var firstName = {name: "firstName", value: $$("firstName").getValue().trim()};
+                            var lastName = {name: "lastName", value: $$("lastName").getValue().trim()};
+                            var isNew = {name: "isNew", value: false};
+                            webix.send("/base-info/person/save", [code, firstName, lastName, isNew], "POST", null);
+                        }
+                    }
+                ]
+            },
+            {}
+
+        ]
+    });
+    /*<![CDATA[*/
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "view", value: "مشاهده پرسنل", width: 150},
+                {id: "add", value: "افزودن", width: 150}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "view",
+                        view: "datatable", select: true,
+                        columns: [
+                            {
+                                id: "perno",
+                                header: ["کد پرسنلی", {
+                                    content: "textFilter",
+                                    compare: oneForAll,
+                                    placeholder: "جستجو",
+                                    colspan: 3
+                                }],
+                                sort: "int",
+                                width: 200
+                            },
+                            {id: "firstName", header: ["نام", null], fillspace: true},
+                            {id: "lastName", header: ["نام خانوادگی", null], width: 300},
+                            {
+                                id: "edit",
+                                header: "ویرایش",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='edit_person'>ویرایش</a>"
+                            },
+                            {
+                                id: "remove",
+                                header: "حذف",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='remove_person'>حذف</a>"
+                            }
+                        ],
+                        data: [[${persons}]],
+                        onClick: {
+                            "edit_person": function (e, id) {
+                                var item = this.getItem(id);
+                                $$("code").setValue(item.perno);
+                                $$("firstName").setValue(item.firstName);
+                                $$("lastName").setValue(item.lastName);
+                                $("#editPersonDialog").dialog("open");
+                            },
+                            "remove_person": function (e, id) {
+                                webix.message("remove :" + id);
+                                var item = this.getItem(id);
+                                var code = {name: "perno", value: item.perno};
+                                webix.send("/base-info/person/remove", [code], "POST", null);
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        id: "add",
+                        view: "form",
+                        cols: [
+                            {
+                                type: "form",
+                                borderless: true,
+                                width: 400,
+                                rows: [
+                                    {template: "افزودن پرسنل", type: "header"},
+                                    {
+                                        id: 'code_new',
+                                        view: "text",
+                                        label: "کد پرسنلی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right'
+                                    },
+                                    {
+                                        id: "firstName_new",
+                                        view: "text",
+                                        label: "نام",
+                                        labelAlign: 'right',
+                                        textAlign: 'right'
+                                    },
+                                    {
+                                        id: "lastName_new",
+                                        view: "text",
+                                        label: "نام خانوادگی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right'
+                                    },
+                                    {
+                                        inputWidth: 100,
+                                        view: "button",
+                                        type: "form",
+                                        value: "ثبت",
+                                        align: "left",
+                                        click: function () {
+                                            var code = {name: "perno", value: $$("code_new").getValue().trim()};
+                                            var firstName = {
+                                                name: "firstName",
+                                                value: $$("firstName_new").getValue().trim()
+                                            };
+                                            var lastName = {
+                                                name: "lastName",
+                                                value: $$("lastName_new").getValue().trim()
+                                            };
+                                            var isNew = {
+                                                name: "isNew",
+                                                value: true
+                                            };
+                                            webix.send("/base-info/person/save", [code, firstName, lastName, isNew], "POST", null);
+                                        }
+                                    }
+                                ]
+                            },
+                            {}
+
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    /*]]>*/
+
+    $("#editPersonDialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

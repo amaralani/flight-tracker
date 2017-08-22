@@ -1,0 +1,52 @@
+<!DOCTYPE html >
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <!--<title>Create Account</title>-->
+
+</head>
+<body>
+
+<div class="container">
+    <div class="ui big breadcrumb">
+        <a class="section" href="welcome.html">Home</a>
+        <i class="right chevron icon divider"></i>
+        <div class="active section">Create Account</div>
+    </div>
+    <h2 class="ui dividing header"></h2>
+    <form action="#" th:action="@{/registration}" th:object="${userForm}" method="post" class="ui form column">
+        <!--<h2 class="form-signin-heading">Create your account</h2>-->
+        <div class="three fields" th:classappend="${status} ? 'has-error' : ''">
+            <div class="field">
+                <label th:text="Username"></label>
+                <input class="field" type="text" th:field="*{username}"/>
+                <div  th:classappend="${password} != null ? 'ui pointing red basic label' : ''">
+                    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Incorrect username</p>
+                </div>
+            </div>
+        </div>
+        <div class="three fields" th:classappend="${status} ? 'has-error' : ''">
+            <div class="field">
+                <label th:text="Password"></label>
+                <input class="form-control" type="text" th:field="*{password}" th:label="password"/>
+                <div  th:classappend="${password} != null ? 'ui pointing red basic label' : ''">
+                    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect password</p>
+                </div>
+            </div>
+        </div>
+        <div class="three fields" th:classappend="${status} ? 'has-error' : ''">
+            <div class="field">
+                <label th:text="Email"></label>
+                <input class="form-control" type="text" th:field="*{email}" th:label="email"/>
+                <div  th:classappend="${error} != null ? 'ui pointing red basic label' : ''">
+                    <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Incorrect email</p>
+                </div>
+            </div>
+        </div>
+        <button class="ui left floated button blue" type="submit">Submit</button>
+    </form>
+</div>
+<!-- /container -->
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

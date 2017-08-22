@@ -1,0 +1,62 @@
+<!DOCTYPE html >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <link rel="stylesheet" type="text/css"
+          th:href="@{/persian-datepicker/css/persian-datepicker-0.4.5.min.css}"/>
+    <title>مشخصات فردی</title>
+</head>
+<body>
+<!--/*/ <th:block th:include="partials/menu :: menu"></th:block> /*/-->
+
+<div class="ui raised very padded text container segment">
+    <form class="ui form" method="POST" th:action="@{/profile/edit}" th:object="${profile}">
+        <h4 class="ui dividing header">مشخصات فردی</h4>
+        <div class="field">
+            <div class="two fields">
+                <div class="field">
+                    <label>نام</label>
+                    <input class="form-control" type="text" th:field="*{name}"/>
+                </div>
+                <div class="field">
+                    <label>نام خانوادگی</label>
+                    <input class="form-control" type="text" th:field="*{family}"/>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <div class="two fields">
+                <div class="field required">
+                    <label>شماره موبایل</label>
+                    <input type="number" th:field="*{mobile}"/>
+                    <p th:if="${#fields.hasErrors('mobile')}" th:errors="*{mobile}">Incorrect Mobile</p>
+                </div>
+                <div class="field ">
+                    <label>تاریخ تولد</label>
+                    <input type="text" class="birthdate-datePicker" name="persianBirthDate" th:value="${birthDate}"/>
+                    <p th:if="${birthDateError} != null" th:text="#{invalid.birth.date}">Incorrect BirthDate</p>
+                </div>
+            </div>
+        </div>
+
+        <button class="ui primary button">
+            ذخیره
+        </button>
+    </form>
+</div>
+
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+<script th:src="@{/persian-datepicker/js/persian-datepicker-0.4.5.min.js}"></script>
+<script th:src="@{/persian-datepicker/js/persian-date-0.1.8.min.js}"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".birthdate-datePicker").pDatepicker({
+                    format: "YYYY-MM-DD"
+                }
+        );
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+</head>
+<body th:fragment="footer">
+
+<form id="logoutForm" method="POST" th:action="@{/logout}">
+    <input type="hidden"
+           th:name="${_csrf.parameterName}"
+           th:value="${_csrf.token}"/>
+</form>
+
+<script th:src="@{/js/custom.js}" type="text/javascript" charset="utf-8"></script>
+
+
+</body>
+</html>

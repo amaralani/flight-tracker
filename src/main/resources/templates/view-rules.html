@@ -1,0 +1,403 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>مدیریت قوانین</title>
+</head>
+<body>
+<div class="edit-rule-dialog" id="editRuleDialog" style="display: none">
+
+</div>
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+    function oneForAll(value, filter, obj) {
+        if (equals(obj.perno, filter)) return true;
+        if (typeof getPersonNameByPerno(obj.perno) != 'undefined') {
+            if (equals(getPersonNameByPerno(obj.perno), filter)) return true;
+        }
+        if (typeof getSectionNameByCode(obj.section) != 'undefined') {
+            if (equals(getSectionNameByCode(obj.section), filter)) return true;
+        }
+        if (typeof getWorkGroupNameByCode(obj.workGroup) != 'undefined') {
+            if (equals(getWorkGroupNameByCode(obj.workGroup), filter)) return true;
+        }
+        if (equals(obj.kartNo, filter)) return true;
+        return !!equals(obj.section, filter);
+    }
+
+
+    /*<![CDATA[*/
+    var sections = [];
+    $.each([[${sections}]], function (i, section) {
+        sections.push({id: section.code, value: section.name})
+    });
+    var workGroups = [];
+    $.each([[${workGroups}]], function (i, workGroup) {
+        workGroups.push({id: workGroup.code, value: workGroup.name})
+    });
+    var persons = [];
+    $.each([[${persons}]], function (i, person) {
+        persons.push({id: person.perno, value: person.firstName.trim() + " " + person.lastName.trim()})
+    });
+
+    function getPersonNameByPerno(perno) {
+        var ret;
+        $.each(persons, function (i, person) {
+            if (person.id.trim() === perno.trim()) {
+                ret = person.value.trim();
+            }
+        })
+        return ret;
+    }
+
+    function getSectionNameByCode(code) {
+        var ret;
+        $.each(sections, function (i, section) {
+            if (section.id.trim() == code.trim()) {
+                ret = section.value.trim();
+            }
+        });
+        return ret;
+    }
+
+
+    function getWorkGroupNameByCode(code) {
+        var ret;
+        $.each(workGroups, function (i, workGroup) {
+            if (workGroup.id === code) {
+                ret = workGroup.value.trim();
+            }
+        });
+        return ret;
+    }
+
+    function getPersonCodeByName(name) {
+        var ret;
+        $.each(persons, function (i, person) {
+            if (person.value.trim() === name.trim()) {
+                ret = person.id.trim();
+            }
+        })
+        return ret;
+    }
+
+    function getSectionCodeByName(name) {
+        var ret;
+        $.each(sections, function (i, section) {
+            if (section.value.trim() == name.trim()) {
+                ret = section.id.trim();
+            }
+        });
+        return ret;
+    }
+
+
+    function getWorkGroupCodeByName(name) {
+        var ret;
+        $.each(workGroups, function (i, workGroup) {
+            if (workGroup.value.trim() === name.trim()) {
+                ret = workGroup.id;
+            }
+        });
+        return ret;
+    }
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "view", value: "مشاهده احکام", width: 150},
+                {id: "add", value: " افزودن", width: 150}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "view",
+                        view: "datatable", select: true,
+                        columns: [
+                            {
+                                id: "perno",
+                                header: ["کد پرسنلی ", {
+                                    content: "textFilter",
+                                    compare: oneForAll,
+                                    placeholder: "جستجو",
+                                    colspan: 3
+                                }],
+                                sort: "int",
+                                width: 200
+                            },
+                            {id: "perno", header: ["نام پرسنل", null], format: getPersonNameByPerno, fillspace: true},
+                            {id: "beginDate", header: ["تاریخ شروع", null], fillspace: true},
+                            {id: "endDate", header: ["تاریخ پایان", null], fillspace: true},
+                            {id: "kartNo", header: ["شماره کارت", null], fillspace: true},
+                            {id: "section", header: ["نام قسمت", null], format: getSectionNameByCode, fillspace: true},
+                            {
+                                id: "workGroup",
+                                header: ["نام گروه کاری", null],
+                                format: getWorkGroupNameByCode,
+                                fillspace: true
+                            }, {
+                                id: "edit",
+                                header: "ویرایش",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='edit_rule'>ویرایش</a>"
+                            },
+                            {
+                                id: "remove",
+                                header: "حذف",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='remove_rule'>حذف</a>"
+                            }
+                        ],
+                        data: [[${rRules}]],
+                        onClick: {
+                            "edit_rule": function (e, id) {
+                                var item = this.getItem(id);
+                                $$("beginDate_edit").setValue(item.beginDate);
+                                $$("endDate_edit").setValue(item.endDate);
+                                $$("person_edit").setValue(getPersonNameByPerno(item.perno));
+                                $$("kartno_edit").setValue(item.kartNo);
+                                $$("section_edit").setValue(getSectionNameByCode(item.section));
+                                $$("workGroup_edit").setValue(getWorkGroupNameByCode(item.workGroup));
+                                $("#editRuleDialog").dialog("open");
+                            },
+                            "remove_rule": function (e, id) {
+                                var item = this.getItem(id);
+                                var person = {name: "perno", value: item.perno};
+                                webix.send("/base-info/rRule/remove", [person], "POST", null);
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        id: "add",
+                        view: "form",
+                        cols: [
+                            {
+                                type: "form",
+                                borderless: true,
+                                width: 600,
+                                rows: [
+                                    {template: "ثبت پرسنل در احکام کاری", type: "header"},
+                                    {
+                                        cols: [
+                                            {
+                                                id: 'beginDate',
+                                                view: "text",
+                                                label: "تاریخ شروع",
+                                                value: '01/01',
+                                                labelAlign: 'right',
+                                                textAlign: 'right'
+                                            },
+                                            {
+                                                id: "endDate",
+                                                view: "text",
+                                                label: "تاریخ پایان",
+                                                value: '12/29  ',
+                                                labelAlign: 'right',
+                                                textAlign: 'right'
+                                            }
+                                        ]
+                                    },
+
+                                    {
+                                        cols: [
+                                            {
+                                                id: "section",
+                                                view: "text",
+                                                label: "قسمت",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                suggest: {
+                                                    data: sections, relative: "right", fitMaster: false, width: 200
+                                                }
+                                            },
+                                            {
+                                                id: "workGroup",
+                                                view: "text",
+                                                label: "گروه کاری",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                suggest: {
+                                                    data: workGroups, relative: "right", fitMaster: false, width: 200
+                                                }
+                                            }
+                                        ]
+                                    }
+                                    ,
+                                    {
+                                        id: "person",
+                                        view: "text",
+                                        label: "نام پرسنل",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        suggest: {
+                                            data: persons, relative: "right", fitMaster: false, width: 200
+                                        }
+                                    },
+                                    {
+                                        id: "kartno",
+                                        view: "text",
+                                        label: "شماره کارت",
+                                        labelAlign: 'right',
+                                        textAlign: 'right'
+                                    },
+                                    {
+                                        inputWidth: 100,
+                                        view: "button",
+                                        type: "form",
+                                        value: "ثبت",
+                                        align: "left",
+                                        click: function () {
+                                            var beginDate = {name: "beginDate", value: $$("beginDate").getValue().trim()};
+                                            var endDate = {name: "endDate", value: $$("endDate").getValue().trim()};
+                                            var section = {name: "section", value: getSectionCodeByName($$("section").getValue())};
+                                            var workGroup = {name: "workGroupId", value: getWorkGroupCodeByName($$("workGroup").getValue())};
+                                            var person = {name: "perno", value: getPersonCodeByName($$("person").getValue())};
+                                            var kartno = {name: "kartNo", value: $$("kartno").getValue().trim()};
+                                            var isNew = {
+                                                name: "isNew",
+                                                value: true
+                                            };
+                                            webix.send("/base-info/rRule/save", [beginDate,endDate,section,workGroup,person, kartno, isNew], "POST", null);
+                                        }
+                                    }
+                                ]
+                            }
+
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+
+    webix.ui({
+        id: "edit-rule",
+        container: "editRuleDialog",
+        view: "form",
+        cols: [
+            {
+                type: "form",
+                id : 'formform',
+                borderless: true,
+                width: 425,
+                rows: [
+                    {template: "ثبت پرسنل در احکام کاری", type: "header"},
+                    {
+                        cols: [
+                            {
+                                id: 'beginDate_edit',
+                                name: 'beginDate_edit',
+                                view: "text",
+                                label: "تاریخ شروع",
+                                value: '01/01',
+                                labelAlign: 'right',
+                                textAlign: 'right'
+                            },
+                            {
+                                id: "endDate_edit",name:"endDate_edit",
+                                view: "text",
+                                label: "تاریخ پایان",
+                                value: '12/29  ',
+                                labelAlign: 'right',
+                                textAlign: 'right'
+                            }
+                        ]
+                    },
+
+                    {
+                        cols: [
+                            {
+                                id: "section_edit",name :"section_edit",
+                                view: "text",
+                                label: "قسمت",
+                                labelAlign: 'right',
+                                textAlign: 'right',
+                                suggest: {
+                                    data: sections, relative: "right", fitMaster: false, width: 200
+                                }
+                            },
+                            {
+                                id: "workGroup_edit",name: "workGroup_edit",
+                                view: "text",
+                                label: "گروه کاری",
+                                labelAlign: 'right',
+                                textAlign: 'right',
+                                suggest: {
+                                    data: workGroups, relative: "right", fitMaster: false, width: 200
+                                }
+                            }
+                        ]
+                    }
+                    ,
+                    {
+                        id: "person_edit",name :"person_edit",
+                        view: "text",
+                        label: "نام پرسنل",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        suggest: {
+                            data: persons, relative: "right", fitMaster: false, width: 200
+                        }
+                    },
+                    {
+                        id: "kartno_edit",name:"kartno_edit",
+                        view: "text",
+                        label: "شماره کارت",
+                        labelAlign: 'right',
+                        textAlign: 'right'
+                    },
+                    {
+                        inputWidth: 100,
+                        view: "button",
+                        type: "form",
+                        value: "ثبت",
+                        align: "left",
+                        click: function () {
+                            console.log()
+                             var beginDate = {name: "beginDate", value: $$("beginDate_edit").getValue().trim()};
+                            var endDate = {name: "endDate", value: $$("endDate_edit").getValue().trim()};
+                            var section = {name: "section", value: getSectionCodeByName($$("section_edit").getValue())};
+                            var workGroup = {name: "workGroupId", value: getWorkGroupCodeByName($$("workGroup_edit").getValue())};
+                            var person = {name: "perno", value: getPersonCodeByName($$("person_edit").getValue())};
+                            var kartno = {name: "kartNo", value: $$("kartno_edit").getValue().trim()};
+                            var isNew = {
+                                name: "isNew",
+                                value: false
+                            };
+                            webix.send("/base-info/rRule/save", [beginDate,endDate,section,workGroup,person, kartno, isNew], "POST", null);
+                        }
+                    }
+                ]
+            }
+        ]
+    });
+    /*]]>*/
+
+    $("#editRuleDialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

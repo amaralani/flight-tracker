@@ -1,0 +1,40 @@
+package ir.mfava.modfava.pardazesh.validator;
+
+/**
+ * @author Drago
+ *         <p>
+ *         General Validations
+ */
+public class CustomValidatorUtil {
+    public static boolean isValidNationalCode(Long _nationalCode) {
+        if (_nationalCode == null)
+            return false;
+
+        String nationalCode = _nationalCode.toString();
+        int length = nationalCode.length();
+
+        if (length > 10)
+            return false;
+
+        if (length < 10) {//add zero to the head of string
+            int numberOfZero = 10 - length;
+            for (int i = 0; i < numberOfZero; i++)
+                nationalCode = "0" + nationalCode;
+        }
+
+
+        if (nationalCode.substring(0, 2).equals("000")) {
+            return false;
+        }
+        int check = 0;
+        for (int i = 0; i < 9; i++) {
+
+            check += Integer.valueOf(nationalCode.substring(i, i + 1)) * (10 - i);
+        }
+        int remainder = check % 11;
+        int controlDigit = Integer.valueOf(nationalCode.substring(9, 10));
+
+        return remainder < 2 ? controlDigit == remainder : controlDigit == 11 - remainder;
+
+    }
+}

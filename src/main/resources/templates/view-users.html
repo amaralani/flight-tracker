@@ -1,0 +1,275 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>مدیریت کاربران</title>
+</head>
+<body>
+<div class="edit-user-dialog" id="editUserDialog" style="display: none">
+
+</div>
+<div class="view-roles-dialog" id="viewRolesDialog" style="display: none">
+
+</div>
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+    function oneForAll(value, filter, obj) {
+        return !!equals(obj.username, filter);
+    }
+
+    function activeFormat(text) {
+        if (text === true)
+            return 'فعال';
+        if (text === false)
+            return 'غیرفعال';
+    }
+
+    webix.ui({
+        id: "edit-user",
+        container: "editUserDialog",
+        view: "form",
+        cols: [
+            {
+                type: "form",
+                borderless: true,
+                width: 400,
+                rows: [
+                    {template: "ویرایش مشخصات", type: "header"},
+                    {
+                        id: 'username',
+                        view: "text",
+                        label: "نام کاربری",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        id: "enabled",
+                        view: "segmented",
+                        width: 270,
+                        align: "left",
+                        options: [
+                            {id: "1", value: "فعال"},
+                            {id: "0", value: "غیرفعال"}
+                        ]
+                    },
+                    {
+                        id: "password",
+                        view: "text",
+                        label: "رمز عبور جدید",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+
+                    },
+                    {
+                        id: "re-password",
+                        view: "text",
+                        label: "تکرار رمز عبور جدید",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+
+                    },
+                    {
+                        inputWidth: 100,
+                        view: "button",
+                        type: "form",
+                        value: "ثبت",
+                        align: "left",
+                        click: function () {
+                            var username = {name: "username", value: $$("username").getValue().trim()};
+                            var enabled = {name: "enabled", value: $$("enabled").getValue().trim()};
+                            var password = {name: "password", value: $.sha1($$("password").getValue().trim())};
+                            var rePassword = {name: "re-password", value: $.sha1($$("re-password").getValue().trim())};
+                            var isNew = {name: "isNew", value: false};
+                            webix.send("/base-info/user/save", [username, enabled, password, rePassword, isNew], "POST", null);
+                        }
+                    }
+                ]
+            },
+            {}
+
+        ]
+    });
+
+    /*<![CDATA[*/
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "view", value: "مشاهده کاربران", width: 150},
+                {id: "add", value: "افزودن", width: 150}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "view",
+                        view: "datatable", select: true,
+                        columns: [
+                            {
+                                id: "username",
+                                header: ["نام کاربری", {
+                                    content: "textFilter",
+                                    compare: oneForAll,
+                                    placeholder: "جستجو",
+                                    colspan: 3
+                                }],
+                                sort: "int",
+                                width: 200
+                            },
+                            {id: "createDate", header: ["تاریخ ثبت", null], fillspace: true},
+                            {id: "enabled", header: ["فعال", null], format: activeFormat, width: 300},
+                            {
+                                id: "view_roles",
+                                header: "نمایش دسترسی ها",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='view_roles'>نمایش</a>"
+                            },
+                            {
+                                id: "edit_user",
+                                header: "ویرایش",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='edit_user'>ویرایش</a>"
+                            },
+                            {
+                                id: "remove",
+                                header: "حذف",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='remove_user'>حذف</a>"
+                            }
+                        ],
+                        data: [[${users}]],
+                        onClick: {
+                            "edit_user": function (e, id) {
+                                var item = this.getItem(id);
+                                $$("username").setValue(item.username);
+                                $$("enabled").setValue(item.enabled ? 1 : 0);
+                                $("#editUserDialog").dialog("open");
+                            },
+                            "remove_user": function (e, id) {
+                                var item = this.getItem(id);
+                                var username = {name: "username", value: item.username};
+                                webix.send("/base-info/user/remove", [username], "POST", null);
+                                return false;
+                            },
+                            "view_roles": function (e, id) {
+                                var item = this.getItem(id);
+                                $("#viewRolesDialog").html("");
+                                webix.ui({
+                                    container: "viewRolesDialog",
+                                    view: "list",
+                                    width: 200,
+                                    autoheight: true,
+                                    template: "#id#. #label# ",
+                                    data: item.roles
+                                });
+                                $("#viewRolesDialog").dialog("open");
+                            }
+                        }
+                    },
+                    {
+                        id: "add",
+                        view: "form",
+                        cols: [
+                            {
+                                type: "form",
+                                borderless: true,
+                                width: 400,
+                                rows: [
+                                    {template: "افزودن کاربر", type: "header"},
+                                    {
+                                        id: 'username_new',
+                                        view: "text",
+                                        label: "نام کاربری",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: "enabled_new",
+                                        view: "segmented",
+                                        width: 270,
+                                        align: "left",
+                                        options: [
+                                            {id: "1", value: "فعال"},
+                                            {id: "0", value: "غیرفعال"}
+                                        ]
+                                    },
+                                    {
+                                        id: "password_new",
+                                        view: "text",
+                                        label: "رمز عبور جدید",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+
+                                    },
+                                    {
+                                        id: "re-password_new",
+                                        view: "text",
+                                        label: "تکرار رمز عبور جدید",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+
+                                    },
+                                    {
+                                        inputWidth: 100,
+                                        view: "button",
+                                        type: "form",
+                                        value: "ثبت",
+                                        align: "left",
+                                        click: function () {
+                                            var username = {name: "username", value: $$("username_new").getValue().trim()};
+                                            var enabled = {name: "enabled", value: $$("enabled_new").getValue().trim()};
+                                            var password = {name: "password", value: $.sha1($$("password_new").getValue().trim())};
+                                            var rePassword = {name: "re-password", value: $.sha1($$("re-password_new").getValue().trim())};
+                                            var isNew = {name: "isNew", value: true};
+                                            webix.send("/base-info/user/save", [username, enabled, password, rePassword, isNew], "POST", null);
+                                        }
+                                    }
+                                ]
+                            },
+                            {}
+
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    /*]]>*/
+
+    $("#editUserDialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
+    $("#viewRolesDialog").dialog({
+        autoOpen: false,
+        width: 300,
+        modal: true
+    });
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

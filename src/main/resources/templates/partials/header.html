@@ -1,0 +1,121 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head lang="en" th:fragment="head">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <link rel="stylesheet" th:href="@{/webix/skins/metro.css}" type="text/css" media="screen" charset="utf-8"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/custom.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/jquery-ui.min.css}"/>
+    <script th:src="@{/webix/webix_debug.js}" type="text/javascript" charset="utf-8"></script>
+    <script th:src="@{/js/jquery-1.12.4.js}" type="text/javascript" charset="utf-8"></script>
+    <script th:src="@{/js/jquery-ui.min.js}" type="text/javascript" charset="utf-8"></script>
+    <script th:src="@{/persian-datepicker/js/persian-date-0.1.8.js}" type="text/javascript" charset="utf-8"></script>
+    <script th:src="@{/js/jquery.sha1.js}" type="text/javascript" charset="utf-8"></script>
+    <script th:inline="javascript">
+        var main_content = {};
+        /*<![CDATA[*/
+        var csrf_token = [[${_csrf.token}]];
+        var right_menu_base_info = [
+            {id: 1, "name": "مدیریت ایستگاه های هواشناسی", href: "/base-info/station/", icon: "id-badge"},
+            {id: 2, "name": "مدیریت پدیده ها", href: "/base-info/event/", icon: "id-badge"},
+            {id: 3, "name": "مدیریت یگان ها", href: "/base-info/unit/", icon: "id-badge"},
+            {id: 4, "name": "مديريت کاربران", href: "/base-info/user/", icon: "id-badge"},
+            {id: 5, "name": "مديريت دسترسي", href: "/base-info/role/", icon: "users"},
+            {id: 6, "name": "مديريت تنظیمات امنیتی", href: "/base-info/security/", icon: "users"},
+        ];
+        var right_menu_usage = [
+            {id: 1, "name": "دریافت اطلاعات", href: "/upload/files/", icon: "id-badge"},
+            {id: 2, "name": "بولتن", href: "/bulletin/", icon: "id-badge"},
+            {id: 3, "name": "D-Factor", href: "/dfactor/", icon: "id-badge"},
+            {id: 4, "name": "ارسال پیام", href: "/messages/", icon: "id-badge"},
+            {id: 5, "name": "نمایش نقشه", href: "/map/", icon: "id-badge"},
+        ];
+        var right_menu_report = [
+            {id: 1, "name": "مشاهده ورود و خروج کاربران", href: "/report/login/", icon: "id-badge"},
+            {id: 2, "name": "گزارشات", href: "#", icon: "id-badge"},
+        ];
+        var right_menu = {
+            width: 300,
+
+            multi: false, rows: [
+                {
+                    header: "<span class='menu-list-header'>اطلاعات پايه</span>", body: {
+                    rows: [
+                        {
+                            view: "list",
+                            template: "<a href='#href#' class='menu-list-item'>#name#</a>",
+                            yCount: 6,
+                            data: right_menu_base_info,
+                            onClick: {
+                                link: function (e, id) {
+                                    if (this.getItem(id).href !== undefined) {
+                                        window.location.href = this.getItem(id).href;
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                    ,
+                    elementsConfig: {
+                        labelWidth: 100, labelAlign: "right"
+                    }
+                }
+                },
+                {
+                    header: "<span class='menu-list-header'>کاربری</span>", body: {
+                    rows: [
+                        {
+                            view: "list",
+                            template: "<a href='#href#' class='menu-list-item'>#name#</a>",
+                            yCount: 6,
+                            data: right_menu_usage,
+                            onClick: {
+                                link: function (e, id) {
+                                    if (this.getItem(id).href !== undefined) {
+                                        window.location.href = this.getItem(id).href;
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                    ,
+                    elementsConfig: {
+                        labelWidth: 100, labelAlign: "right"
+                    }
+                }
+                },
+                {
+                    header: "<span class='menu-list-header'>گزارشات</span>", body: {
+                    rows: [
+                        {
+                            view: "list",
+                            template: "<a href='#href#' class='menu-list-item'>#name#</a>",
+                            yCount: 6,
+                            data: right_menu_report,
+                            onClick: {
+                                link: function (e, id) {
+                                    if (this.getItem(id).href !== undefined) {
+                                        window.location.href = this.getItem(id).href;
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                    ,
+                    elementsConfig: {
+                        labelWidth: 100, labelAlign: "right"
+                    }
+                }
+                }
+                ,
+                {}
+            ]
+        };
+        /*]]>*/
+    </script>
+</head>
+<body>
+
+</body>
+</html>

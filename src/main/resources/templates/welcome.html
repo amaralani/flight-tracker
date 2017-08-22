@@ -1,0 +1,363 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>آمار</title>
+</head>
+<body>
+<div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        var offers = [
+            {
+                id: 1,
+                direction: "<b>Tallin</b> EE - <b>Berlin</b> Tegel DE",
+                date: new Date(2014, 7, 25),
+                price: "450",
+                save: "45",
+                places: 21
+            },
+            {
+                id: 2,
+                direction: "<b>Moscow</b> Vnukovo RU - <b>Kiev</b> Borispol UA",
+                date: new Date(2014, 7, 28),
+                price: "160",
+                save: "65",
+                places: 5
+            },
+            {
+                id: 3,
+                direction: "<b>Riga</b> International LV - <b>Warsaw</b> Modlin",
+                date: new Date(2014, 7, 16),
+                price: "220",
+                save: "110",
+                places: 2
+            },
+            {
+                id: 4,
+                direction: "<b>Vilnius</b> LT - <b>Kiev</b> Zhulhany UA",
+                date: new Date(2014, 8, 1),
+                price: "140",
+                save: "40",
+                places: 35
+            },
+            {
+                id: 5,
+                direction: "<b>Minsk</b> International 2 BY- <b>Berlin</b> Schoenefeld DE",
+                date: new Date(2014, 8, 6),
+                price: "378",
+                save: "35",
+                places: 25
+            },
+            {
+                id: 6,
+                direction: "<b>St. Petersburg</b> Pulkovo - <b>Tallin</b> Estonia",
+                date: new Date(2014, 7, 31),
+                price: "90",
+                save: "82",
+                places: 11
+            },
+            {
+                id: 7,
+                direction: "<b>Kiev</b> Zhulhany UA - <b>Moscow</b> Vnukovo RU",
+                date: new Date(2014, 8, 15),
+                price: "220",
+                save: "30",
+                places: 41
+            },
+            {
+                id: 8,
+                direction: "<b>Moscow</b> Sheremetyevo RU - <b>Vilnius</b> LT",
+                date: new Date(2014, 8, 11),
+                price: "321",
+                save: "44",
+                places: 32
+            },
+            {
+                id: 9,
+                direction: "<b>Warsaw</b> PL - <b>Minsk</b> International 2 BY",
+                date: new Date(2014, 8, 5),
+                price: "256",
+                save: "32",
+                places: 55
+            },
+            {
+                id: 10,
+                direction: "<b>Prague</b> CZ - <b>St. Petersburg</b> Pulkovo",
+                date: new Date(2014, 7, 30),
+                price: "311",
+                save: "63",
+                places: 15
+            },
+            {
+                id: 11,
+                direction: "<b>Tallin</b> EE - <b>Berlin</b> Tegel DE",
+                date: new Date(2014, 8, 25),
+                price: "450",
+                save: "45",
+                places: 35
+            },
+            {
+                id: 12,
+                direction: "<b>Moscow</b> Vnukovo RU - <b>Kiev</b> Borispol UA",
+                date: new Date(2014, 8, 28),
+                price: "160",
+                save: "65",
+                places: 20
+            },
+            {
+                id: 13,
+                direction: "<b>Riga</b> International LV - <b>Warsaw</b> Modlin",
+                date: new Date(2014, 8, 16),
+                price: "220",
+                save: "110",
+                places: 22
+            },
+            {
+                id: 14,
+                direction: "<b>Vilnius</b> LT - <b>Kiev</b> Zhulhany UA",
+                date: new Date(2014, 9, 1),
+                price: "140",
+                save: "40",
+                places: 20
+            },
+            {
+                id: 15,
+                direction: "<b>Minsk</b> International 2 BY- <b>Berlin</b> Schoenefeld DE",
+                date: new Date(2014, 9, 6),
+                price: "378",
+                save: "35",
+                places: 11
+            },
+            {
+                id: 16,
+                direction: "<b>St. Petersburg</b> Pulkovo - <b>Tallin</b> Estonia",
+                date: new Date(2014, 9, 31),
+                price: "90",
+                save: "82",
+                places: 21
+            },
+            {
+                id: 17,
+                direction: "<b>Kiev</b> Zhulhany UA - <b>Moscow</b> Vnukovo RU",
+                date: new Date(2014, 10, 15),
+                price: "220",
+                save: "30",
+                places: 53
+            },
+            {
+                id: 18,
+                direction: "<b>Moscow</b> Sheremetyevo RU - <b>Vilnius</b> LT",
+                date: new Date(2014, 11, 11),
+                price: "321",
+                save: "44",
+                places: 42
+            },
+            {
+                id: 19,
+                direction: "<b>Warsaw</b> PL - <b>Minsk</b> International 2 BY",
+                date: new Date(2014, 12, 5),
+                price: "256",
+                save: "32",
+                places: 30
+            },
+            {
+                id: 20,
+                direction: "<b>Prague</b> CZ - <b>St. Petersburg</b> Pulkovo",
+                date: new Date(2014, 12, 14),
+                price: "311",
+                save: "63",
+                places: 2
+            },
+            {
+                id: 21,
+                direction: "<b>Minsk</b> International 2 BY - <b>Berlin</b> Tegel DE",
+                date: new Date(2014, 12, 20),
+                price: "256",
+                save: "32",
+                places: 10
+            },
+            {
+                id: 22,
+                direction: "<b>Vilnius</b> LT - <b>Berlin</b> Tegel DE",
+                date: new Date(2014, 12, 21),
+                price: "311",
+                save: "63",
+                places: 11
+            }
+        ];
+        var info = [
+            {id: 1, from: "Tallin", to: "Berlin", depart: "06:20", arrive: "08:35", status: "Landed"},
+            {id: 2, from: "Moscow", to: "Kiev", depart: "06:35", arrive: "07:40", status: "Landed"},
+            {id: 3, from: "Riga", to: "Warsaw", depart: "06:45", arrive: "08:05", status: "Landed"},
+            {id: 4, from: "Vilnius", to: "Zhulhany", depart: "06:50", arrive: "07:40", status: "Landed"},
+            {id: 5, from: "Prague", to: "St. Petersburg", depart: "07:20", arrive: "09:50", status: "On Time"},
+            {id: 6, from: "Moscow", to: "Prague", depart: "07:45", arrive: "10:05", status: "On Time"},
+            {id: 7, from: "Berlin", to: "Oslo", depart: "07:15", arrive: "09:45", status: "On Time"},
+            {id: 8, from: "Roma", to: "Stockholm", depart: "07:05", arrive: "10:25", status: "On Time"},
+            {id: 9, from: "Barcelona", to: "Kiev", depart: "07:10", arrive: "10:45", status: "On Time"},
+            {id: 10, from: "Milan", to: "Frankfurt", depart: "07:30", arrive: "09:15", status: "On Time"},
+            {id: 11, from: "Moscow", to: "Oslo", depart: "07:50", arrive: "10:50", status: "On Time"},
+            {id: 12, from: "Berlin", to: "Riga", depart: "08:05", arrive: "09:45", status: "On Time"},
+            {id: 13, from: "Roma", to: "Moscow", depart: "08:15", arrive: "11:25", status: "On Time"},
+            {id: 14, from: "Barcelona", to: "Vilnius", depart: "08:20", arrive: "11:45", status: "On Time"},
+            {id: 15, from: "Milan", to: "Warsaw", depart: "08:25", arrive: "10:15", status: "On Time"}
+        ];
+
+
+        var special_offers = {
+
+            gravity: 3,
+            type: "clean",
+            rows: [
+                {
+                    view: "tabbar", multiview: true, selected: "sOffers", options: [
+                    {id: "sOffers", value: "Special offers", width: 150},
+                    {id: "regular", value: "Regular", width: 150},
+                    {id: "flightInfo", value: "Flight Info", width: 150}
+                ]
+                },
+                {
+                    view: "multiview",
+                    cells: [
+                        {
+                            id: "sOffers",
+                            view: "datatable", select: true,
+                            columns: [
+                                {id: "id", header: "#", width: 40},
+                                {id: "direction", header: "Direction", fillspace: true},
+                                {
+                                    id: "date",
+                                    header: "Date",
+                                    width: 150,
+                                    sort: "date",
+                                    format: webix.i18n.longDateFormatStr
+                                },
+                                {id: "price", header: "Price", width: 95, sort: "int", format: webix.i18n.priceFormat},
+                                {
+                                    id: "save",
+                                    header: "You save",
+                                    width: 95,
+                                    sort: "int",
+                                    format: webix.i18n.priceFormat
+                                },
+                                {id: "places", header: "Tickets", width: 65, sort: "int"},
+                                {
+                                    id: "book",
+                                    header: "Booking",
+                                    css: "webix_el_button",
+                                    width: 100,
+                                    template: "<a href='javascript:void(0)' class='check_flight'>Book now</a>"
+                                }
+                            ],
+                            data: offers,
+                            onClick: {
+                                "check_flight": function () {
+                                    return false;
+                                }
+                            }
+                        },
+                        {
+                            id: "regular",
+                            view: "list",
+                            select: true,
+                            template: "#id#. #direction#",
+                            data: offers,
+                            onClick: {
+                                "check_flight": function () {
+                                    return false;
+                                }
+                            }
+                        },
+                        {
+                            id: "flightInfo",
+                            rows: [
+                                {
+                                    view: "form",
+                                    cols: [
+                                        {
+                                            type: "form",
+                                            borderless: true,
+                                            width: 550,
+                                            rows: [
+                                                {
+                                                    cols: [
+                                                        {
+                                                            view: "text",
+                                                            labelPosition: "top",
+                                                            label: "Flight number",
+                                                            placeholder: "Enter flight No."
+                                                        },
+                                                        {width: 40},
+                                                        {}
+                                                    ]
+                                                },
+                                                {
+                                                    view: "label",
+                                                    label: "-- or --",
+                                                    align: "left"
+                                                },
+                                                {
+
+                                                    cols: [
+                                                        {
+                                                            view: "combo",
+                                                            labelPosition: "top",
+                                                            label: "From",
+                                                            suggest: "cities",
+                                                            placeholder: "Select departure point"
+                                                        },
+                                                        {width: 40},
+                                                        {
+                                                            view: "combo",
+                                                            labelPosition: "top",
+                                                            label: "To",
+                                                            suggest: "cities",
+                                                            placeholder: "Select destination"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    inputWidth: 100,
+                                                    view: "button",
+                                                    type: "form",
+                                                    value: "Search",
+                                                    align: "left"
+                                                }
+                                            ]
+                                        },
+                                        {}
+
+                                    ]
+                                },
+                                {
+
+                                    view: "datatable", select: true,
+                                    columns: [
+                                        {id: "from", header: "From", width: 150, sort: "string"},
+                                        {id: "to", header: "To", width: 150, sort: "string"},
+                                        {id: "depart", header: "Depart", width: 110, sort: "int"},
+                                        {id: "arrive", header: "Arrive", width: 110, sort: "int"},
+                                        {id: "status", header: "Status", fillspace: true, sort: "string"}
+                                    ],
+                                    data: info
+                                }
+                            ]
+
+                        }
+                    ]
+                }
+            ]
+        };
+
+
+
+
+        /*]]>*/
+    </script>
+</div>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+
+</body>
+</html>
