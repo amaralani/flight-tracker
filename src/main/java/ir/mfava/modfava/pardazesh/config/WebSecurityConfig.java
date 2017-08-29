@@ -1,4 +1,5 @@
 package ir.mfava.modfava.pardazesh.config;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +25,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-//                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/profile/**").authenticated()
+                .antMatchers("/js/**").permitAll()
+                .antMatchers("/css/**").permitAll()
+                .antMatchers("/webix/**").permitAll()
+                .antMatchers("/persian-datepicker/**").permitAll()
+                .antMatchers("/registration").permitAll()
+                .antMatchers("/map/**").hasRole("USER")
+                .antMatchers("/**").authenticated()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/base-info/station/**").hasRole("WEATHER_STATION_MANAGER")
+                .antMatchers("/user/manage/**").hasRole("USER_MANAGER")
+                .antMatchers("/base-info/event/**").hasRole("EVENTS_MANAGER")
+                .antMatchers("/base-info/unit/**").hasRole("UNITS_MANAGER")
+                .antMatchers("/bulletin/**").hasRole("VIEW_BULLETIN")
+//                .antMatchers("/bulletin/**").hasRole("ADMIN") TODO: add access control for adding bulletin
+                .antMatchers("/defactor/**").hasRole("VIEW_DEFACTOR")
+//                .antMatchers("/defactor/**").hasRole("ADMIN") TODO: add access control for adding defactor
+                .antMatchers("/bulletin/**").hasRole("ADMIN")
+                .antMatchers("/role/**").hasRole("ACCESS_MANAGER")
+                .antMatchers("/history/**").hasRole("VIEW_LOGIN_HISTORY")
+                .antMatchers("/upload/**").hasRole("UPLOAD_FILES")
+                .antMatchers("/report/**").hasRole("REPORT")
                 .anyRequest().permitAll()
                 .and()
                 .formLogin()

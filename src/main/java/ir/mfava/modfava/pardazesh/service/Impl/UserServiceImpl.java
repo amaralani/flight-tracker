@@ -44,23 +44,23 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public void remove(User entity) {
+        userRepository.delete(entity);
+    }
+
+    @Transactional
+    @Override
+    public void addNewUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         HashSet<Role> roles = new HashSet<>();
         roles.add(roleRepository.getOne(2L));
         user.setRoles(roles);
         user.setEnabled(true);
         user.setCreateDate(new Date());
-        return userRepository.save(user);
-    }
-
-    @Override
-    public void remove(User entity) {
-
-    }
-
-    @Transactional
-    @Override
-    public void addNewUser(User user) {
         save(user);
     }
 

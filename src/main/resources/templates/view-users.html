@@ -22,7 +22,11 @@
         return a.indexOf(b) !== -1;
     }
     function oneForAll(value, filter, obj) {
-        return !!equals(obj.username, filter);
+        if (equals(obj.username, filter)) return true;
+        if (equals(obj.firstName, filter)) return true;
+        if (equals(obj.lastName, filter)) return true;
+        if (equals(obj.nationalCode, filter)) return true;
+        return !!equals(obj.personNumber, filter);
     }
 
     function activeFormat(text) {
@@ -52,6 +56,38 @@
                         labelWidth: 100
                     },
                     {
+                        id: 'firstName',
+                        view: "text",
+                        label: "نام",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'lastName',
+                        view: "text",
+                        label: "نام خانوادگی",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'nationalCode',
+                        view: "text",
+                        label: "کد ملی",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'personNumber',
+                        view: "text",
+                        label: "کد پرسنلی",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
                         id: "enabled",
                         view: "segmented",
                         width: 270,
@@ -64,6 +100,8 @@
                     {
                         id: "password",
                         view: "text",
+                        type: "password",
+                        value: null,
                         label: "رمز عبور جدید",
                         labelAlign: 'right',
                         textAlign: 'right',
@@ -73,6 +111,8 @@
                     {
                         id: "re-password",
                         view: "text",
+                        type: "password",
+                        value: null,
                         label: "تکرار رمز عبور جدید",
                         labelAlign: 'right',
                         textAlign: 'right',
@@ -87,11 +127,16 @@
                         align: "left",
                         click: function () {
                             var username = {name: "username", value: $$("username").getValue().trim()};
-                            var enabled = {name: "enabled", value: $$("enabled").getValue().trim()};
-                            var password = {name: "password", value: $.sha1($$("password").getValue().trim())};
-                            var rePassword = {name: "re-password", value: $.sha1($$("re-password").getValue().trim())};
+                            var firstName = {name: "firstName", value: $$("firstName").getValue().trim()};
+                            var lastName = {name: "lastName", value: $$("lastName").getValue().trim()};
+                            var nationalCode = {name: "nationalCode", value: $$("nationalCode").getValue().trim()};
+                            var personNumber = {name: "personNumber", value: $$("personNumber").getValue().trim()};
+                            var enabled = {name: "enabled", value: $$("enabled").getValue()};
+                            console.log("password : ",$$("password").getValue());
+                            var password = {name: "password", value: $$("password").getValue().trim()};
+                            var rePassword = {name: "re-password", value: $$("re-password").getValue().trim()};
                             var isNew = {name: "isNew", value: false};
-                            webix.send("/base-info/user/save", [username, enabled, password, rePassword, isNew], "POST", null);
+                            webix.send("/base-info/user/save", [username, firstName, lastName, nationalCode, personNumber, enabled, password, rePassword, isNew], "POST", null);
                         }
                     }
                 ]
@@ -128,13 +173,46 @@
                                     content: "textFilter",
                                     compare: oneForAll,
                                     placeholder: "جستجو",
-                                    colspan: 3
+                                    colspan: 5
                                 }],
                                 sort: "int",
+                                width: 100
+                            },
+                            {
+                                id: "firstName",
+                                view: "text",
+                                header: ["نام", null],
+                                labelAlign: 'right',
+                                textAlign: 'right',
+                                width: 150
+                            },
+                            {
+                                id: "lastName",
+                                view: "text",
+                                header: ["نام خانوادگی", null],
+                                labelAlign: 'right',
+                                textAlign: 'right',
+                                width: 150
+                            },
+                            {
+                                id: "nationalCode",
+                                view: "number",
+                                header: ["کد ملی", null],
+                                labelAlign: 'right',
+                                textAlign: 'right',
+                                fillspace : true
+                            },
+                            {
+                                id: "personNumber",
+                                view: "number",
+                                header: ["شماره پرسنلی", null],
+                                labelAlign: 'right',
+                                textAlign: 'right',
                                 width: 200
                             },
-                            {id: "createDate", header: ["تاریخ ثبت", null], fillspace: true},
-                            {id: "enabled", header: ["فعال", null], format: activeFormat, width: 300},
+                            {
+                                id: "enabled", header: ["فعال", null], format: activeFormat, width: 100
+                            },
                             {
                                 id: "view_roles",
                                 header: "نمایش دسترسی ها",
@@ -153,7 +231,7 @@
                                 id: "remove",
                                 header: "حذف",
                                 css: "webix_el_button",
-                                width: 150,
+                                width: 100,
                                 template: "<a href='javascript:void(0)' class='remove_user'>حذف</a>"
                             }
                         ],
@@ -162,6 +240,11 @@
                             "edit_user": function (e, id) {
                                 var item = this.getItem(id);
                                 $$("username").setValue(item.username);
+                                $$("firstName").setValue(item.firstName);
+                                $$("lastName").setValue(item.lastName);
+                                $$("nationalCode").setValue(item.nationalCode);
+                                $$("personNumber").setValue(item.personNumber);
+                                $$("password").setValue(null);
                                 $$("enabled").setValue(item.enabled ? 1 : 0);
                                 $("#editUserDialog").dialog("open");
                             },
@@ -173,6 +256,17 @@
                             },
                             "view_roles": function (e, id) {
                                 var item = this.getItem(id);
+                                var roles = [];
+                                item.roles.sort(function (a, b) {
+                                    if (a.id == b.id) {
+                                        return 0;
+                                    }
+                                    return (a.id > b.id) ? 1 : -1;
+                                });
+                                $.each(item.roles, function (i, itemRole) {
+                                    roles.push({id: i+1, label: itemRole.label})
+                                });
+
                                 $("#viewRolesDialog").html("");
                                 webix.ui({
                                     container: "viewRolesDialog",
@@ -180,11 +274,12 @@
                                     width: 200,
                                     autoheight: true,
                                     template: "#id#. #label# ",
-                                    data: item.roles
+                                    data: roles
                                 });
                                 $("#viewRolesDialog").dialog("open");
                             }
                         }
+
                     },
                     {
                         id: "add",
@@ -205,6 +300,38 @@
                                         labelWidth: 100
                                     },
                                     {
+                                        id: 'firstName_new',
+                                        view: "text",
+                                        label: "نام",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'lastName_new',
+                                        view: "text",
+                                        label: "نام خانوادگی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'nationalCode_new',
+                                        view: "text",
+                                        label: "کد ملی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'personNumber_new',
+                                        view: "text",
+                                        label: "کد پرسنلی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
                                         id: "enabled_new",
                                         view: "segmented",
                                         width: 270,
@@ -217,6 +344,8 @@
                                     {
                                         id: "password_new",
                                         view: "text",
+                                        type: 'password',
+                                        value: null,
                                         label: "رمز عبور جدید",
                                         labelAlign: 'right',
                                         textAlign: 'right',
@@ -226,6 +355,8 @@
                                     {
                                         id: "re-password_new",
                                         view: "text",
+                                        type: 'password',
+                                        value: null,
                                         label: "تکرار رمز عبور جدید",
                                         labelAlign: 'right',
                                         textAlign: 'right',
@@ -239,12 +370,37 @@
                                         value: "ثبت",
                                         align: "left",
                                         click: function () {
-                                            var username = {name: "username", value: $$("username_new").getValue().trim()};
+                                            var username = {
+                                                name: "username",
+                                                value: $$("username_new").getValue().trim()
+                                            };
+                                            var firstName = {
+                                                name: "firstName",
+                                                value: $$("firstName_new").getValue().trim()
+                                            };
+                                            var lastName = {
+                                                name: "lastName",
+                                                value: $$("lastName_new").getValue().trim()
+                                            };
+                                            var nationalCode = {
+                                                name: "nationalCode",
+                                                value: $$("nationalCode_new").getValue().trim()
+                                            };
+                                            var personNumber = {
+                                                name: "personNumber",
+                                                value: $$("personNumber_new").getValue().trim()
+                                            };
                                             var enabled = {name: "enabled", value: $$("enabled_new").getValue().trim()};
-                                            var password = {name: "password", value: $.sha1($$("password_new").getValue().trim())};
-                                            var rePassword = {name: "re-password", value: $.sha1($$("re-password_new").getValue().trim())};
+                                            var password = {
+                                                name: "password",
+                                                value: $$("password_new").getValue().trim()
+                                            };
+                                            var rePassword = {
+                                                name: "re-password",
+                                                value: $$("re-password_new").getValue().trim()
+                                            };
                                             var isNew = {name: "isNew", value: true};
-                                            webix.send("/base-info/user/save", [username, enabled, password, rePassword, isNew], "POST", null);
+                                            webix.send("/base-info/user/save", [username, firstName, lastName, nationalCode, personNumber, enabled, password, rePassword, isNew], "POST", null);
                                         }
                                     }
                                 ]

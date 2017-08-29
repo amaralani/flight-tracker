@@ -1,0 +1,172 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>نمایش نقشه</title>
+    <style>
+        #container {
+            height: 650px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="container"></div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                id: "something",
+                body: {content: 'container'},
+            }
+        ]
+    };
+
+    var map = L.map('container').setView([34.63321, 53.12988], 6);
+
+    L.tileLayer('http://132.168.20.202/osm_tiles/{z}/{x}/{y}.png', {
+
+        maxZoom: 18,
+        attribution: 'معاونت فناوری اطلاعات و ارتباطات ق‌پ‌ه‌خ‌ (ص) | مدیریت فناوری اطلاعات ',
+        id: 'container'
+    }).addTo(map);
+    L.control.scale().addTo(map);
+
+    var cloudyIcon = L.icon({
+        iconUrl: '/icons/cloudy.png',
+        iconSize: [45, 45],
+        iconAnchor: [16, 37],
+        popupAnchor: [0, -28]
+    });
+    var partlyCloudyIcon = L.icon({
+        iconUrl: '/icons/partly-cloudy.png',
+        iconSize: [45, 45],
+        iconAnchor: [16, 37],
+        popupAnchor: [0, -28]
+    });
+    var sunnyIcon = L.icon({
+        iconUrl: '/icons/sunny.ico',
+        iconSize: [45, 45],
+        iconAnchor: [16, 37],
+        popupAnchor: [0, -28]
+    });
+    var lightningIcon = L.icon({
+        iconUrl: '/icons/lightning.ico',
+        iconSize: [45, 45],
+        iconAnchor: [16, 37],
+        popupAnchor: [0, -28]
+    });
+    var rainyIcon = L.icon({
+        iconUrl: '/icons/rainy.png',
+        iconSize: [45, 45],
+        iconAnchor: [16, 37],
+        popupAnchor: [0, -28]
+    });
+
+
+    var popup = L.popup();
+
+//    function onMapClick(e) {
+//        popup
+//                .setLatLng(e.latlng)
+//                .setContent("You clicked the map at " + e.latlng.toString())
+//                .openOn(map);
+//        console.log(map.getZoom());
+//    }
+//    map.on('click', onMapClick);
+
+    var weatherPoints = [];
+    var providedPoints = [[${weatherList}]];
+    $.each(providedPoints,function(index, point){
+        weatherPoints.push({
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    point.latitude, point.longitude
+                ]
+            },
+            "type": "Feature",
+            "properties": {
+                "popupContent": "<div style='direction:rtl;text-align:right'><h1>" +  point.contentHeader + "</h1>"+ point.content +"</div>",
+                "markerType": point.markerType,
+                "zoomlevelMax": point.zoomLevelMax,
+                "zoomlevelMin": point.zoomLevelMin
+            },
+            "id": index
+        })
+    });
+    var markersFromPoints = {
+        "type": "FeatureCollection",
+        "features": weatherPoints
+    };
+
+    function onEachFeature(feature, layer) {
+        var popupContent = "" /*"<p>I started out as a GeoJSON " +
+                feature.geometry.type + ", but now I'm a Leaflet vector!</p>"*/;
+
+        if (feature.properties && feature.properties.popupContent) {
+            popupContent += feature.properties.popupContent;
+        }
+
+        layer.bindPopup(popupContent);
+    }
+
+    var currentMarkers;
+    function showMarkers(zoomlevel) {
+
+        currentMarkers = L.geoJSON(markersFromPoints, {
+
+            style: function (feature) {
+                return feature.properties && feature.properties.style;
+            },
+            onEachFeature: onEachFeature,
+            filter: function (feature, layer) {
+                return feature.properties.zoomlevelMax <= zoomlevel && feature.properties.zoomlevelMin >= zoomlevel;
+            },
+            pointToLayer: function (feature, latlng) {
+                switch (feature.properties.markerType) {
+                    case "sunny" :
+                        return L.marker(latlng, {icon: sunnyIcon});
+                        break;
+                    case "lightning" :
+                        return L.marker(latlng, {icon: lightningIcon});
+                        break;
+                    case "partlyCloudy" :
+                        return L.marker(latlng, {icon: partlyCloudyIcon});
+                        break;
+                    case "circle" :
+                        return L.circleMarker(latlng);
+                        break;
+                    case "cloudy" :
+                        return L.marker(latlng, {icon: cloudyIcon});
+                    case "marker" :
+                        return L.marker(latlng);
+                        break;
+                    default :
+                        return L.circleMarker(latlng);
+                        break;
+                }
+
+            },
+
+        });
+        currentMarkers.addTo(map);
+    }
+
+
+    map.on("zoomend", function (e) {
+        if (currentMarkers) {
+            map.removeLayer(currentMarkers);
+        }
+        showMarkers(map.getZoom());
+    });
+    showMarkers(map.getZoom());
+    /*]]>*/
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

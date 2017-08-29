@@ -1,0 +1,344 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>مدیریت ایستگاه های هواشناسی</title>
+</head>
+<body>
+<div class="edit-weatherStation-dialog" id="editWeatherStationDialog" style="display: none">
+
+</div>
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+    function oneForAll(value, filter, obj) {
+        if (equals(obj.provinceCode, filter)) return true;
+        if (equals(obj.farsiName, filter)) return true;
+        if (equals(obj.name, filter)) return true;
+        if (equals(obj.stationId, filter)) return true;
+        if (equals(obj.stationNo, filter)) return true;
+        if (equals(obj.latitude, filter)) return true;
+        if (equals(obj.longitude, filter)) return true;
+        return !!equals(obj.altitude, filter);
+    }
+
+
+    webix.ui({
+        id: "edit-weatherStation",
+        container: "editWeatherStationDialog",
+        view: "form",
+        cols: [
+            {
+                type: "form",
+                borderless: true,
+                width: 400,
+                rows: [
+                    {template: "ویرایش مشخصات", type: "header"},
+                    {
+                        id: 'id', view: "text", disabled: true
+                    },
+                    {
+                        id: 'provinceCode', view: "text", label: "کد شهرستان", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                    },
+                    {
+                        id: 'farsiName', view: "text", label: "نام فارسی", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                    },
+                    {
+                        id: 'name', view: "text", label: "نام", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                    },
+                    {
+                        id: 'stationId', view: "text", label: "Station ID", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                    },
+                    {
+                        id: 'stationNo', view: "text", label: "شماره ایستگاه", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                    },
+                    {
+                        id: 'latitude', view: "text", label: "عرض جغرافیایی", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                    },
+                    {
+                        id: 'longitude', view: "text", label: "طول جغرافیایی", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                    },
+                    {
+                        id: 'altitude', view: "text", label: "ارتفاع", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                    },
+                    {
+                        id: 'level', view: "text", label: "سطح", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                    },
+                    {
+                        inputWidth: 100,
+                        view: "button",
+                        type: "form",
+                        value: "ثبت",
+                        align: "left",
+                        click: function () {
+                            var id = {name: "id", value: $$("id").getValue().trim()};
+                            var provinceCode = {name: "provinceCode", value: $$("provinceCode").getValue().trim()};
+                            var farsiName = {name: "farsiName", value: $$("farsiName").getValue().trim()};
+                            var name = {name: "name", value: $$("name").getValue().trim()};
+                            var stationId = {name: "stationId", value: $$("stationId").getValue().trim()};
+                            var stationNo = {name: "stationNo", value: $$("stationNo").getValue().trim()};
+                            var latitude = {name: "latitude", value: $$("latitude").getValue().trim()};
+                            var longitude = {name: "longitude", value: $$("longitude").getValue().trim()};
+                            var altitude = {name: "altitude", value: $$("altitude").getValue().trim()};
+                            var level = {name: "level", value: $$("level").getValue().trim()};
+                            var isNew = {name: "isNew", value: false};
+                            webix.send("/base-info/station/save", [id,provinceCode, farsiName, name, stationId, stationNo, latitude, longitude, altitude, level, isNew], "POST", null);
+                        }
+                    }
+                ]
+            },
+            {}
+
+        ]
+    });
+    /*<![CDATA[*/
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "view", value: "مشاهده ایستگاه ها", width: 150},
+                {id: "add", value: "افزودن", width: 150}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "view",
+                        view: "datatable", select: true,
+                        columns: [
+                            {
+                                id: "provinceCode",
+                                header: ["کد شهرستان ", {
+                                    content: "textFilter",
+                                    compare: oneForAll,
+                                    placeholder: "جستجو",
+                                    colspan: 9
+                                }]
+                            },
+                            {
+                                id: "farsiName", header: ["نام فارسی", null]
+                            },
+                            {
+                                id: "name", header: ["نام ", null]
+                            },
+                            {
+                                id: "stationId", header: ["Station ID", null]
+                            },
+                            {
+                                id: "stationNo", header: ["شماره ایستگاه", null]
+                            },
+                            {
+                                id: "latitude", header: ["عرض جغرافیایی", null]
+                            },
+                            {
+                                id: "longitude", header: ["طول جغرافیای", null]
+                            },
+                            {
+                                id: "altitude", header: ["ارتفاع", null]
+                            },
+                            {
+                                id: "level", header: ["سطح", null]
+                            },
+                            {
+                                id: "edit",
+                                header: "ویرایش",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='edit_weatherStation'>ویرایش</a>"
+                            },
+                            {
+                                id: "remove",
+                                header: "حذف",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='remove_weatherStation'>حذف</a>"
+                            }
+                        ],
+                        data: [[${weatherStations}]],
+                        onClick: {
+                            "edit_weatherStation": function (e, id) {
+                                //[provinceCode, farsiName, name, stationId, stationNo, latitude, longitude, altitude, level, isNew]
+                                var item = this.getItem(id);
+                                console.log(item);
+                                $$("id").setValue(item.id);
+                                $$("provinceCode").setValue(item.provinceCode);
+                                $$("farsiName").setValue(item.farsiName);
+                                $$("name").setValue(item.name);
+                                $$("stationId").setValue(item.stationId);
+                                $$("stationNo").setValue(item.stationNo);
+                                $$("latitude").setValue(item.latitude);
+                                $$("longitude").setValue(item.longitude);
+                                $$("altitude").setValue(item.altitude);
+                                $$("level").setValue(item.level);
+                                $("#editWeatherStationDialog").dialog("open");
+                            },
+                            "remove_weatherStation": function (e, id) {
+                                var item = this.getItem(id);
+                                console.log(item);
+                                var weatherStationId = {name: "id", value: item.id};
+                                webix.send("/base-info/station/remove", [weatherStationId], "POST", null);
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        id: "add",
+                        view: "form",
+                        cols: [
+                            {
+                                type: "form",
+                                borderless: true,
+                                width: 600,
+
+                                rows: [
+                                    {template: "افزودن ایستگاه", type: "header"},
+                                    {
+                                        id: 'provinceCode_new',
+                                        view: "text",
+                                        label: "کد شهرستان",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'farsiName_new',
+                                        view: "text",
+                                        label: "نام فارسی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'name_new',
+                                        view: "text",
+                                        label: "نام",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'stationId_new',
+                                        view: "text",
+                                        label: "Station ID",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'stationNo_new',
+                                        view: "text",
+                                        label: "شماره ایستگاه",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'latitude_new',
+                                        view: "text",
+                                        label: "عرض جغرافیایی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'longitude_new',
+                                        view: "text",
+                                        label: "طول جغرافیایی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'altitude_new',
+                                        view: "text",
+                                        label: "ارتفاع",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'level_new',
+                                        view: "text",
+                                        label: "سطح",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        inputWidth: 100,
+                                        view: "button",
+                                        type: "form",
+                                        value: "ثبت",
+                                        align: "left",
+                                        click: function () {
+                                            var provinceCode = {
+                                                name: "provinceCode",
+                                                value: $$("provinceCode_new").getValue().trim()
+                                            };
+                                            var farsiName = {
+                                                name: "farsiName",
+                                                value: $$("farsiName_new").getValue().trim()
+                                            };
+                                            var name = {name: "name", value: $$("name_new").getValue().trim()};
+                                            var stationId = {
+                                                name: "stationId",
+                                                value: $$("stationId_new").getValue().trim()
+                                            };
+                                            var stationNo = {
+                                                name: "stationNo",
+                                                value: $$("stationNo_new").getValue().trim()
+                                            };
+                                            var latitude = {
+                                                name: "latitude",
+                                                value: $$("latitude_new").getValue().trim()
+                                            };
+                                            var longitude = {
+                                                name: "longitude",
+                                                value: $$("longitude_new").getValue().trim()
+                                            };
+                                            var altitude = {
+                                                name: "altitude",
+                                                value: $$("altitude_new").getValue().trim()
+                                            };
+                                            var level = {name: "level", value: $$("level_new").getValue().trim()};
+                                            var isNew = {
+                                                name: "isNew",
+                                                value: true
+                                            };
+                                            webix.send("/base-info/station/save", [provinceCode, farsiName, name, stationId, stationNo, latitude, longitude, altitude, level, isNew], "POST", null);
+                                        }
+                                    }
+                                ]
+                            },
+                            {}
+
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    /*]]>*/
+
+    $("#editWeatherStationDialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

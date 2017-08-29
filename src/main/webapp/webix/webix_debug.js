@@ -6825,7 +6825,7 @@ webix.protoUI({
 						this._headobj.style.width = y + "px";
 						this._headobj.style.height = x + 3 + "px";
 						var d = Math.floor(y/2-x/2)+(x-this._settings.headerAltHeight)/2;
-						this._headobj.style[webix.env.transform]="rotate(90deg) translate("+d+"px, "+(d+1)+"px)";
+						this._headobj.style[webix.env.transform]="rotate(90deg) translate("+d+"px, -"+(d+1)+"px)";
 					}
 					else { //IE8 fix
 						this._headobj.style.width = x + "px";

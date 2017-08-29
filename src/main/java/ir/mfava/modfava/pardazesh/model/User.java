@@ -8,9 +8,15 @@ import java.util.Set;
 @Table(name = "application_user") // User is a reserved word
 public class User extends BaseModel {
     private Long id;
+    @Column(unique = true)
     private String username;
     private String password;
     private String email;
+    private String firstName;
+    private String lastName;
+    private String personNumber;
+    @Column(length = 10)
+    private String nationalCode;
 
     @Column(nullable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -79,6 +85,38 @@ public class User extends BaseModel {
         this.roles = roles;
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPersonNumber() {
+        return personNumber;
+    }
+
+    public void setPersonNumber(String personNumber) {
+        this.personNumber = personNumber;
+    }
+
+    public String getNationalCode() {
+        return nationalCode;
+    }
+
+    public void setNationalCode(String nationalCode) {
+        this.nationalCode = nationalCode;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -86,7 +124,24 @@ public class User extends BaseModel {
 
         User user = (User) o;
 
-        return getId() != null ? getId().equals(user.getId()) : user.getId() == null && (getUsername() != null ? getUsername().equals(user.getUsername()) : user.getUsername() == null && (getPassword() != null ? getPassword().equals(user.getPassword()) : user.getPassword() == null && (getEmail() != null ? getEmail().equals(user.getEmail()) : user.getEmail() == null && (getCreateDate() != null ? getCreateDate().equals(user.getCreateDate()) : user.getCreateDate() == null && (getEnabled() != null ? getEnabled().equals(user.getEnabled()) : user.getEnabled() == null && (getRoles() != null ? getRoles().equals(user.getRoles()) : user.getRoles() == null))))));
+        if (getId() != null ? !getId().equals(user.getId()) : user.getId() != null) return false;
+        if (getUsername() != null ? !getUsername().equals(user.getUsername()) : user.getUsername() != null)
+            return false;
+        if (getPassword() != null ? !getPassword().equals(user.getPassword()) : user.getPassword() != null)
+            return false;
+        if (getEmail() != null ? !getEmail().equals(user.getEmail()) : user.getEmail() != null) return false;
+        if (getFirstName() != null ? !getFirstName().equals(user.getFirstName()) : user.getFirstName() != null)
+            return false;
+        if (getLastName() != null ? !getLastName().equals(user.getLastName()) : user.getLastName() != null)
+            return false;
+        if (getPersonNumber() != null ? !getPersonNumber().equals(user.getPersonNumber()) : user.getPersonNumber() != null)
+            return false;
+        if (getNationalCode() != null ? !getNationalCode().equals(user.getNationalCode()) : user.getNationalCode() != null)
+            return false;
+        if (getCreateDate() != null ? !getCreateDate().equals(user.getCreateDate()) : user.getCreateDate() != null)
+            return false;
+        if (getEnabled() != null ? !getEnabled().equals(user.getEnabled()) : user.getEnabled() != null) return false;
+        return getRoles() != null ? getRoles().equals(user.getRoles()) : user.getRoles() == null;
 
     }
 
@@ -96,6 +151,10 @@ public class User extends BaseModel {
         result = 31 * result + (getUsername() != null ? getUsername().hashCode() : 0);
         result = 31 * result + (getPassword() != null ? getPassword().hashCode() : 0);
         result = 31 * result + (getEmail() != null ? getEmail().hashCode() : 0);
+        result = 31 * result + (getFirstName() != null ? getFirstName().hashCode() : 0);
+        result = 31 * result + (getLastName() != null ? getLastName().hashCode() : 0);
+        result = 31 * result + (getPersonNumber() != null ? getPersonNumber().hashCode() : 0);
+        result = 31 * result + (getNationalCode() != null ? getNationalCode().hashCode() : 0);
         result = 31 * result + (getCreateDate() != null ? getCreateDate().hashCode() : 0);
         result = 31 * result + (getEnabled() != null ? getEnabled().hashCode() : 0);
         result = 31 * result + (getRoles() != null ? getRoles().hashCode() : 0);
@@ -109,6 +168,10 @@ public class User extends BaseModel {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", personNumber='" + personNumber + '\'' +
+                ", nationalCode=" + nationalCode + '\'' +
                 ", createDate=" + createDate +
                 ", enabled=" + enabled +
                 ", roles=" + roles +

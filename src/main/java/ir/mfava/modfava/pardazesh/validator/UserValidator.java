@@ -24,7 +24,7 @@ public class UserValidator implements Validator {
         User user = (User) o;
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "field.required");
-        if (user.getUsername().length() < 6) {
+        if (user.getUsername().length() < 4) {
             errors.rejectValue("username", "username.too.short");
         }
         if (user.getUsername().length() > 32) {
@@ -35,7 +35,7 @@ public class UserValidator implements Validator {
         }
 
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "field.required");
-        if (user.getPassword().length() < 8) {
+        if (user.getPassword().length() < 6) {
             errors.rejectValue("password", "password.too.short");
         }
         if (user.getPassword().length() > 32) {

@@ -1,0 +1,296 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>مدیریت پدیده های هواشناسی</title>
+</head>
+<body>
+<div class="edit-weatherEvent-dialog" id="editWeatherEventDialog" style="display: none">
+</div>
+<div class="edit-weatherEvent-icon-dialog" id="editWeatherEventIconDialog" style="display: none">
+    <form th:action="@{/base-info/event/save-icon}" enctype="multipart/form-data" th:method="POST">
+        <img id="current-icon" src=""/>
+        <br/>
+        <input type="file" name="file"/>
+        <br/>
+        <br/>
+        <br/>
+        <button class="webix_el_button" type="submit">
+            ذخیره
+        </button>
+        <input type="hidden" name="id" id="current-id" value=""/>
+    </form>
+</div>
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+    function oneForAll(value, filter, obj) {
+        if (equals(obj.provinceCode, filter)) return true;
+        if (equals(obj.farsiName, filter)) return true;
+        if (equals(obj.name, filter)) return true;
+        if (equals(obj.stationId, filter)) return true;
+        if (equals(obj.stationNo, filter)) return true;
+        if (equals(obj.latitude, filter)) return true;
+        if (equals(obj.longitude, filter)) return true;
+        return !!equals(obj.altitude, filter);
+    }
+
+
+    webix.ui({
+        id: "edit-weatherEvent",
+        container: "editWeatherEventDialog",
+        view: "form",
+        cols: [
+            {
+                type: "form",
+                borderless: true,
+                width: 400,
+                rows: [
+                    {template: "ویرایش مشخصات", type: "header"},
+                    {
+                        id: 'id', view: "text", disabled: true
+                    },
+                    {
+                        id: 'title',
+                        view: "text",
+                        label: "عنوان",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'abbreviation',
+                        view: "text",
+                        label: "نام اختصاری",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'description',
+                        view: "text",
+                        label: "شرح",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'priority',
+                        view: "text",
+                        label: "درجه اهمیت",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        inputWidth: 100,
+                        view: "button",
+                        type: "form",
+                        value: "ثبت",
+                        align: "left",
+                        click: function () {
+                            var id = {name: "id", value: $$("id").getValue().trim()};
+                            var title = {name: "title", value: $$("title").getValue().trim()};
+                            var abbreviation = {name: "abbreviation", value: $$("abbreviation").getValue().trim()};
+                            var description = {name: "description", value: $$("description").getValue().trim()};
+                            var priority = {name: "priority", value: $$("priority").getValue().trim()};
+                            var isNew = {name: "isNew", value: false};
+                            webix.send("/base-info/event/save", [id, title, abbreviation, description, priority, isNew], "POST", null);
+                        }
+                    }
+                ]
+            },
+            {}
+
+        ]
+    });
+    /*<![CDATA[*/
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "view", value: "مشاهده ایستگاه ها", width: 150},
+                {id: "add", value: "افزودن", width: 150}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "view",
+                        view: "datatable", select: true,
+                        columns: [
+                            {
+                                id: "title",
+                                header: ["عنوان", {
+                                    content: "textFilter",
+                                    compare: oneForAll,
+                                    placeholder: "جستجو",
+                                    colspan: 3
+                                }]
+                            },
+                            {
+                                id: "abbreviation", header: ["نام اختصاری", null], width: 200
+                            },
+                            {
+                                id: "description", header: ["توضیح", null], fillspace: true
+                            },
+                            {
+                                id: "priority", header: "درجه اهمیت", width: 200
+                            },
+                            {
+                                id: "icon",
+                                header: "تصویر",
+                                template: "<a href='javascript:void(0)' class='remove_weatherEvent_icon'><img src='/base-info/event/view-icon/#icon#'></a>",
+                                width: 200
+                            },
+                            {
+                                id: "edit",
+                                header: "ویرایش",
+                                css: "webix_el_button",
+                                template: "<a href='javascript:void(0)' class='edit_weatherEvent'>ویرایش</a>"
+                            },
+                            {
+                                id: "remove",
+                                header: "حذف",
+                                css: "webix_el_button",
+                                template: "<a href='javascript:void(0)' class='remove_weatherEvent'>حذف</a>"
+                            }
+                        ],
+                        data: [[${weatherEvents}]],
+                        onClick: {
+                            "edit_weatherEvent": function (e, id) {
+                                //[provinceCode, farsiName, name, stationId, stationNo, latitude, longitude, altitude, level, isNew]
+                                var item = this.getItem(id);
+                                $$("id").setValue(item.id);
+                                $$("title").setValue(item.title);
+                                $$("description").setValue(item.description);
+                                $$("abbreviation").setValue(item.abbreviation);
+                                $$("priority").setValue(item.priority);
+                                $("#editWeatherEventDialog").dialog("open");
+                            },
+                            "remove_weatherEvent": function (e, id) {
+                                var item = this.getItem(id);
+                                var weatherEventId = {name: "id", value: item.id};
+                                webix.send("/base-info/event/remove", [weatherEventId], "POST", null);
+                                return false;
+                            },
+                            "remove_weatherEvent_icon": function (e, id) {
+                                var item = this.getItem(id);
+                                $("#current-icon").attr("src", "/base-info/event/view-icon/" + item.icon);
+                                $("#current-id").val(item.id);
+                                $("#editWeatherEventIconDialog").dialog("open");
+                            }
+                        }
+                    },
+                    {
+                        id: "add",
+                        view: "form",
+                        cols: [
+                            {
+                                type: "form",
+                                borderless: true,
+                                width: 600,
+
+                                rows: [
+                                    {template: "افزودن پدیده", type: "header"},
+                                    {
+                                        id: 'title_new',
+                                        view: "text",
+                                        label: "عنوان",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'abbreviation_new',
+                                        view: "text",
+                                        label: "نام اختصاری",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'description_new',
+                                        view: "text",
+                                        label: "توضیح",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'priority_new',
+                                        view: "text",
+                                        label: "درجه اهمیت",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        inputWidth: 100,
+                                        view: "button",
+                                        type: "form",
+                                        value: "ثبت",
+                                        align: "left",
+                                        click: function () {
+                                            var title = {
+                                                name: "title",
+                                                value: $$("title_new").getValue().trim()
+                                            };
+                                            var abbreviation = {
+                                                name: "abbreviation",
+                                                value: $$("abbreviation_new").getValue().trim()
+                                            };
+                                            var description = {
+                                                name: "description",
+                                                value: $$("description_new").getValue().trim()
+                                            };
+                                            var priority = {
+                                                name: "priority",
+                                                value: $$("priority_new").getValue().trim()
+                                            };
+                                            var isNew = {
+                                                name: "isNew",
+                                                value: true
+                                            };
+                                            webix.send("/base-info/event/save", [title, abbreviation, description, priority, isNew], "POST", null);
+                                        }
+                                    }
+                                ]
+                            },
+                            {}
+
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    /*]]>*/
+
+    $("#editWeatherEventDialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
+    $("#editWeatherEventIconDialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>
