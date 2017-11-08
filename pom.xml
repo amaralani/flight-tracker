@@ -71,6 +71,12 @@
             <artifactId>postgresql</artifactId>
             <version>42.1.4</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/net.sourceforge.jweather/jweather -->
+        <dependency>
+            <groupId>net.sourceforge.jweather</groupId>
+            <artifactId>jweather</artifactId>
+            <version>0.3.0</version>
+        </dependency>
 
     </dependencies>
     <build>

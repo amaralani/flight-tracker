@@ -25,8 +25,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getById(String id) {
-        return eventRepository.getOne(Long.valueOf(id));
+    public Event getById(Long id) {
+        return eventRepository.getOne(id);
     }
 
     @Override
