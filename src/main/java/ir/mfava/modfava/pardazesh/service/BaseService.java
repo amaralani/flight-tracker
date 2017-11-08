@@ -12,7 +12,7 @@ public interface BaseService<S> {
 
     List<S> getAll();
 
-    S getById(String id);
+    S getById(Long id);
 
     S save(S entity);
 

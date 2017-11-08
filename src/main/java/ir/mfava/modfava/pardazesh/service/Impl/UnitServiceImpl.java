@@ -29,8 +29,8 @@ public class UnitServiceImpl implements UnitService {
     }
 
     @Override
-    public Unit getById(String id) {
-        return unitRepository.getOne(Long.valueOf(id));
+    public Unit getById(Long id) {
+        return unitRepository.getOne(id);
     }
 
     @Override

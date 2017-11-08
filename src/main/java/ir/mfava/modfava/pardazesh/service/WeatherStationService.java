@@ -6,4 +6,5 @@ import ir.mfava.modfava.pardazesh.model.WeatherStation;
 public interface WeatherStationService extends BaseService<WeatherStation> {
     WeatherStation getByStationNo(Integer stationNo);
 
+    WeatherStation getByStationId(String stationId);
 }

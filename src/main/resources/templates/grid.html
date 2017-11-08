@@ -1,0 +1,241 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>نمایش جدول</title>
+</head>
+<style>
+    .webix_cell {
+        direction: ltr;
+    }
+</style>
+<body>
+
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<div id="grid-container"></div>
+
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+
+    function oneForAll(value, filter, obj) {
+        if(obj.stationId)
+        if (equals(obj.stationId, filter)) return true;
+        if(obj.farsiName)
+        if (equals(obj.farsiName, filter)) return true;
+        if(obj.time)
+        if (equals(obj.time, filter)) return true;
+        if(obj.windDirection)
+        if (equals(obj.windDirection, filter)) return true;
+        if(obj.windSpeed)
+        if (equals(obj.windSpeed, filter)) return true;
+        if(obj.visibility)
+        if (equals(obj.visibility, filter)) return true;
+        if(obj.temperature)
+        if (equals(obj.temperature, filter)) return true;
+        if(obj.dewPoint)
+        if (equals(obj.dewPoint, filter)) return true;
+        if(obj.pressure)
+        if (equals(obj.pressure, filter)) return true;
+        if(obj.metar)
+        return !!equals(obj.metar, filter);
+        return false;
+    }
+
+
+    /*<![CDATA[*/
+
+    var gridBaseData = [[${gridData}]];
+
+    function refreshData() {
+        var items = [];
+        var windSpeedUnit = $$("windSpeedUnit").getValue();
+        var temperatureUnit = $$("temperatureUnit").getValue();
+        var dewPointUnit = $$("dewPointUnit").getValue();
+        var pressureUnit = $$("pressureUnit").getValue();
+        $.each(gridBaseData, function (index, record) {
+            if (windSpeedUnit == "MPS") {
+                record.windSpeed = record.windSpeedInMPS;
+            } else if (windSpeedUnit == "MPH") {
+                record.windSpeed = record.windSpeedInMPH;
+            } else if (windSpeedUnit == "Knots") {
+                record.windSpeed = record.windSpeedInKnots;
+            }
+
+            if (temperatureUnit == "C") {
+                record.temperature = record.temperatureInCelsius;
+            } else if (temperatureUnit == "F") {
+                record.temperature = record.temperatureInFahrenheit;
+            }
+
+
+            if (dewPointUnit == "C") {
+                record.dewPoint = record.dewPointInCelsius;
+            } else if (dewPointUnit == "F") {
+                record.dewPoint = record.dewPointInFahrenheit;
+            }
+
+
+            if (pressureUnit == "HPAS") {
+                record.pressure = record.pressureInHectoPascals;
+            } else if (pressureUnit == "INHG") {
+                record.pressure = record.pressureInInHg;
+            }
+            items.push(record);
+        });
+
+        $$("grid").parse(items);
+        $$("grid").refresh();
+    }
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                type: "form",
+                id: "unitsForm",
+                borderless: true,
+                cols: [
+                    {
+                        id: "windSpeedUnit",
+                        view: "segmented",
+                        animate: {type: "flip", subtype: "vertical"},
+                        width: 270,
+                        labelWidth: 100,
+                        align: "left",
+                        label: "واحد سرعت باد : ",
+                        options: [
+                            {id: "MPS", value: "MPS"},
+                            {id: "MPH", value: "MPH"},
+                            {id: "Knots", value: "Knots"}
+                        ],
+                        value: "Knots",
+                        on: {
+                            "onChange": function (newValue, oldValue) {
+                                refreshData();
+                            }
+                        }
+                    },
+                    {
+                        id: "temperatureUnit",
+                        view: "segmented",
+                        width: 270,
+                        labelWidth: 100,
+                        align: "left",
+                        label: "واحد دما : ",
+                        options: [
+                            {id: "C", value: "Celsius"},
+                            {id: "F", value: "Fahrenheit"}
+                        ],
+                        on: {
+                            "onChange": function (newValue, oldValue) {
+                                refreshData();
+                            }
+                        }
+                    },
+                    {
+                        id: "dewPointUnit",
+                        view: "segmented",
+                        width: 270,
+                        labelWidth: 100,
+                        align: "left",
+                        label: "واحدنقطه شبنم : ",
+                        options: [
+                            {id: "C", value: "Celsius"},
+                            {id: "F", value: "Fahrenheit"}
+                        ],
+                        on: {
+                            "onChange": function (newValue, oldValue) {
+                                refreshData();
+                            }
+                        }
+                    },
+                    {
+                        id: "pressureUnit",
+                        view: "segmented",
+                        width: 270,
+                        labelWidth: 100,
+                        align: "left",
+                        label: "واحد فشار : ",
+                        options: [
+                            {id: "HPAS", value: "Hpas"},
+                            {id: "INHG", value: "InHg"}
+                        ],
+                        on: {
+                            "onChange": function (newValue, oldValue) {
+                                refreshData();
+                            }
+                        }
+                    }, {}
+                ]
+            },
+            {
+                cols: [{
+                    view: "multiview",
+                    cells: [
+                        {
+                            id: "grid",
+                            container: "grid-container",
+                            view: "datatable",
+                            columns: [
+                                {
+                                    id: "stationId",
+                                    header: ["کد", {
+                                        content: "textFilter",
+                                        compare: oneForAll,
+                                        placeholder: "جستجو",
+                                        colspan: 10
+                                    }]
+                                },
+                                {id: "farsiName", header: ["نام ایستگاه", null]},
+                                {id: "time", header: ["ساعت", null]},
+                                {id: "windDirection", header: ["سمت باد", null]},
+                                {id: "windSpeed", header: ["سرعت باد", null]},
+                                {id: "visibility", header: ["دید", null]},
+                                {id: "temperature", header: ["دما", null]},
+                                {id: "dewPoint", header: ["نقطه شبنم", null]},
+                                {id: "pressure", header: ["فشار", null]},
+                                {id: "metar", header: ["اصل متار", null], width: 500}
+                            ],
+                            select: "row",
+                            tooltip: true,
+                            navigation: true,
+                            autowidth: false,
+                            autoheight: false,
+                            scroll: true,
+//                            pager: {
+////                            container: "paging-container",
+//                                size: 15,
+//                                group: 10,
+//                                template: " {common.first()} {common.prev()} {common.pages()} {common.next()} {common.last()}"
+//                            },
+                            data: gridBaseData
+                        }
+                    ],
+                    on: {
+                        "onAfterLoad": function () {
+                            refreshData();
+                        }
+                    }
+
+                }
+                ]
+            }
+        ]
+    };
+
+    /*]]>*/
+
+
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

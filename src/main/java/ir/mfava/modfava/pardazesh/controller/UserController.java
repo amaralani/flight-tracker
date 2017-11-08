@@ -1,33 +1,38 @@
 package ir.mfava.modfava.pardazesh.controller;
 
 
+import ir.mfava.modfava.pardazesh.model.DTO.JSONMessage;
+import ir.mfava.modfava.pardazesh.model.Role;
 import ir.mfava.modfava.pardazesh.model.User;
 import ir.mfava.modfava.pardazesh.security.SecurityService;
+import ir.mfava.modfava.pardazesh.service.RoleService;
 import ir.mfava.modfava.pardazesh.service.UserService;
 import ir.mfava.modfava.pardazesh.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
+import java.util.*;
+
+import static com.ibm.icu.impl.ValidIdentifiers.Datatype.u;
 
 @Controller
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private RoleService roleService;
 
     @Autowired
     private SecurityService securityService;
@@ -36,10 +41,13 @@ public class UserController {
     private UserValidator userValidator;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private SessionRegistry sessionRegistry;
 
     @RequestMapping(value = {"/base-info/user"}, method = RequestMethod.GET)
     public String getAllUsers(ModelMap map, HttpSession session) {
         map.put("users", userService.getAll());
+        map.put("roles", roleService.getAll());
         map.put("successMessage", session.getAttribute("successMessage"));
         map.put("errorMessage", session.getAttribute("errorMessage"));
         session.removeAttribute("successMessage");
@@ -97,6 +105,43 @@ public class UserController {
         return "redirect:/base-info/user";
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/base-info/user/roles", method = RequestMethod.GET)
+    public JSONMessage grantRole(@RequestParam(name = "userId") Long userId) {
+        User user = userService.getById(userId);
+        Map<String, Object> map = new HashMap<>();
+        map.put("roles", user.getRoles());
+        return JSONMessage.Success("", map);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/base-info/grant/role", method = RequestMethod.POST)
+    public JSONMessage grantRole(@RequestParam(name = "userId") Long userId,
+                                 @RequestParam(name = "roleId") Long roleId,
+                                 @RequestParam(name = "grant") Boolean grant) {
+        User user = userService.getById(userId);
+        Role role = roleService.getById(roleId);
+        Set<Role> userRoles = user.getRoles();
+        try {
+            if (grant != null && grant) {
+                if (!userRoles.contains(role)) {
+                    userRoles.add(role);
+                }
+            } else {
+                if (userRoles.contains(role)) {
+                    userRoles.remove(role);
+                }
+            }
+            user.setRoles(userRoles);
+            userService.save(user);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return JSONMessage.Error("unknown.exception");
+        }
+
+        return JSONMessage.Success();
+    }
+
     @RequestMapping(value = {"/base-info/user/remove"}, method = RequestMethod.POST)
     public String removeUser(@RequestParam(name = "username") String username,
                              HttpSession session) {
@@ -119,7 +164,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public String registration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult, Model model) {
+    public String registration(@ModelAttribute("userForm") User userForm, BindingResult bindingResult) {
         userValidator.validate(userForm, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -145,8 +190,14 @@ public class UserController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public String logout(HttpServletRequest request, HttpServletResponse response,Authentication authentication) {
-        new SecurityContextLogoutHandler().logout(request,response,authentication);
+    public String logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        new SecurityContextLogoutHandler().logout(request, response, authentication);
+        List<SessionInformation> infos = sessionRegistry.getAllSessions(authentication.getPrincipal(), false);
+
+        for(SessionInformation info : infos) {
+            info.expireNow(); //expire the session
+//            sessionRegistry.removeSessionInformation(info.getSessionId()); //remove session
+        }
         return "redirect:/login?logout";
     }
 

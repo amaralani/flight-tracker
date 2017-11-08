@@ -24,4 +24,5 @@ VALUES ('کاربری', 'ROLE_USER'),
   ('مدیریت دسترسی', 'ROLE_ACCESS_MANAGER'),
   ('مشاهده تاریخچه ورود', 'ROLE_VIEW_LOGIN_HISTORY'),
   ('بارگذاری فایل', 'ROLE_UPLOAD_FILES'),
-  ('مشاهده گزارشات', 'ROLE_REPORT');
+  ('مشاهده گزارشات', 'ROLE_REPORT'),
+  ('مدیریت شهرستان ها', 'ROLE_PROVINCES_MANAGER');

@@ -2,14 +2,15 @@ package ir.mfava.modfava.pardazesh.model.DTO;
 
 public class WeatherDTO {
 
-    String latitude;
-    String longitude;
-    String contentHeader;
-    String content;
-    String markerType;
-    Integer zoomLevelMax;
-    Integer zoomLevelMin;
+    private String latitude;
+    private String longitude;
+    private String contentHeader;
+    private String content;
+    private String markerType;
+    private Integer zoomLevelMax;
+    private Integer zoomLevelMin;
 
+    public WeatherDTO(){}
     public WeatherDTO(String latitude, String longitude, String contentHeader, String content, String markerType, Integer zoomLevelMax, Integer zoomLevelMin) {
         this.latitude = latitude;
         this.longitude = longitude;

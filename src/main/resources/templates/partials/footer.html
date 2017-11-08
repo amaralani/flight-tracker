@@ -9,7 +9,11 @@
            th:name="${_csrf.parameterName}"
            th:value="${_csrf.token}"/>
 </form>
-
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var onlineUsersCount = [[${session.onlineUserCount}]] || 0;
+    /*]]>*/
+</script>
 <script th:src="@{/js/custom.js}" type="text/javascript" charset="utf-8"></script>
 
 

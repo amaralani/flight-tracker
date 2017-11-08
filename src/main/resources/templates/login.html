@@ -16,6 +16,15 @@
     <script th:src="@{/js/jquery.sha1.js}" type="text/javascript" charset="utf-8"></script>
     <script th:src="@{/js/leaflet.js}" type="text/javascript" charset="utf-8"></script>
     <title>ورود به سیستم</title>
+    <style>
+        .webix_layout_space {
+            background: url("/images/sky-clouds.jpg") no-repeat;
+            background-size: cover;
+        }
+        .webix_layout_wide {
+            background: transparent;
+        }
+    </style>
 </head>
 
 <body style="direction: rtl">
@@ -31,6 +40,7 @@
     var main_content = {
         gravity: 3,
         type: "clean",
+        css : "transparent-background",
         rows: [
             {
                 cols: [

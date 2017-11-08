@@ -25,13 +25,18 @@ public class WeatherStationServiceImpl implements WeatherStationService {
     }
 
     @Override
-    public WeatherStation getById(String id) {
-        return weatherStationRepository.getOne(Long.valueOf(id));
+    public WeatherStation getById(Long id) {
+        return weatherStationRepository.getOne(id);
     }
 
     @Override
     public WeatherStation getByStationNo(Integer stationNo) {
         return weatherStationRepository.findByStationNo(stationNo);
+    }
+
+    @Override
+    public WeatherStation getByStationId(String stationId) {
+        return weatherStationRepository.findByStationId(stationId);
     }
 
     @Override

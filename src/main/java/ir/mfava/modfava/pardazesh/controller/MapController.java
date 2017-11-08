@@ -1,13 +1,21 @@
 package ir.mfava.modfava.pardazesh.controller;
 
 
+import ir.mfava.modfava.pardazesh.model.Bulletin;
 import ir.mfava.modfava.pardazesh.model.DTO.WeatherDTO;
+import ir.mfava.modfava.pardazesh.model.Phenomena;
+import ir.mfava.modfava.pardazesh.model.Weather;
+import ir.mfava.modfava.pardazesh.service.BulletinService;
+import ir.mfava.modfava.pardazesh.service.WeatherService;
+import ir.mfava.modfava.pardazesh.util.DateUtils;
+import ir.mfava.modfava.pardazesh.util.metar.MetarConstants;
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,205 +23,158 @@ import java.util.List;
 @RequestMapping(value = "/map")
 public class MapController {
 
+    @Autowired
+    private WeatherService weatherService;
+    @Autowired
+    private BulletinService bulletinService;
+
     @RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
-    public String showMap(ModelMap map, HttpSession session) {
-        /*
-        marand : 38.42347, 45.7663
-azarshahr : 37.7338, 45.98053
-heris :‌ 38.23818, 47.14508
+    public String showMap(ModelMap map, HttpServletRequest request) {
 
-
-
-Tehran main :‌ 51.39404,35.62158
-varamin :‌  51.65771 , 35.32857
-boomehen : 51.84174 , 35.72422
-karaj : 51.00677 , 35.80445
-
-
-Dezfool main :‌ 48.44971 , 32.34284
-??? :‌  48.30688 , 32.043
-masjed soleiman :‌ 31.9172, 49.27643
-ahvaz : 31.32079, 48.68866
-
-
-
-Booshehr main : 51.21826 , 28.76766
-ali abad : 28.79655, 51.05621
-paygah havaee sh ahmadi :‌ 29.09698, 51.03699
-
-
-
-Bandar Abas main :‌ 56.40381,27.19601
-qeshm :‌ 26.94778, 56.27472
-foroodgah hava darya : 27.16181, 56.17035
-
-
-
-Zahedan  main :‌ 60.77637 , 294396
-         */
         List<WeatherDTO> weatherDTOList = new ArrayList<>();
 
-        // EAST - AZ
-        weatherDTOList.add(new WeatherDTO("46.69189",
-                "37.9442",
-                " آذربایجان شرقی",
-                "<ul><li>وضعیت هوا : ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "cloudy",
-                5, 8
-        ));
-        weatherDTOList.add(new WeatherDTO("45.7663",
-                "38.42347",
-                "مرند",
-                "<ul><li>وضعیت هوا : ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "cloudy",
-                9, 18
-        ));
-        weatherDTOList.add(new WeatherDTO("45.98053",
-                "37.7338",
-                "آذرشهر",
-                "<ul><li>وضعیت هوا : ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "cloudy",
-                9, 18
-        ));
-        weatherDTOList.add(new WeatherDTO("47.14508",
-                "38.23818",
-                "هریس",
-                "<ul><li>وضعیت هوا : ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "cloudy",
-                9, 18
-        ));
+        List<Weather> weathers = weatherService.getCurrentWeather();
+        for (Weather weather : weathers) {
+            WeatherDTO weatherDTO = new WeatherDTO();
+            weatherDTO.setLatitude(weather.getWeatherStation().getLatitude());
+            weatherDTO.setLongitude(weather.getWeatherStation().getLongitude());
+            if (weather.getWeatherStation().getLevel() == 1) {
+                weatherDTO.setZoomLevelMax(8);
+                weatherDTO.setZoomLevelMin(5);
+            } else {
+                weatherDTO.setZoomLevelMax(18);
+                weatherDTO.setZoomLevelMin(8);
+            }
+            String markerType;
+            String cloud = weather.getCloud();
+            if (cloud != null) {
+                switch (cloud) {
+                    case MetarConstants.METAR_OVERCAST:
+                        markerType = "4";
+                        break;
+                    case MetarConstants.METAR_BROKEN:
+                        markerType = "3";
+                        break;
+                    case MetarConstants.METAR_SCATTERED:
+                        markerType = "2";
+                        break;
+                    case MetarConstants.METAR_FEW:
+                        markerType = "1";
+                        break;
+                    default:
+                        markerType = "0";
+                        break;
+                }
+            } else {
+                markerType = "0";
+            }
+            markerType = markerType + "cloud";
+            Phenomena phenomena = weather.getPhenomena();
+            if (phenomena != null) {
+                markerType = markerType + "_" + phenomena.getIcon();
+            }
+            if (!markerType.startsWith("0") && markerType.endsWith("cloud")) {
+                markerType = markerType + "_norain";
+            }
+            weatherDTO.setMarkerType(markerType);
+            String stationFarsiName = weather.getWeatherStation().getFarsiName();
+            stationFarsiName = (stationFarsiName != null ? stationFarsiName : "");
+            String content = "<ul>";
+            content = content + "<li> ساعت و زمان تهیه گزارش : " + DateUtils.convertJulianToPersian(weather.getReportDate(), "HH:mm:SS dd-MM-YYYY") + "</li>";
+            content = content + "<li> سرعت باد : ";
+            if (weather.getWindSpeedInKnots() != null) {
+                content = content + weather.getWindSpeedInKnots() + " نات " + "</li>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content = content + "<li> جهت باد : ";
+            if (weather.getWindDirection() != null) {
+                content = content + weather.getWindDirection() + " درجه " + "</li>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content = content + "<li> فشار هوا : ";
+            if (weather.getPressure() != null) {
+                content = content + weather.getPressureInHectoPascals() + " هکتوپاسکال " + "</li>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content = content + "<li> دمای هوا : ";
+            if (weather.getTemperature() != null) {
+                content = content + weather.getTemperature() + " درجه سانتیگراد " + "</li>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content = content + "<li> نقطه شبنم : ";
+            if (weather.getDewPoint() != null) {
+                content = content + weather.getDewPoint() + " درجه سانتیگراد " + "</li>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content = content + "<li> دید افقی : ";
+            if (weather.getVisibility() != null) {
+                content = content + weather.getVisibility() + " متر " + "</li>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content = content + "<li style='direction: ltr; text-align: left'> ";
+            if (weather.getOriginalContent() != null) {
+                content = content + weather.getOriginalContent() + "</li>";
+            } else {
+                content = printNoDataExists(content);
+            }
 
-        // TEHRAN
-        weatherDTOList.add(new WeatherDTO("51.39267",
-                "35.75208",
-                "تهران",
-                "<ul><li>وضعیت هوا : نیمه ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "partlyCloudy",
-                5, 8
-        ));
-        weatherDTOList.add(new WeatherDTO("51.39404",
-                "35.62158",
-                "تهران",
-                "<ul><li>وضعیت هوا : نیمه ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "partlyCloudy",
-                9, 18
-        ));
-        weatherDTOList.add(new WeatherDTO("51.65771",
-                "35.32857",
-                "ورامین",
-                "<ul><li>وضعیت هوا : نیمه ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "partlyCloudy",
-                9, 18
-        ));
-        weatherDTOList.add(new WeatherDTO("51.84174",
-                "35.72422",
-                "بومهن",
-                "<ul><li>وضعیت هوا : نیمه ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "partlyCloudy",
-                9, 18
-        ));
-        weatherDTOList.add(new WeatherDTO("51.00677",
-                "35.80445",
-                "کرج",
-                "<ul><li>وضعیت هوا : نیمه ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "partlyCloudy",
-                9, 18
-        ));
-
-        // DEZFOOL
-        weatherDTOList.add(new WeatherDTO("48.44971",
-                "32.34284",
-                "دزفول",
-                "<ul><li>وضعیت هوا : ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "cloudy",
-                5, 8
-        ));
-        weatherDTOList.add(new WeatherDTO("48.30688",
-                "32.043",
-                "ایستگاه هواشناسی",
-                "<ul><li>وضعیت هوا : ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "cloudy",
-                9, 18
-        ));
-        weatherDTOList.add(new WeatherDTO("49.27643",
-                "31.9172",
-                "مسجد سلیمان",
-                "<ul><li>وضعیت هوا : ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "cloudy",
-                9, 18
-        ));
-        weatherDTOList.add(new WeatherDTO("48.68866",
-                "31.32079",
-                "اهواز",
-                "<ul><li>وضعیت هوا : ابری</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "cloudy",
-                9, 18
-        ));
-
-        // BOOSHEHR
-        weatherDTOList.add(new WeatherDTO("51.21826",
-                "28.76766",
-                "بوشهر",
-                "<ul><li>وضعیت هوا : رعد و برق</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "lightning",
-                5, 8
-        ));
-        weatherDTOList.add(new WeatherDTO("51.05621",
-                "28.79655",
-                "علی آباد",
-                "<ul><li>وضعیت هوا : رعد و برق</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "lightning",
-                9, 18
-        ));
-        weatherDTOList.add(new WeatherDTO("51.03699",
-                "29.09698",
-                "پایگاه هوایی شهید احمدی",
-                "<ul><li>وضعیت هوا : رعد و برق</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "lightning",
-                9, 18
-        ));
-
-
-        // BANDAR ABBAS
-        weatherDTOList.add(new WeatherDTO("56.40381",
-                "27.19601",
-                "بندر عباس",
-                "<ul><li>وضعیت هوا : آفتابی</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "sunny",
-                5, 8
-        ));
-        weatherDTOList.add(new WeatherDTO("56.27472",
-                "26.94778",
-                "قشم",
-                "<ul><li>وضعیت هوا : آفتابی</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "sunny",
-                9, 18
-        ));
-        weatherDTOList.add(new WeatherDTO("57.07947",
-                "27.12759",
-                "میناب",
-                "<ul><li>وضعیت هوا : آفتابی</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "sunny",
-                9, 18
-        ));
-        weatherDTOList.add(new WeatherDTO("56.17035",
-                "27.16181",
-                "فرودگاه هوادریا",
-                "<ul><li>وضعیت هوا : آفتابی</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "sunny",
-                9, 18
-        ));
-
-        // ZAHEDAN
-        weatherDTOList.add(new WeatherDTO("60.84229",
-                "29.32472",
-                "زاهدان",
-                "<ul><li>وضعیت هوا : آفتابی</li><li>دما : 25 درجه سانتیگراد</li><li>تاریخ آخرین به روز رسانی : 1396/06/08</li></ul>",
-                "sunny",
-                5, 18
-        ));
+            content = content + "</ul>";
+            weatherDTOList.add(
+                    new WeatherDTO(
+                            weather.getWeatherStation().getLongitude(),
+                            weather.getWeatherStation().getLatitude(),
+                            stationFarsiName + " - " + weather.getWeatherStation().getName(),
+                            content, markerType,
+                            5, 8
+                    ));
+        }
 
         map.put("weatherList", weatherDTOList);
+
+        List<Bulletin> bulletins = bulletinService.getCurrentForecasts();
+        List<WeatherDTO> bulletinDTOs = new ArrayList<>();
+
+        for (Bulletin bulletin : bulletins) {
+            WeatherDTO bulletinDTO = new WeatherDTO();
+            bulletinDTO.setLatitude(bulletin.getProvince().getLatitude());
+            bulletinDTO.setLongitude(bulletin.getProvince().getLongitude());
+            bulletinDTO.setZoomLevelMax(100);
+            bulletinDTO.setZoomLevelMin(0);
+            bulletinDTO.setMarkerType(bulletin.getIcon());
+
+            String content = "<ul>";
+            content = content + "<li> پیش بینی 24 ساعت آینده (" + DateUtils.convertJulianToPersian(bulletin.getForecastDate(), "dd-MM-YYYY") + ")</li>";
+            content = content + "<li> حداقل دما : " + bulletin.getMinTemperature() + "<img src='/icons/downL.png'></li>";
+            content = content + "<li> حداکثر دما : " + bulletin.getMaxTemperature() + " <img src='/icons/upL.png'></li>";
+            content = content + "<li>" + bulletin.getPhenomena() + "</li>";
+            content = content + "<li><a href='/bulletin/view?provinceId="+ bulletin.getProvince().getId() +"' >مشاهده پیش بینی چند روزه </a></li>";
+
+            content = content + "</ul>";
+            bulletinDTOs.add(
+                    new WeatherDTO(
+                            bulletin.getProvince().getLatitude(),
+                            bulletin.getProvince().getLongitude(),
+                            bulletin.getProvince().getName(),
+                            content, bulletin.getIcon(),
+                            5, 8
+                    ));
+        }
+        map.put("forecasts", bulletinDTOs);
+
+        StringBuffer url = request.getRequestURL();
+        String uri = request.getRequestURI();
+        String host = url.substring(0, url.indexOf(uri) -5); //result
+        map.put("host", host);
         return "map";
+    }
+
+    private String printNoDataExists(String content) {
+        return content + " اطلاعات موجود نیست " + "</li>";
     }
 }

@@ -3,13 +3,28 @@
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
     <title>مدیریت کاربران</title>
+    <style>
+        .checkbox {
+            padding-left: 10px;
+            height: 60px;
+            padding-top: 10px;
+            float: left;
+        }
+
+        .item-text {
+            float: right;
+            padding-right: 10px;
+            height: 60px;
+            padding-top: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="edit-user-dialog" id="editUserDialog" style="display: none">
 
 </div>
 <div class="view-roles-dialog" id="viewRolesDialog" style="display: none">
-
+    <div id="role-list"></div>
 </div>
 <div id="message">
     <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
@@ -132,7 +147,7 @@
                             var nationalCode = {name: "nationalCode", value: $$("nationalCode").getValue().trim()};
                             var personNumber = {name: "personNumber", value: $$("personNumber").getValue().trim()};
                             var enabled = {name: "enabled", value: $$("enabled").getValue()};
-                            console.log("password : ",$$("password").getValue());
+                            console.log("password : ", $$("password").getValue());
                             var password = {name: "password", value: $$("password").getValue().trim()};
                             var rePassword = {name: "re-password", value: $$("re-password").getValue().trim()};
                             var isNew = {name: "isNew", value: false};
@@ -200,7 +215,7 @@
                                 header: ["کد ملی", null],
                                 labelAlign: 'right',
                                 textAlign: 'right',
-                                fillspace : true
+                                fillspace: true
                             },
                             {
                                 id: "personNumber",
@@ -255,28 +270,91 @@
                                 return false;
                             },
                             "view_roles": function (e, id) {
+                                $("#viewRolesDialog").html("<div id='role-list'></div>");
+                                var userRoles = [];
                                 var item = this.getItem(id);
-                                var roles = [];
-                                item.roles.sort(function (a, b) {
-                                    if (a.id == b.id) {
-                                        return 0;
-                                    }
-                                    return (a.id > b.id) ? 1 : -1;
-                                });
-                                $.each(item.roles, function (i, itemRole) {
-                                    roles.push({id: i+1, label: itemRole.label})
-                                });
+                                ajaxCall(
+                                        "/base-info/user/roles",
+                                        {userId : item.id},
+                                        "GET",
+                                        function(response){
+                                            userRoles = response.data.roles;
+                                            var allRoles = [[${roles}]];
+                                            var roles = [];
+                                            allRoles.sort(function (a, b) {
+                                                if (a.id == b.id) {
+                                                    return 0;
+                                                }
+                                                return (a.id > b.id) ? 1 : -1;
+                                            });
+                                            $.each(allRoles, function (i, unitRole) {
+                                                var userHasRole = 0;
+                                                $.each(userRoles, function (i, itemRole) {
+                                                    if (itemRole.id == unitRole.id) {
+                                                        userHasRole = 1;
+                                                    }
+                                                });
+                                                roles.push({
+                                                    id: unitRole.id,
+                                                    rank: i + 1,
+                                                    label: unitRole.label,
+                                                    markCheckbox: userHasRole
+                                                })
+                                            });
+                                            webix.protoUI({
+                                                name: "activeList"
+                                            }, webix.ui.list, webix.ActiveContent);
+                                            webix.ui({
+                                                view: "activeList",
+                                                container: "role-list",
+                                                width: 300,
+                                                height: 400,
+                                                select: false,
+                                                data: roles,
+                                                activeContent: {
+                                                    markCheckbox: {
+                                                        view: "checkbox",
+                                                        width: 50,
+                                                        on: {
+                                                            /*checkbox onChange handler*/
+                                                            'onChange': function (newv, oldv, third) {
+                                                                var item_id = this.config.$masterId;
+                                                                ajaxCall(
+                                                                        "/base-info/grant/role",
+                                                                        {
+                                                                            userId: item.id,
+                                                                            roleId : item_id,
+                                                                            grant : newv,
+                                                                            _csrf : csrf_token
+                                                                        },
+                                                                        "POST",
+                                                                        function(response){
+                                                                            webix.message("تغییرات با موفقیت ثبت شد.");
+                                                                        },
+                                                                        function(response){
+                                                                            webix.message("خطا در عملیات. لطفا صفحه را بازیابی و مجددا تلاش کنید.")
+                                                                        }
+                                                                );
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                template: "<div class='item-text'>#rank#. #label# </div>" +
+                                                "<div class='checkbox'>{common.markCheckbox()}</div>"
+                                                ,
+                                                type: {
+                                                    height: 65
+                                                }
 
-                                $("#viewRolesDialog").html("");
-                                webix.ui({
-                                    container: "viewRolesDialog",
-                                    view: "list",
-                                    width: 200,
-                                    autoheight: true,
-                                    template: "#id#. #label# ",
-                                    data: roles
-                                });
-                                $("#viewRolesDialog").dialog("open");
+                                            });
+
+                                            $("#viewRolesDialog").dialog("open");
+                                        },
+                                        function(response){
+                                            webix.message("خطا در دریافت نقش های کاربر");
+                                        }
+                                );
+
                             }
                         }
 
@@ -422,7 +500,7 @@
     });
     $("#viewRolesDialog").dialog({
         autoOpen: false,
-        width: 300,
+        width: 350,
         modal: true
     });
 </script>

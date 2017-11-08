@@ -1,0 +1,234 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>مدیریت شهرستان ها</title>
+</head>
+<body>
+<div class="edit-province-dialog" id="editProvinceDialog" style="display: none">
+
+</div>
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+    function oneForAll(value, filter, obj) {
+        if (equals(obj.name, filter)) return true;
+        if (equals(obj.latitude, filter)) return true;
+        return !!equals(obj.longitude, filter);
+    }
+
+
+    webix.ui({
+        id: "edit-province",
+        container: "editProvinceDialog",
+        view: "form",
+        cols: [
+            {
+                type: "form",
+                borderless: true,
+                width: 400,
+                rows: [
+                    {template: "ویرایش مشخصات", type: "header"},
+                    {
+                        id: 'id', view: "text", disabled: true
+                    },
+                    {
+                        id: 'name', view: "text", label: "نام", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                    },
+                    {
+                        id: 'latitude',
+                        view: "text",
+                        label: "عرض جغرافیایی",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'longitude',
+                        view: "text",
+                        label: "طول جغرافیایی",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        inputWidth: 100,
+                        view: "button",
+                        type: "form",
+                        value: "ثبت",
+                        align: "left",
+                        click: function () {
+                            var id = {name: "id", value: $$("id").getValue().trim()};
+                            var name = {name: "name", value: $$("name").getValue().trim()};
+                            var latitude = {name: "latitude", value: $$("latitude").getValue().trim()};
+                            var longitude = {name: "longitude", value: $$("longitude").getValue().trim()};
+                            var isNew = {name: "isNew", value: false};
+                            webix.send("/base-info/province/save", [id, name, latitude, longitude, isNew], "POST", null);
+                        }
+                    }
+                ]
+            },
+            {}
+
+        ]
+    });
+    /*<![CDATA[*/
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "view", value: "مشاهده شهرستان ها", width: 150},
+                {id: "add", value: "افزودن", width: 150}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "view",
+                        view: "datatable", select: true,
+                        columns: [
+                            {
+                                id: "name",
+                                header: ["نام شهرستان ", {
+                                    content: "textFilter",
+                                    compare: oneForAll,
+                                    placeholder: "جستجو",
+                                    colspan: 3
+                                }],
+                                fillspace: true
+                            },
+                            {
+                                id: "latitude", header: ["عرض جغرافیایی", null],fillspace: true
+                            },
+                            {
+                                id: "longitude", header: ["طول جغرافیای", null],fillspace: true
+                            },
+                            {
+                                id: "edit",
+                                header: "ویرایش",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='edit_province'>ویرایش</a>"
+                            },
+                            {
+                                id: "remove",
+                                header: "حذف",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<a href='javascript:void(0)' class='remove_province'>حذف</a>"
+                            }
+                        ],
+                        data: [[${provinces}]],
+                        onClick: {
+                            "edit_province": function (e, id) {
+                                //[provinceCode, farsiName, name, stationId, stationNo, latitude, longitude, altitude, level, isNew]
+                                var item = this.getItem(id);
+                                $$("id").setValue(item.id);
+                                $$("name").setValue(item.name);
+                                $$("latitude").setValue(item.latitude);
+                                $$("longitude").setValue(item.longitude);
+                                $("#editProvinceDialog").dialog("open");
+                            },
+                            "remove_province": function (e, id) {
+                                var item = this.getItem(id);
+                                console.log(item);
+                                var provinceId = {name: "id", value: item.id};
+                                webix.send("/base-info/province/remove", [provinceId], "POST", null);
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        id: "add",
+                        view: "form",
+                        cols: [
+                            {
+                                type: "form",
+                                borderless: true,
+                                width: 600,
+
+                                rows: [
+                                    {template: "افزودن شهرستان", type: "header"},
+                                    {
+                                        id: 'name_new',
+                                        view: "text",
+                                        label: "نام",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'latitude_new',
+                                        view: "text",
+                                        label: "عرض جغرافیایی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'longitude_new',
+                                        view: "text",
+                                        label: "طول جغرافیایی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        inputWidth: 100,
+                                        view: "button",
+                                        type: "form",
+                                        value: "ثبت",
+                                        align: "left",
+                                        click: function () {
+
+                                            var name = {name: "name", value: $$("name_new").getValue().trim()};
+
+                                            var latitude = {
+                                                name: "latitude",
+                                                value: $$("latitude_new").getValue().trim()
+                                            };
+                                            var longitude = {
+                                                name: "longitude",
+                                                value: $$("longitude_new").getValue().trim()
+                                            };
+                                            var isNew = {
+                                                name: "isNew",
+                                                value: true
+                                            };
+                                            webix.send("/base-info/province/save", [name, latitude, longitude, isNew], "POST", null);
+                                        }
+                                    }
+                                ]
+                            },
+                            {}
+
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    /*]]>*/
+
+    $("#editProvinceDialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

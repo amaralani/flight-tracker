@@ -7,6 +7,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -25,6 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
+                .antMatchers("/images/**").permitAll()
                 .antMatchers("/js/**").permitAll()
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/webix/**").permitAll()
@@ -34,8 +37,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").authenticated()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/base-info/station/**").hasRole("WEATHER_STATION_MANAGER")
+                .antMatchers("/base-info/user/**").hasRole("USER_MANAGER")
+                .antMatchers("/base-info/grant/**").hasRole("ACCESS_MANAGER")
                 .antMatchers("/user/manage/**").hasRole("USER_MANAGER")
-                .antMatchers("/base-info/event/**").hasRole("EVENTS_MANAGER")
+                .antMatchers("/base-info/phenomena/**").hasRole("EVENTS_MANAGER")
                 .antMatchers("/base-info/unit/**").hasRole("UNITS_MANAGER")
                 .antMatchers("/bulletin/**").hasRole("VIEW_BULLETIN")
 //                .antMatchers("/bulletin/**").hasRole("ADMIN") TODO: add access control for adding bulletin
@@ -56,6 +61,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .csrf();
+
+        http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry());
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 
     @Autowired

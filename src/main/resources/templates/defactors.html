@@ -1,0 +1,727 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>Defactor</title>
+</head>
+<body>
+<div id="editDefactorDialog" style="display: none"></div>
+
+<div id="removeDefactorConfirmDialog" style="display: none">
+</div>
+
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+    var editDefactorId;
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+    function oneForAll(value, filter, obj) {
+        if (equals(obj.name, filter)) return true;
+        if (equals(obj.latitude, filter)) return true;
+        return !!equals(obj.longitude, filter);
+    }
+
+    var defactorToRemove = 0;
+    /*<![CDATA[*/
+    var provinces = [[${provinces}]];
+    var comboProvinces = [];
+    $.each(provinces, function (index, province) {
+        comboProvinces.push({id: province.id, value: province.name})
+    });
+    comboProvinces.push({id: null, value: 'انتخاب کنید...'});
+
+    webix.ui({
+        id: "edit-defactor",
+        container: "editDefactorDialog",
+        view: "form",
+        rows: [
+            {
+                type: "form",
+                borderless: true,
+                width: 600,
+                rows: [
+                    {
+                        rows: [
+                            {
+                                view: "richselect",
+                                id: "provinceId",
+                                label: 'استان',
+                                labelWidth: 100,
+                                labelAlign: 'right',
+                                name: "provinceId",
+                                options: comboProvinces
+                            },
+                            {
+                                id: 'date',
+                                view: "datepicker",
+                                format:"%d-%m-%Y",
+                                label: "تاریخ",
+                                labelAlign: 'right',
+                                textAlign: 'right',
+                                labelWidth: 100
+                            },
+                            {
+                                id: 'hoursFrom',
+                                view: "text",
+                                label: "از ساعت",
+                                labelAlign: 'right',
+                                textAlign: 'right',
+                                labelWidth: 100
+                            },
+                            {
+                                id: 'hoursTo',
+                                view: "text",
+                                label: "تا ساعت",
+                                labelAlign: 'right',
+                                textAlign: 'right',
+                                labelWidth: 100
+                            }
+                        ]
+                    },
+
+                    {
+                        cols: [
+                            {
+                                rows: [
+                                    {
+                                        template: "<span style='font-size: 15px;font-weight: bold;'>300</span>",
+                                        type: "section",
+                                        textAlign: 'left'
+                                    },
+                                    {
+                                        id: 'height300',
+                                        view: "text",
+                                        label: "ارتفاع",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'temperature300',
+                                        view: "text",
+                                        label: "دما",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'windSpeed300',
+                                        view: "text",
+                                        label: "سرعت باد",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'windDirection300',
+                                        view: "text",
+                                        label: "جهت باد",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    }
+                                ]
+                            }, {
+                                rows: [
+                                    {
+                                        template: "<span style='font-size: 15px;font-weight: bold;'>500</span>",
+                                        type: "section",
+                                        textAlign: 'left'
+                                    },
+                                    {
+                                        id: 'height500',
+                                        view: "text",
+                                        label: "ارتفاع",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'temperature500',
+                                        view: "text",
+                                        label: "دما",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'windSpeed500',
+                                        view: "text",
+                                        label: "سرعت باد",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'windDirection500',
+                                        view: "text",
+                                        label: "جهت باد",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    }
+                                ]
+                            },
+                            {
+                                rows: [
+                                    {
+                                        template: "<span style='font-size: 15px;font-weight: bold;'>700</span> ",
+                                        type: "section"
+                                    },
+                                    {
+                                        id: 'height700',
+                                        view: "text",
+                                        label: "ارتفاع",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'temperature700',
+                                        view: "text",
+                                        label: "دما",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'windSpeed700',
+                                        view: "text",
+                                        label: "سرعت باد",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        id: 'windDirection700',
+                                        view: "text",
+                                        label: "جهت باد",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    }
+                                ]
+                            }
+
+                        ]
+
+                    },
+                    {
+                        inputWidth: 100,
+                        view: "button",
+                        type: "form",
+                        value: "ثبت",
+                        align: "left",
+                        click: function () {
+                            var id = {
+                                name: "id",
+                                value: editDefactorId
+                            };
+                            var provinceId = {
+                                name: "provinceId",
+                                value: $$("provinceId").getValue()
+                            };
+                            var date = {name: "date", value: $$("date").getValue()};
+                            var hoursFrom = {name: "hoursFrom", value: $$("hoursFrom").getValue()};
+                            var hoursTo = {name: "hoursTo", value: $$("hoursTo").getValue()};
+                            var height300 = {name: "height300", value: $$("height300").getValue()};
+                            var temperature300 = {
+                                name: "temperature300",
+                                value: $$("temperature300").getValue()
+                            };
+                            var windSpeed300 = {
+                                name: "windSpeed300",
+                                value: $$("windSpeed300").getValue()
+                            };
+                            var windDirection300 = {
+                                name: "windDirection300",
+                                value: $$("windDirection300").getValue()
+                            };
+                            var height500 = {name: "height500", value: $$("height500").getValue()};
+                            var temperature500 = {
+                                name: "temperature500",
+                                value: $$("temperature500").getValue()
+                            };
+                            var windSpeed500 = {
+                                name: "windSpeed500",
+                                value: $$("windSpeed500").getValue()
+                            };
+                            var windDirection500 = {
+                                name: "windDirection500",
+                                value: $$("windDirection500").getValue()
+                            };
+                            var height700 = {name: "height700", value: $$("height700").getValue()};
+                            var temperature700 = {
+                                name: "temperature700",
+                                value: $$("temperature700").getValue()
+                            };
+                            var windSpeed700 = {
+                                name: "windSpeed700",
+                                value: $$("windSpeed700").getValue()
+                            };
+                            var windDirection700 = {
+                                name: "windDirection700",
+                                value: $$("windDirection700").getValue()
+                            };
+                            var isNew = {
+                                name: "isNew",
+                                value: false
+                            };
+
+                            webix.send("/defactor/save",
+                                    [
+                                        id,
+                                        provinceId,
+                                        date,
+                                        hoursFrom,
+                                        hoursTo,
+                                        height300,
+                                        temperature300,
+                                        windSpeed300,
+                                        windDirection300,
+                                        height500,
+                                        temperature500,
+                                        windSpeed500,
+                                        windDirection500,
+                                        height700,
+                                        temperature700,
+                                        windSpeed700,
+                                        windDirection700,
+                                        isNew
+                                    ],
+                                    "POST",
+                                    null);
+                        }
+                    }
+
+                ]
+            }
+
+        ]
+    });
+
+    webix.ui({
+        id: "confirm-remove-defactor",
+        container: "removeDefactorConfirmDialog",
+        view: "form",
+        cols: [
+            {
+                type: "form",
+                borderless: true,
+                width: 300,
+                rows: [
+
+                    {template: "<span class='webix_strong'>آیا از حذف اطلاعات اطمینان دارید؟</span>", height: 25},
+                    {height: 30},
+                    {
+                        cols: [
+                            {
+                                inputWidth: 100,
+                                view: "button",
+                                type: "form",
+                                value: "بله",
+                                align: "left",
+                                click: function () {
+                                    var defactorId = {name: "defactorId", value: defactorToRemove};
+                                    webix.send("/defactor/remove", [defactorId], "POST", null);
+                                }
+                            },
+                            {
+                                inputWidth: 100,
+                                view: "button",
+                                type: "form",
+                                value: "خیر",
+                                align: "left",
+                                click: function () {
+                                    $("#removeDefactorConfirmDialog").dialog("close");
+                                }
+                            }
+                        ]
+                    }
+
+                ]
+            }
+        ]
+    });
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "view", value: "مشاهده اطلاعات", width: 150},
+                {id: "add", value: "افزودن", width: 150}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "view",
+                        view: "dataview", select: true,
+                        type: {
+                            template: "<div class='defactor-title'>#provinceName# #datePersian# #hoursFrom#-#hoursTo#</div>" +
+                            "<table class='defactor-table'>" +
+                            "<thead>" +
+                            " <th colspan='3'>300</th>" +
+                            " <th colspan='3'>500</th>" +
+                            " <th colspan='3'>700</th>" +
+                            "</thead>" +
+                            "<tbody>" +
+                            "<tr>" +
+                            "<td>#windSpeedDirection300#</td>" +
+                            "<td>#temperature300#</td>" +
+                            "<td>#height300#</td>" +
+                            "<td>#windSpeedDirection500#</td>" +
+                            "<td>#temperature500#</td>" +
+                            "<td>#height500#</td>" +
+                            "<td>#windSpeedDirection700#</td>" +
+                            "<td>#temperature700#</td>" +
+                            "<td>#height700#</td>" +
+                            "</tr>" +
+                            "<div><button class='webixtype_form' type='button' onclick='openEditDefactorDialog(\"#id#\")'>ویرایش</button> " +
+                            "<button class='webixtype_form' type='button' onclick='openConfirmRemoveDefactorDialog(\"#id#\")'>حذف</button></div>" +
+                            "</tr>" +
+                            "</tbody>" +
+                            "</table>",
+                            width: "auto",
+                            height: "auto"
+                        },
+                        xCount: 1, yCount: 4,
+                        data: [[${defactors}]]
+                    },
+                    {
+                        id: "add",
+                        view: "form",
+                        rows: [
+                            {
+                                type: "form",
+                                borderless: true,
+                                width: 600,
+                                rows: [
+                                    {
+                                        rows: [
+                                            {
+                                                view: "richselect",
+                                                id: "provinceId_new",
+                                                label: 'استان',
+                                                labelWidth: 100,
+                                                labelAlign: 'right',
+                                                name: "provinceId",
+                                                options: comboProvinces
+                                            },
+                                            {
+                                                id: 'date_new',
+                                                view: "datepicker",
+                                                format:"%d-%m-%Y",
+                                                label: "تاریخ",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                labelWidth: 100
+                                            },
+                                            {
+                                                id: 'hoursFrom_new',
+                                                view: "text",
+                                                label: "از ساعت",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                labelWidth: 100
+                                            },
+                                            {
+                                                id: 'hoursTo_new',
+                                                view: "text",
+                                                label: "تا ساعت",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                labelWidth: 100
+                                            }
+                                        ]
+                                    },
+
+                                    {
+                                        cols: [
+                                            {
+                                                rows: [
+                                                    {
+                                                        template: "<span style='font-size: 15px;font-weight: bold;'>300</span>",
+                                                        type: "section",
+                                                        textAlign: 'left'
+                                                    },
+                                                    {
+                                                        id: 'height300_new',
+                                                        view: "text",
+                                                        label: "ارتفاع",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    },
+                                                    {
+                                                        id: 'temperature300_new',
+                                                        view: "text",
+                                                        label: "دما",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    },
+                                                    {
+                                                        id: 'windSpeed300_new',
+                                                        view: "text",
+                                                        label: "سرعت باد",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    },
+                                                    {
+                                                        id: 'windDirection300_new',
+                                                        view: "text",
+                                                        label: "جهت باد",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    }
+                                                ]
+                                            }, {
+                                                rows: [
+                                                    {
+                                                        template: "<span style='font-size: 15px;font-weight: bold;'>500</span>",
+                                                        type: "section",
+                                                        textAlign: 'left'
+                                                    },
+                                                    {
+                                                        id: 'height500_new',
+                                                        view: "text",
+                                                        label: "ارتفاع",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    },
+                                                    {
+                                                        id: 'temperature500_new',
+                                                        view: "text",
+                                                        label: "دما",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    },
+                                                    {
+                                                        id: 'windSpeed500_new',
+                                                        view: "text",
+                                                        label: "سرعت باد",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    },
+                                                    {
+                                                        id: 'windDirection500_new',
+                                                        view: "text",
+                                                        label: "جهت باد",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                rows: [
+                                                    {
+                                                        template: "<span style='font-size: 15px;font-weight: bold;'>700</span> ",
+                                                        type: "section"
+                                                    },
+                                                    {
+                                                        id: 'height700_new',
+                                                        view: "text",
+                                                        label: "ارتفاع",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    },
+                                                    {
+                                                        id: 'temperature700_new',
+                                                        view: "text",
+                                                        label: "دما",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    },
+                                                    {
+                                                        id: 'windSpeed700_new',
+                                                        view: "text",
+                                                        label: "سرعت باد",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    },
+                                                    {
+                                                        id: 'windDirection700_new',
+                                                        view: "text",
+                                                        label: "جهت باد",
+                                                        labelAlign: 'right',
+                                                        textAlign: 'right',
+                                                        labelWidth: 100
+                                                    }
+                                                ]
+                                            }
+
+                                        ]
+
+                                    },
+                                    {
+                                        inputWidth: 100,
+                                        view: "button",
+                                        type: "form",
+                                        value: "ثبت",
+                                        align: "left",
+                                        click: function () {
+                                            var provinceId = {
+                                                name: "provinceId",
+                                                value: $$("provinceId_new").getValue()
+                                            };
+                                            var date = {name: "date", value: $$("date_new").getValue().getTime() };
+                                            var hoursFrom = {name: "hoursFrom", value: $$("hoursFrom_new").getValue()};
+                                            var hoursTo = {name: "hoursTo", value: $$("hoursTo_new").getValue()};
+                                            var height300 = {name: "height300", value: $$("height300_new").getValue()};
+                                            var temperature300 = {
+                                                name: "temperature300",
+                                                value: $$("temperature300_new").getValue()
+                                            };
+                                            var windSpeed300 = {
+                                                name: "windSpeed300",
+                                                value: $$("windSpeed300_new").getValue()
+                                            };
+                                            var windDirection300 = {
+                                                name: "windDirection300",
+                                                value: $$("windDirection300_new").getValue()
+                                            };
+                                            var height500 = {name: "height500", value: $$("height500_new").getValue()};
+                                            var temperature500 = {
+                                                name: "temperature500",
+                                                value: $$("temperature500_new").getValue()
+                                            };
+                                            var windSpeed500 = {
+                                                name: "windSpeed500",
+                                                value: $$("windSpeed500_new").getValue()
+                                            };
+                                            var windDirection500 = {
+                                                name: "windDirection500",
+                                                value: $$("windDirection500_new").getValue()
+                                            };
+                                            var height700 = {name: "height700", value: $$("height700_new").getValue()};
+                                            var temperature700 = {
+                                                name: "temperature700",
+                                                value: $$("temperature700_new").getValue()
+                                            };
+                                            var windSpeed700 = {
+                                                name: "windSpeed700",
+                                                value: $$("windSpeed700_new").getValue()
+                                            };
+                                            var windDirection700 = {
+                                                name: "windDirection700",
+                                                value: $$("windDirection700_new").getValue()
+                                            };
+                                            var isNew = {
+                                                name: "isNew",
+                                                value: true
+                                            };
+
+                                            webix.send("/defactor/save",
+                                                    [
+                                                        provinceId,
+                                                        date,
+                                                        hoursFrom,
+                                                        hoursTo,
+                                                        height300,
+                                                        temperature300,
+                                                        windSpeed300,
+                                                        windDirection300,
+                                                        height500,
+                                                        temperature500,
+                                                        windSpeed500,
+                                                        windDirection500,
+                                                        height700,
+                                                        temperature700,
+                                                        windSpeed700,
+                                                        windDirection700,
+                                                        isNew
+                                                    ],
+                                                    "POST",
+                                                    null);
+                                        }
+                                    }
+
+                                ]
+                            },
+                            {}
+
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    /*]]>*/
+
+    function openConfirmRemoveDefactorDialog(defactorId) {
+        defactorToRemove = defactorId;
+        $("#removeDefactorConfirmDialog").dialog("open");
+    }
+
+    function openEditDefactorDialog(defactorId) {
+        editDefactorId = defactorId;
+        ajaxCall("/defactor/get?defactorId="+defactorId,
+                {
+
+                },
+                "GET",
+                function (response) {
+                    var defactor = response.data.defactor;
+                    $$("provinceId").setValue(defactor.provinceId);
+                    $$("date").setValue(defactor.date);
+                    $$("hoursFrom").setValue(defactor.hoursFrom);
+                    $$("hoursTo").setValue(defactor.hoursTo);
+                    $$("height300").setValue(defactor.height300);
+                    $$("temperature300").setValue(defactor.temperature300);
+                    $$("windSpeed300").setValue(defactor.windSpeed300);
+                    $$("windDirection300").setValue(defactor.windDirection300);
+                    $$("height500").setValue(defactor.height500);
+                    $$("temperature500").setValue(defactor.temperature500);
+                    $$("windSpeed500").setValue(defactor.windSpeed500);
+                    $$("windDirection500").setValue(defactor.windDirection500);
+                    $$("height700").setValue(defactor.height700);
+                    $$("temperature700").setValue(defactor.temperature700);
+                    $$("windSpeed700").setValue(defactor.windSpeed700);
+                    $$("windDirection700").setValue(defactor.windDirection700);
+                    $("#editDefactorDialog").dialog("open");
+
+                },
+                function (response) {
+                    webix.message("خطا در بازیابی اطلاعات");
+                }
+        )
+
+    }
+
+
+    $("#editDefactorDialog").dialog({
+        autoOpen: false,
+        width: 700,
+        modal: true
+    });
+
+    $("#removeDefactorConfirmDialog").dialog({
+        autoOpen: false,
+        width: 400,
+        modal: true
+    });
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

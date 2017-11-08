@@ -1,0 +1,62 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>دریافت اطلاعات </title>
+</head>
+<body>
+
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "add",
+                        view: "form",
+                        cols: [
+                            {
+                                type: "form",
+                                borderless: true,
+                                width: 600,
+
+                                rows: [
+
+                                    {
+                                        inputWidth: 300,
+                                        view: "button",
+                                        type: "form",
+                                        value: "شروع فرآیند به روز رسانی",
+                                        align: "left",
+                                        click: function () {
+
+                                            webix.send("/update/process", [], "GET", null);
+                                        }
+                                    }
+                                ]
+                            },
+                            {}
+
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    /*]]>*/
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

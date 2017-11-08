@@ -51,7 +51,7 @@ public class WeatherStationController {
         if (isNew) {
             weatherStation = new WeatherStation();
         } else {
-            weatherStation = weatherStationService.getById(String.valueOf(id));
+            weatherStation = weatherStationService.getById(id);
         }
         weatherStation.setProvinceCode(provinceCode);
         weatherStation.setName(name);
@@ -74,7 +74,7 @@ public class WeatherStationController {
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
     public String remove(HttpSession session,
                          @RequestParam(name = "id") Long id) {
-        WeatherStation weatherStation =weatherStationService.getById(String.valueOf(id));
+        WeatherStation weatherStation =weatherStationService.getById(id);
         Weather weather = new Weather();
         weather.setWeatherStation(weatherStation);
         if(weatherService.exists(weather)) {

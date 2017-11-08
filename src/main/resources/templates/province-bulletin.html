@@ -1,0 +1,344 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>پیش بینی روزهای آینده</title>
+    <style>
+        .checkbox {
+            padding-left: 10px;
+            height: 60px;
+            padding-top: 10px;
+            float: left;
+        }
+
+        .item-text {
+            float: right;
+            padding-right: 10px;
+            height: 60px;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id="addBulletinDialog" style="display: none">
+
+</div>
+
+<div id="removeBulletinConfirmDialog" style="display: none">
+</div>
+
+
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+
+    var bulletinToRemove = 0;
+    /*<![CDATA[*/
+    var provinces = [[${provinces}]];
+    var comboProvinces = [];
+    $.each(provinces, function (index, province) {
+        comboProvinces.push({id: province.id, value: province.name})
+    });
+    comboProvinces.push({id: null, value: 'انتخاب کنید...'});
+    var forecasts = [];
+    if ([[${bulletins}]]) {
+        forecasts = [[${bulletins}]];
+    }
+
+    var formItems = [];
+    formItems.push({
+        view: "richselect",
+        id: "province",
+        width: 300,
+        label: 'استان',
+        name: "province",
+        value: [[${provinceId}]],
+        options: comboProvinces
+
+    });
+    formItems.push({
+        view: "button",
+        type: "form",
+        value: "مشاهده پیش بینی ها",
+        align: "left",
+        width: 200,
+        click: function () {
+
+            ajaxCall(
+                    "/bulletin/get/",
+                    {
+                        provinceId: $$("province").getValue()
+                    },
+                    "GET",
+                    function (response) {
+                        $$("forecastsDataview").clearAll();
+                        $$("forecastsDataview").parse(response.data.bulletins);
+                    },
+                    function (response) {
+                        console.log("error");
+                        console.log(response);
+                    }
+            )
+        }
+    });
+    if ([[${#httpServletRequest.isUserInRole("ROLE_ADD_BULLETIN")}]]) {
+        formItems.push({
+            view: "button",
+            type: "form",
+            value: "افزودن پیش بینی",
+            align: "left",
+            click: function () {
+                $$("new_province").setValue($$("province").getValue());
+                $("#addBulletinDialog").dialog("open");
+            }
+        });
+    }
+    formItems.push({});
+
+    webix.ui({
+        id: "add-bulletin",
+        container: "addBulletinDialog",
+        view: "form",
+        cols: [
+            {
+                type: "form",
+                borderless: true,
+                width: 400,
+                rows: [
+                    {template: "افزودن پیش بینی", type: "header"},
+                    {
+                        view: "richselect",
+                        id: "new_province",
+                        label: 'استان',
+                        labelWidth: 100,
+                        labelAlign: 'right',
+                        name: "provinceId",
+                        value: [[${provinceId}]],
+                        options: comboProvinces
+                    },
+                    {
+                        id: 'minTemperature',
+                        view: "text",
+                        label: "حداقل دما",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        name: "minTemperature",
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'maxTemperature',
+                        view: "text",
+                        label: "حداکثر دما",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        name: "maxTemperature",
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'phenomena',
+                        view: "text",
+                        label: "شرح وضعیت",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        name: "phenomena",
+                        labelWidth: 100
+                    },
+                    {
+                        view: "richselect",
+                        id: "forecastDate",
+                        label: 'تاریخ پیش بینی',
+                        labelWidth: 100,
+                        labelAlign: 'right',
+                        name: "provinceId",
+                        value: "0",
+                        options: [
+                            {id: "0", value: "24  ساعت آینده "},
+                            {id: "1", value: "48 ساعت آینده"},
+                            {id: "2", value: "72 ساعت آینده"},
+                            {id: "3", value: "جهار روز آینده"},
+                            {id: "4", value: "پنج روز آینده"},
+                            {id: "5", value: "شش روز آینده"},
+                            {id: "6", value: "هقت روز آینده"}
+                        ]
+                    },
+                    {
+                        view: "richselect",
+                        id: "icon",
+                        label: 'نشانگر',
+                        labelWidth: 100,
+                        labelAlign: 'right',
+                        name: "icon",
+                        value: null,
+                        options: [
+                            {id: "/icons/0cloud.png", value: "<img src='/icons/0cloud.png'>"},
+                            {id: "/icons/0cloud_fog.png", value: "<img src='/icons/0cloud_fog.png'>"},
+                            {id: "/icons/0cloud_mist.png", value: "<img src='/icons/0cloud_mist.png'>"},
+                            {id: "/icons/1cloud_fog.png", value: "<img src='/icons/1cloud_fog.png'>"},
+                            {id: "/icons/1cloud_heavyrain.png", value: "<img src='/icons/1cloud_heavyrain.png'>"},
+                            {id: "/icons/1cloud_lightrain.png", value: "<img src='/icons/1cloud_lightrain.png'>"},
+                            {id: "/icons/1cloud_mist.png", value: "<img src='/icons/1cloud_mist.png'>"},
+                            {id: "/icons/1cloud_modrain.png", value: "<img src='/icons/1cloud_modrain.png'>"},
+                            {id: "/icons/1cloud_norain.png", value: "<img src='/icons/1cloud_norain.png'>"},
+                            {id: "/icons/1cloud_rain.png", value: "<img src='/icons/1cloud_rain.png'>"},
+                            {id: "/icons/1cloud_snow.png", value: "<img src='/icons/1cloud_snow.png'>"},
+                            {id: "/icons/2cloud_fog.png", value: "<img src='/icons/2cloud_fog.png'>"},
+                            {id: "/icons/2cloud_hail.png", value: "<img src='/icons/2cloud_hail.png'>"},
+                            {id: "/icons/2cloud_heavyrain.png", value: "<img src='/icons/2cloud_heavyrain.png'>"},
+                            {id: "/icons/2cloud_lightrain.png", value: "<img src='/icons/2cloud_lightrain.png'>"},
+                            {id: "/icons/2cloud_mist.png", value: "<img src='/icons/2cloud_mist.png'>"},
+                            {id: "/icons/2cloud_modrain.png", value: "<img src='/icons/2cloud_modrain.png'>"},
+                            {id: "/icons/2cloud_norain.png", value: "<img src='/icons/2cloud_norain.png'>"},
+                            {id: "/icons/2cloud_snow.png", value: "<img src='/icons/2cloud_snow.png'>"},
+                            {id: "/icons/2cloud_thunders.png", value: "<img src='/icons/2cloud_thunders.png'>"},
+                            {id: "/icons/3cloud_fog.png", value: "<img src='/icons/3cloud_fog.png'>"},
+                            {id: "/icons/3cloud_hail.png", value: "<img src='/icons/3cloud_hail.png'>"},
+                            {id: "/icons/3cloud_heavyrain.png", value: "<img src='/icons/3cloud_heavyrain.png'>"},
+                            {id: "/icons/3cloud_lightrain.png", value: "<img src='/icons/3cloud_lightrain.png'>"},
+                            {id: "/icons/3cloud_mist.png", value: "<img src='/icons/3cloud_mist.png'>"},
+                            {id: "/icons/3cloud_modrain.png", value: "<img src='/icons/3cloud_modrain.png'>"},
+                            {id: "/icons/3cloud_norain.png", value: "<img src='/icons/3cloud_norain.png'>"},
+                            {id: "/icons/3cloud_snow.png", value: "<img src='/icons/3cloud_snow.png'>"},
+                            {id: "/icons/3cloud_thunders.png", value: "<img src='/icons/3cloud_thunders.png'>"},
+                            {id: "/icons/4cloud_modrain.png", value: "<img src='/icons/4cloud_modrain.png'>"},
+                            {id: "/icons/4cloud_fog.png", value: "<img src='/icons/4cloud_fog.png'>"},
+                            {id: "/icons/4cloud_hail.png", value: "<img src='/icons/4cloud_hail.png'>"},
+                            {id: "/icons/4cloud_heavyhail.png", value: "<img src='/icons/4cloud_heavyhail.png'>"},
+                            {id: "/icons/4cloud_heavyrain.png", value: "<img src='/icons/4cloud_heavyrain.png'>"},
+                            {id: "/icons/4cloud_heavysnow.png", value: "<img src='/icons/4cloud_heavysnow.png'>"},
+                            {id: "/icons/4cloud_lighthail.png", value: "<img src='/icons/4cloud_lighthail.png'>"},
+                            {id: "/icons/4cloud_lightrain.png", value: "<img src='/icons/4cloud_lightrain.png'>"},
+                            {id: "/icons/4cloud_lightsnow.png", value: "<img src='/icons/4cloud_lightsnow.png'>"},
+                            {id: "/icons/4cloud_mist.png", value: "<img src='/icons/4cloud_mist.png'>"},
+                            {id: "/icons/4cloud_modrain.png", value: "<img src='/icons/4cloud_modrain.png'>"},
+                            {id: "/icons/4cloud_modsnow.png", value: "<img src='/icons/4cloud_modsnow.png'>"},
+                            {id: "/icons/4cloud_norain.png", value: "<img src='/icons/4cloud_norain.png'>"},
+                            {id: "/icons/4cloud_thunders.png", value: "<img src='/icons/4cloud_thunders.png'>"}
+                        ]
+
+                    },
+                    {
+                        inputWidth: 100,
+                        view: "button",
+                        type: "form",
+                        value: "ثبت",
+                        align: "left",
+                        click: function () {
+                            var provinceId = {name: "provinceId", value: $$("new_province").getValue()};
+                            var minTemperature = {
+                                name: "minTemperature",
+                                value: $$("minTemperature").getValue().trim()
+                            };
+                            var maxTemperature = {
+                                name: "maxTemperature",
+                                value: $$("maxTemperature").getValue().trim()
+                            };
+                            var phenomena = {name: "phenomena", value: $$("phenomena").getValue().trim()};
+                            var forecastDate = {name: "forecastDate", value: $$("forecastDate").getValue().trim()};
+                            var icon = {name: "icon", value: $$("icon").getValue().trim()};
+                            webix.send("/bulletin/save", [provinceId, minTemperature, maxTemperature, phenomena, forecastDate, icon], "POST", null);
+                        }
+                    }
+                ]
+            }
+        ]
+    });
+
+    webix.ui({
+        id: "confirm-remove-bulletin",
+        container: "removeBulletinConfirmDialog",
+        view: "form",
+        cols: [
+            {
+                type: "form",
+                borderless: true,
+                width: 300,
+                rows: [
+
+                    {template: "<span class='webix_strong'>آیا از حذف این پیش بینی اطمینان دارید؟</span>", height: 25},
+                    {height: 30},
+                    {
+                        cols: [
+                            {
+                                inputWidth: 100,
+                                view: "button",
+                                type: "form",
+                                value: "بله",
+                                align: "left",
+                                click: function () {
+                                    var bulletinId = {name: "bulletinId", value: bulletinToRemove};
+                                    webix.send("/bulletin/remove", [bulletinId], "POST", null);
+                                }
+                            },
+                            {
+                                inputWidth: 100,
+                                view: "button",
+                                type: "form",
+                                value: "خیر",
+                                align: "left",
+                                click: function () {
+                                    $("#removeBulletinConfirmDialog").dialog("close");
+                                }
+                            }
+                        ]
+                    }
+
+                ]
+            }
+        ]
+    });
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        view: "form",
+                        cols: formItems
+
+                    }
+                ]
+            },
+            {
+                id: "forecastsDataview",
+                view: "dataview",
+                template: "<div style='direction:rtl;text-align:center'><div title='حذف' style='text-align: left;'><div onclick='openConfirmRemoveBulletinDialog(\"#id#\")'><span style='color : red' class='webix_icon fa-close'></span></div> </div><div><img src='#icon#'><br><span>#phenomena#</span></div><div class='webix_strong'><span> حداقل دما :</span><span>#minTemperature#</span><img src='/icons/downL.png'><span> حداکثر دما :</span><span>#maxTemperature#</span><img src='/icons/upL.png'></div><div>#forecastDateString#</div><div class='webix_strong'>#title#</div></div>",
+                type: {
+                    height: 200,
+                    width: 400
+                },
+                data: forecasts
+            }
+        ]
+    };
+
+
+    function openConfirmRemoveBulletinDialog(bulletinId) {
+        bulletinToRemove = bulletinId;
+        $("#removeBulletinConfirmDialog").dialog("open");
+    }
+
+    $("#addBulletinDialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
+    $("#removeBulletinConfirmDialog").dialog({
+        autoOpen: false,
+        width: 400,
+        modal: true
+    });
+
+    /*]]>*/
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

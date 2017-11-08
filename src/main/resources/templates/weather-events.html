@@ -8,7 +8,7 @@
 <div class="edit-weatherEvent-dialog" id="editWeatherEventDialog" style="display: none">
 </div>
 <div class="edit-weatherEvent-icon-dialog" id="editWeatherEventIconDialog" style="display: none">
-    <form th:action="@{/base-info/event/save-icon}" enctype="multipart/form-data" th:method="POST">
+    <form th:action="@{/base-info/phenomena/save-icon}" enctype="multipart/form-data" th:method="POST">
         <img id="current-icon" src=""/>
         <br/>
         <input type="file" name="file"/>
@@ -102,7 +102,7 @@
                             var description = {name: "description", value: $$("description").getValue().trim()};
                             var priority = {name: "priority", value: $$("priority").getValue().trim()};
                             var isNew = {name: "isNew", value: false};
-                            webix.send("/base-info/event/save", [id, title, abbreviation, description, priority, isNew], "POST", null);
+                            webix.send("/base-info/phenomena/save", [id, title, abbreviation, description, priority, isNew], "POST", null);
                         }
                     }
                 ]
@@ -121,7 +121,7 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
-                {id: "view", value: "مشاهده ایستگاه ها", width: 150},
+                {id: "view", value: "مشاهده پدیده", width: 150},
                 {id: "add", value: "افزودن", width: 150}
             ]
             },
@@ -150,12 +150,12 @@
                             {
                                 id: "priority", header: "درجه اهمیت", width: 200
                             },
-                            {
-                                id: "icon",
-                                header: "تصویر",
-                                template: "<a href='javascript:void(0)' class='remove_weatherEvent_icon'><img src='/base-info/event/view-icon/#icon#'></a>",
-                                width: 200
-                            },
+//                            {
+//                                id: "icon",
+//                                header: "تصویر",
+//                                template: "<a href='javascript:void(0)' class='remove_weatherEvent_icon'><img src='/base-info/phenomena/view-icon/#icon#'></a>",
+//                                width: 200
+//                            },
                             {
                                 id: "edit",
                                 header: "ویرایش",
@@ -184,12 +184,12 @@
                             "remove_weatherEvent": function (e, id) {
                                 var item = this.getItem(id);
                                 var weatherEventId = {name: "id", value: item.id};
-                                webix.send("/base-info/event/remove", [weatherEventId], "POST", null);
+                                webix.send("/base-info/phenomena/remove", [weatherEventId], "POST", null);
                                 return false;
                             },
                             "remove_weatherEvent_icon": function (e, id) {
                                 var item = this.getItem(id);
-                                $("#current-icon").attr("src", "/base-info/event/view-icon/" + item.icon);
+                                $("#current-icon").attr("src", "/base-info/phenomena/view-icon/" + item.icon);
                                 $("#current-id").val(item.id);
                                 $("#editWeatherEventIconDialog").dialog("open");
                             }
@@ -265,7 +265,7 @@
                                                 name: "isNew",
                                                 value: true
                                             };
-                                            webix.send("/base-info/event/save", [title, abbreviation, description, priority, isNew], "POST", null);
+                                            webix.send("/base-info/phenomena/save", [title, abbreviation, description, priority, isNew], "POST", null);
                                         }
                                     }
                                 ]

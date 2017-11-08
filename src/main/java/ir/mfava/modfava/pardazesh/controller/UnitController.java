@@ -33,16 +33,16 @@ public class UnitController {
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public String saveUnit(@RequestParam(name = "title") String title,
-                             @RequestParam(name = "code") String code,
-                             @RequestParam(name = "type") Long type,
-                             @RequestParam(name = "id", required = false) Long id,
-                             @RequestParam(name = "isNew", required = false) Boolean isNew,
-                             HttpSession session) {
+                           @RequestParam(name = "code") String code,
+                           @RequestParam(name = "type") Long type,
+                           @RequestParam(name = "id", required = false) Long id,
+                           @RequestParam(name = "isNew", required = false) Boolean isNew,
+                           HttpSession session) {
         Unit unit;
         if (isNew) {
             unit = new Unit();
         } else {
-            unit = unitService.getById(String.valueOf(id));
+            unit = unitService.getById(id);
         }
         unit.setTitle(title);
         unit.setCode(code);
@@ -58,9 +58,9 @@ public class UnitController {
 
     @RequestMapping(value = "/type/save", method = RequestMethod.POST)
     public String saveUnitType(@RequestParam(name = "name") String name,
-                             @RequestParam(name = "id", required = false) Long id,
-                             @RequestParam(name = "isNew", required = false) Boolean isNew,
-                             HttpSession session) {
+                               @RequestParam(name = "id", required = false) Long id,
+                               @RequestParam(name = "isNew", required = false) Boolean isNew,
+                               HttpSession session) {
         UnitType unitType;
         if (isNew) {
             unitType = new UnitType();
@@ -80,7 +80,7 @@ public class UnitController {
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
     public String remove(HttpSession session,
                          @RequestParam(name = "id") Long id) {
-        Unit unit = unitService.getById(String.valueOf(id));
+        Unit unit = unitService.getById(id);
         try {
             unitService.remove(unit);
             session.setAttribute("successMessage", "حذف یگان با موفقیت انجام شد.");
