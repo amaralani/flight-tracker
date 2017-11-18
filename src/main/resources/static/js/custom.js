@@ -27,6 +27,11 @@ function formatDate(date) {
     return day + '-' + (monthIndex +1)  + '-' + year;
 }
 
+
+var n = new Date().toLocaleTimeString().slice(0,8);
+var n1 = new Date().toTimeString().slice(0,8);
+
+
 var ui = {
     view: "scrollview",
     body: {
@@ -43,6 +48,8 @@ var ui = {
 
                 ]
             },
+            {view: "label", template: "<span class='time'>" + n + "</span>"},
+            {view: "label", template: "<span class='time'>" +  n1 + "</span>"},
             {
                 autoheight: true, type: "wide", cols: [right_menu, main_content]
             },

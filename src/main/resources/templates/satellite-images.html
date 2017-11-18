@@ -1,0 +1,246 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>دریافت اطلاعات </title>
+
+    <style>
+        #slides {
+            display: none
+        }
+
+        #slides .slidesjs-navigation {
+            margin-top: 5px;
+        }
+
+        a.slidesjs-next,
+        a.slidesjs-previous,
+        a.slidesjs-play,
+        a.slidesjs-stop {
+            background-image: url('/images/slidesjs/btns-next-prev.png');
+            background-repeat: no-repeat;
+            display: block;
+            width: 12px;
+            height: 18px;
+            overflow: hidden;
+            text-indent: -9999px;
+            float: left;
+            margin-right: 5px;
+        }
+
+        a.slidesjs-next {
+            margin-right: 10px;
+            background-position: -12px 0;
+        }
+
+        a:hover.slidesjs-next {
+            background-position: -12px -18px;
+        }
+
+        a.slidesjs-previous {
+            background-position: 0 0;
+        }
+
+        a:hover.slidesjs-previous {
+            background-position: 0 -18px;
+        }
+
+        a.slidesjs-play {
+            width: 15px;
+            background-position: -25px 0;
+        }
+
+        a:hover.slidesjs-play {
+            background-position: -25px -18px;
+        }
+
+        a.slidesjs-stop {
+            width: 18px;
+            background-position: -41px 0;
+        }
+
+        a:hover.slidesjs-stop {
+            background-position: -41px -18px;
+        }
+
+        .slidesjs-pagination {
+            margin: 7px 0 0;
+            float: right;
+            list-style: none;
+        }
+
+        .slidesjs-pagination li {
+            float: left;
+            margin: 0 1px;
+        }
+
+        .slidesjs-pagination li a {
+            display: block;
+            width: 13px;
+            height: 0;
+            padding-top: 13px;
+            background-image: url('/images/slidesjs/pagination.png');
+            background-position: 0 0;
+            float: left;
+            overflow: hidden;
+        }
+
+        .slidesjs-pagination li a.active,
+        .slidesjs-pagination li a:hover.active {
+            background-position: 0 -13px
+        }
+
+        .slidesjs-pagination li a:hover {
+            background-position: 0 -26px
+        }
+
+        #slides a:link,
+        #slides a:visited {
+            color: #333
+        }
+
+        #slides a:hover,
+        #slides a:active {
+            color: #9e2020
+        }
+
+        .navbar {
+            overflow: hidden
+        }
+
+        #slides {
+            display: none;
+        }
+
+        #images-container {
+            margin: auto;
+            width: 800px;
+            height: 600px;
+        }
+
+        #slides {
+            display: none
+        }
+
+        .container {
+            margin: 0 auto
+        }
+
+
+    </style>
+    <script src="/js/jquery.slides.min.js" type="text/javascript" charset="utf-8"></script>
+    <!--<style th:inline="text">-->
+    <!--.hs-wrapper img:nth-child(1) {-->
+    <!--z-index: 9;-->
+    <!--}-->
+    <!--</style>-->
+    <!--<th:block th:each="imageName,iter : ${files}" >-->
+    <!--<div th:with="iteration=${iter.index+1},time=${(iter.index+1)/10},zindex=${iter.size - iter.index + 1}" th:remove="tag">-->
+
+    <!--<style type="text/css" th:inline="text">-->
+    <!--.hs-wrapper img:nth-child([[${iteration}]]) {-->
+    <!-- -webkit-animation-delay: [[${time}]]s;-->
+    <!-- -moz-animation-delay: [[${time}]]s;-->
+    <!-- -o-animation-delay: [[${time}]]s;-->
+    <!-- -ms-animation-delay: ${time}s;-->
+    <!--animation-delay: [[${time}]]s;-->
+    <!--z-index: [[${zindex}]];-->
+    <!--}-->
+    <!--</style>-->
+    <!--</div>-->
+    <!--</th:block>-->
+
+</head>
+<body>
+
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<!--&lt;!&ndash;/*@thymesVar id="files" type="java.lang.String"*/&ndash;&gt;-->
+<!--<div id="images-container" class="hs-wrapper" th:each="imageName : ${files}">-->
+<!--<img  th:src="/satellite/imageName/${imageName}"/>-->
+<!--</div>-->
+<div id="images-container"> 
+    <div id="slides">
+        <th:block th:each="imageName : ${#lists.sort(files)}">
+            <img th:src='@{${"/satellite/image/" + imageName}}' th:style="'width : 100%; height : 100%'"/>
+        </th:block>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var imageNames = [[${files}]];
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: 'images-container'}
+            },
+            {
+                view: "form", id: "controlForm", elements: [
+                {
+                    view: "slider", label: "سرعت نمایش :",labelWidth : 100, value: "100", step: 1, min: 1, max: 100,
+                    on: {
+                        onChange: function (value) {
+                            restartSlides(value);
+                        }
+                    }
+                }
+            ]
+            }
+        ]
+    };
+
+
+    function restartSlides(intervalTime) {
+        var slidesContainerString = "<div id='slides'>";
+        $.each(imageNames, function (index, imageName) {
+            slidesContainerString = slidesContainerString + "<img src='/satellite/image/" + imageName + "' style='width : 100%; height : 100%'/>";
+        });
+        slidesContainerString = slidesContainerString + "</div>";
+        $("#images-container").html(slidesContainerString);
+        $('#slides').slidesjs({
+            play: {
+                effect: "fade",
+                swap: true,
+                active: true,
+                auto: true,
+                interval: 10000/intervalTime
+            },
+            effect: {
+                fade: {
+                    speed: 1
+                }
+            }
+        });
+    }
+    /*]]>*/
+
+
+    $(function () {
+        $('#slides').slidesjs({
+
+            play: {
+                effect: "fade",
+                swap: true,
+                active: true,
+                auto: true,
+                interval: 100
+            },
+            effect: {
+                fade: {
+                    speed: 1
+                }
+            }
+        });
+    });
+</script>
+
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

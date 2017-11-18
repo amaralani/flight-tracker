@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.FileSystemUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -101,20 +100,20 @@ public class WeatherServiceImpl implements WeatherService {
                 File taforDirectory = new File("/d/weather_base_directory/tafor/");
                 if (!taforDirectory.exists()) taforDirectory.mkdirs();
                 if (taforDirectory.listFiles() != null) {
-                    List<File> metarFiles = Arrays.asList(taforDirectory.listFiles());
-                    for (File metarFile : metarFiles) {
+                    List<File> taforFiles = Arrays.asList(taforDirectory.listFiles());
+                    for (File taforFile : taforFiles) {
                         DataFile dataFile = new DataFile();
-                        dataFile.setFileName(metarFile.getName());
+                        dataFile.setFileName(taforFile.getName());
                         dataFile.setFileType("TAFOR");
                         dataFile.setProcessStartDate(new Date());
-                        processFile("/d/weather_base_directory/tafor/"+metarFile.getName());
+                        processFile("/d/weather_base_directory/tafor/"+ taforFile.getName());
                         dataFile.setProcessEndDate(new Date());
 
-                        File metarProcessedDirectory = new File("/d/weather_base_directory/processed/tafor/");
-                        if (!metarProcessedDirectory.exists()) metarProcessedDirectory.mkdirs();
-                        File newFile = new File("/d/weather_base_directory/processed/tafor/" + metarFile.getName());
-                        FileCopyUtils.copy(metarFile,newFile);
-                        metarFile.delete();
+                        File taforProcessedDirectory = new File("/d/weather_base_directory/processed/tafor/");
+                        if (!taforProcessedDirectory.exists()) taforProcessedDirectory.mkdirs();
+                        File newFile = new File("/d/weather_base_directory/processed/tafor/" + taforFile.getName());
+                        FileCopyUtils.copy(taforFile,newFile);
+                        taforFile.delete();
 
                         dataFileService.save(dataFile);
                     }
@@ -122,22 +121,47 @@ public class WeatherServiceImpl implements WeatherService {
                 File speciDirectory = new File("/d/weather_base_directory/speci/");
                 if (!speciDirectory.exists()) speciDirectory.mkdirs();
                 if (speciDirectory.listFiles() != null) {
-                    List<File> metarFiles = Arrays.asList(speciDirectory.listFiles());
-                    for (File metarFile : metarFiles) {
+                    List<File> speciFiles = Arrays.asList(speciDirectory.listFiles());
+                    for (File speciFile : speciFiles) {
                         DataFile dataFile = new DataFile();
-                        dataFile.setFileName(metarFile.getName());
+                        dataFile.setFileName(speciFile.getName());
                         dataFile.setFileType("SPECI");
                         dataFile.setProcessStartDate(new Date());
-                        processFile("/d/weather_base_directory/speci/"+metarFile.getName());
+                        processFile("/d/weather_base_directory/speci/"+ speciFile.getName());
                         dataFile.setProcessEndDate(new Date());
 
-                        File metarProcessedDirectory = new File("/d/weather_base_directory/processed/speci/");
-                        if (!metarProcessedDirectory.exists()) metarProcessedDirectory.mkdirs();
-                        File newFile = new File("/d/weather_base_directory/processed/speci/" + metarFile.getName());
-                        FileCopyUtils.copy(metarFile,newFile);
-                        metarFile.delete();
+                        File speciProcessedDirectory = new File("/d/weather_base_directory/processed/speci/");
+                        if (!speciProcessedDirectory.exists()) speciProcessedDirectory.mkdirs();
+                        File newFile = new File("/d/weather_base_directory/processed/speci/" + speciFile.getName());
+                        FileCopyUtils.copy(speciFile,newFile);
+                        speciFile.delete();
 
                         dataFileService.save(dataFile);
+                    }
+                }
+
+                File satImageProcessedDirectory = new File("/d/weather_base_directory/processed/sat/");
+                if (!satImageProcessedDirectory.exists()) satImageProcessedDirectory.mkdirs();
+                if (satImageProcessedDirectory.listFiles() != null) {
+                    List<File> oldSatImages = Arrays.asList(satImageProcessedDirectory.listFiles());
+                    File oldSatImageProcessedDirectory = new File("/d/weather_base_directory/processed/sat/old/");
+                    if (!oldSatImageProcessedDirectory.exists()) oldSatImageProcessedDirectory.mkdirs();
+                    for (File oldSatImage : oldSatImages) {
+                        File newFile = new File("/d/weather_base_directory/processed/sat/old/" + oldSatImage.getName());
+                        FileCopyUtils.copy(oldSatImage, newFile);
+                    }
+                }
+
+                File satImagesDirectory = new File("/d/weather_base_directory/sat/");
+                if (!satImagesDirectory.exists()) satImagesDirectory.mkdirs();
+                if (satImagesDirectory.listFiles() != null) {
+                    List<File> satImages = Arrays.asList(satImagesDirectory.listFiles());
+                    for (File satImage : satImages) {
+                        File metarProcessedDirectory = new File("/d/weather_base_directory/processed/sat/");
+                        if (!metarProcessedDirectory.exists()) metarProcessedDirectory.mkdirs();
+                        File newFile = new File("/d/weather_base_directory/processed/sat/" + satImage.getName());
+                        FileCopyUtils.copy(satImage,newFile);
+                        satImage.delete();
                     }
                 }
                 PROCESS_IN_PROGRESS = false;
