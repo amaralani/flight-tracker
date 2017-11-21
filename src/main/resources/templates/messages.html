@@ -1,0 +1,271 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>نمایش جدول</title>
+</head>
+<body>
+
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<div id="grid-container"></div>
+
+<div id="view-message-dialog">
+    <div class="message-subject"></div>
+    <hr/>
+    <div class="message-text"></div>
+</div>
+
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+
+    function oneForAll(value, filter, obj) {
+        if (obj.senderName)
+            if (equals(obj.senderName, filter)) return true;
+        if (obj.subject)
+            if (equals(obj.subject, filter)) return true;
+        return !!equals(obj.createDate, filter);
+    }
+
+    /*<![CDATA[*/
+    var users = [[${users}]];
+    var comboUsers = [];
+
+    $.each(users, function (index, user) {
+        comboUsers.push({id: user.id, value: user.firstName + " " + user.lastName})
+    });
+
+    var gridBaseData = [[${userMessages}]];
+
+    function refreshData() {
+        var messagesType = $$("messagesType").getValue();
+        ajaxCall(
+                "/message/get",
+                {
+                    type: messagesType
+                },
+                RequestMethod.GET,
+                function (data) {
+                    $$("grid").clearAll();
+                    if (data.data) {
+                        $$("grid").parse(data.data);
+                    }
+                    $$("grid").refresh();
+                },
+                function (response) {
+                    webix.message("خطا در دریافت اطلاعات.")
+                }
+        );
+    }
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "view", value: "مشاهده پیام ها", width: 150},
+                {id: "add", value: "ارسال پیام", width: 150}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "view",
+                        rows: [
+                            {
+                                type: "form",
+                                id: "messagesForm",
+                                borderless: true,
+                                cols: [
+                                    {
+                                        id: "messagesType",
+                                        view: "segmented",
+                                        width: 270,
+                                        labelWidth: 100,
+                                        align: "right",
+                                        options: [
+                                            {id: "UNREAD", value: "خوانده نشده"},
+                                            {id: "READ", value: "خوانده شده"},
+                                            {id: "‌BOTH", value: "هردو"}
+                                        ],
+                                        on: {
+                                            "onChange": function (newValue, oldValue) {
+                                                refreshData();
+                                            }
+                                        }
+                                    },
+//                                    {
+//                                        view: "button",
+//                                        type: "form",
+//                                        value: "ارسال پیام",
+//                                        align: "left",
+//                                        click: function () {
+//                                            $$("new_province").setValue($$("province").getValue());
+//                                            $("#addBulletinDialog").dialog("open");
+//                                        }
+//                                    },
+                                    {}
+                                ]
+                            },
+                            {
+                                id: "grid",
+                                container: "grid-container",
+                                view: "datatable",
+                                columns: [
+                                    {
+                                        id: "senderName",
+                                        header: ["فرستنده", {
+                                            content: "textFilter",
+                                            compare: oneForAll,
+                                            placeholder: "جستجو",
+                                            colspan: 3
+                                        }]
+                                        , fillspace: true
+                                    },
+                                    {id: "subject", header: ["موضوع", null], fillspace: true},
+                                    {id: "createDate", header: ["تاریخ ارسال", null], fillspace: true},
+                                    {
+                                        id: "view",
+                                        header: "مشاهده",
+                                        css: "webix_el_button",
+                                        width: 150,
+                                        template: "<span class='webix_icon fa-sticky-note has-cursor-pointer green view_message'></span>"
+                                    },
+                                    {
+                                        id: "remove",
+                                        header: "حذف",
+                                        css: "webix_el_button",
+                                        width: 150,
+                                        template: "<span class='webix_icon fa-close has-cursor-pointer red remove_message'></span>"
+                                    }
+                                ],
+                                select: "row",
+                                tooltip: true,
+                                autowidth: false,
+                                autoheight: false,
+                                scroll: true,
+                                data: gridBaseData,
+                                onClick: {
+                                    "view_message": function (e, id) {
+                                        var item = this.getItem(id);
+                                        var messageId = {name: "messageId", value: item.id};
+                                        ajaxCall(
+                                                "/message/read",
+                                                {
+                                                    messageId : item.id,
+                                                    _csrf : csrf_token
+                                                },
+                                                "POST",
+                                                function(data){
+                                                    $("#view-message-dialog > .message-subject").html(item.subject);
+                                                    $("#view-message-dialog > .message-text").html(item.text);
+
+                                                    $("#view-message-dialog").dialog("open");
+                                                },
+                                                function(error){
+                                                    webix.message("خطا در بازیابی اطلاعات.");
+                                                }
+                                        );
+                                    },
+                                    "remove_message": function (e, id) {
+                                        webix.message("remove :" + id);
+                                        var item = this.getItem(id);
+                                        var messageId = {name: "messageId", value: item.id};
+                                        webix.send("/message/delete", [messageId], "POST", null);
+                                        return false;
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        id: "add",
+                        view: "form",
+                        cols: [
+                            {
+                                type: "form",
+                                borderless: true,
+                                width: 600,
+                                rows: [
+                                    {template: "ارسال پیام", type: "header"},
+                                    {
+                                        id: 'receiverIds',
+                                        view: "multicombo",
+                                        label: "گیرندگان",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        suggest: {
+                                            body: {
+                                                data: comboUsers,
+                                                template: webix.template("#value#")
+                                            }
+                                        }
+                                    },
+                                    {
+                                        id: "subject",
+                                        view: "text",
+                                        label: "موضوع",
+                                        labelAlign: 'right',
+                                        textAlign: 'right'
+                                    },
+                                    {
+                                        id: "text",
+                                        view: "textarea",
+                                        label: "متن پیام",
+                                        labelAlign: 'right',
+                                        textAlign: 'right'
+                                    },
+                                    {
+                                        inputWidth: 100,
+                                        view: "button",
+                                        type: "form",
+                                        value: "ثبت",
+                                        align: "left",
+                                        click: function () {
+                                            var receiverIds = {name: "receiverIds", value: $$("receiverIds").getValue()};
+                                            var subject = {
+                                                name: "subject",
+                                                value: $$("subject").getValue().trim()
+                                            };
+                                            var lastName = {
+                                                name: "text",
+                                                value: $$("text").getValue().trim()
+                                            };
+                                            webix.send("/message/save", [receiverIds, subject, lastName], "POST", null);
+                                        }
+                                    }
+                                ]
+                            },
+                            {}
+
+                        ]
+                    }
+                ]
+
+            }
+        ]
+    };
+
+    /*]]>*/
+
+    $("#view-message-dialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

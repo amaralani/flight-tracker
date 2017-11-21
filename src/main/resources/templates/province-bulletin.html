@@ -17,6 +17,10 @@
             height: 60px;
             padding-top: 10px;
         }
+
+        .webix_win_body .webix_list_item {
+            height: 50px !important;
+        }
     </style>
 </head>
 <body>
@@ -73,9 +77,9 @@
                         provinceId: $$("province").getValue()
                     },
                     "GET",
-                    function (response) {
+                    function (data) {
                         $$("forecastsDataview").clearAll();
-                        $$("forecastsDataview").parse(response.data.bulletins);
+                        $$("forecastsDataview").parse(data.bulletins);
                     },
                     function (response) {
                         console.log("error");

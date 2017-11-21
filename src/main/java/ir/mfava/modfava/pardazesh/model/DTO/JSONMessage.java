@@ -39,6 +39,14 @@ public class JSONMessage implements Serializable {
         return jsonMessage;
     }
 
+    public static JSONMessage Success(Map<String,Object> data){
+        JSONMessage jsonMessage = new JSONMessage();
+        jsonMessage.setStatus(200);
+        jsonMessage.setMessage("");
+        jsonMessage.setData(data);
+        return jsonMessage;
+    }
+
     public static JSONMessage Success(){
         JSONMessage jsonMessage = new JSONMessage();
         jsonMessage.setStatus(200);

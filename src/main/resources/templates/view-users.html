@@ -233,21 +233,21 @@
                                 header: "نمایش دسترسی ها",
                                 css: "webix_el_button",
                                 width: 150,
-                                template: "<a href='javascript:void(0)' class='view_roles'>نمایش</a>"
+                                template: "<span class='webix_icon fa-sticky-note has-cursor-pointer custom-blue view_roles'></span>"
                             },
                             {
                                 id: "edit_user",
                                 header: "ویرایش",
                                 css: "webix_el_button",
                                 width: 150,
-                                template: "<a href='javascript:void(0)' class='edit_user'>ویرایش</a>"
+                                template: "<span class='webix_icon fa-edit has-cursor-pointer green edit_user'></span>"
                             },
                             {
                                 id: "remove",
                                 header: "حذف",
                                 css: "webix_el_button",
                                 width: 100,
-                                template: "<a href='javascript:void(0)' class='remove_user'>حذف</a>"
+                                template: "<span class='webix_icon fa-close has-cursor-pointer red remove_user'></span>"
                             }
                         ],
                         data: [[${users}]],
@@ -277,8 +277,8 @@
                                         "/base-info/user/roles",
                                         {userId : item.id},
                                         "GET",
-                                        function(response){
-                                            userRoles = response.data.roles;
+                                        function(data){
+                                            userRoles = data.roles;
                                             var allRoles = [[${roles}]];
                                             var roles = [];
                                             allRoles.sort(function (a, b) {
@@ -328,7 +328,7 @@
                                                                             _csrf : csrf_token
                                                                         },
                                                                         "POST",
-                                                                        function(response){
+                                                                        function(data){
                                                                             webix.message("تغییرات با موفقیت ثبت شد.");
                                                                         },
                                                                         function(response){

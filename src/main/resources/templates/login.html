@@ -15,6 +15,7 @@
     <script th:src="@{/persian-datepicker/js/persian-date-0.1.8.js}" type="text/javascript" charset="utf-8"></script>
     <script th:src="@{/js/jquery.sha1.js}" type="text/javascript" charset="utf-8"></script>
     <script th:src="@{/js/leaflet.js}" type="text/javascript" charset="utf-8"></script>
+    <script th:src="@{/js/moment.min.js}" type="text/javascript" charset="utf-8"></script>
     <title>ورود به سیستم</title>
     <style>
         .webix_layout_space {
@@ -23,6 +24,10 @@
         }
         .webix_layout_wide {
             background: transparent;
+        }
+        .webix_el_text input {
+            background-color: #9fdbe3;
+            color: #000;
         }
     </style>
 </head>
@@ -37,6 +42,7 @@
     /*<![CDATA[*/
     var csrf_token = [[${_csrf.token}]];
     var right_menu = {};
+    isLoginPage = true;
     var main_content = {
         gravity: 3,
         type: "clean",
@@ -44,11 +50,11 @@
         rows: [
             {
                 cols: [
+                    {},
                     {
                         id : "loginForm",
                         type: "form",
                         borderless: true,
-//                        width: 500,
                         rows: [
                             {template: "ورود به سیستم", type: "header"},
                             {

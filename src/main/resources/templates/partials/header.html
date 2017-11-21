@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="/css/custom.css"/>
     <link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css"/>
     <link rel="stylesheet" type="text/css" href="/css/leaflet.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/colors.css"/>
     <script src="/webix/webix_debug.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/jquery-1.12.4.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
@@ -17,9 +18,13 @@
             charset="utf-8"></script>
     <script src="/js/jquery.sha1.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/leaflet.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/moment.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/constants.js" type="text/javascript" charset="utf-8"></script>
     <script th:inline="javascript">
         var main_content = {};
+        var isLoginPage = false;
         /*<![CDATA[*/
+        var hasUnreadMessage = [[${session.hasUnreadMessage}]] || false;
         var csrf_token = [[${_csrf.token}]];
         var right_menu_base_info = [];
 
@@ -62,9 +67,13 @@
             {id: 3, "name": "دریافت اطلاعات", href: "/update/", icon: "id-badge"},
             {id: 4, "name": "بولتن", href: "/bulletin/view", icon: "id-badge"},
             {id: 5, "name": "D-Factor", href: "/defactor/view", icon: "id-badge"},
-            {id: 6, "name": "نمایش تصاویر هواشناسی", href: "/satellite/", icon: "id-badge"},
-            {id: 7, "name": "ارسال پیام", href: "#", icon: "id-badge"}
+            {id: 6, "name": "نمایش تصاویر هواشناسی", href: "/satellite/", icon: "id-badge"}
         ];
+        if(hasUnreadMessage){
+            right_menu_usage.push({id: 7, "name": " ارسال پیام" + "<span style='color: red;' class='blinking'>(پیام جدید)</span>", href: "/message", icon: "id-badge"});
+        }else {
+            right_menu_usage.push({id: 7, "name": "ارسال پیام", href: "/message", icon: "id-badge"});
+        }
 
         var right_menu_report = [
             {id: 1, "name": "مشاهده ورود و خروج کاربران", href: "#"/*, href: "/report/login/"*/, icon: "id-badge"},

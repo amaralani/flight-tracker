@@ -681,8 +681,8 @@
 
                 },
                 "GET",
-                function (response) {
-                    var defactor = response.data.defactor;
+                function (data) {
+                    var defactor = data.defactor;
                     $$("provinceId").setValue(defactor.provinceId);
                     $$("date").setValue(defactor.date);
                     $$("hoursFrom").setValue(defactor.hoursFrom);
