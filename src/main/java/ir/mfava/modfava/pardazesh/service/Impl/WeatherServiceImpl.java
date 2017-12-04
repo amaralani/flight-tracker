@@ -147,8 +147,10 @@ public class WeatherServiceImpl implements WeatherService {
                     File oldSatImageProcessedDirectory = new File("/d/weather_base_directory/processed/sat/old/");
                     if (!oldSatImageProcessedDirectory.exists()) oldSatImageProcessedDirectory.mkdirs();
                     for (File oldSatImage : oldSatImages) {
+                        if(oldSatImage.isFile()){
                         File newFile = new File("/d/weather_base_directory/processed/sat/old/" + oldSatImage.getName());
                         FileCopyUtils.copy(oldSatImage, newFile);
+                        }
                     }
                 }
 
@@ -157,11 +159,38 @@ public class WeatherServiceImpl implements WeatherService {
                 if (satImagesDirectory.listFiles() != null) {
                     List<File> satImages = Arrays.asList(satImagesDirectory.listFiles());
                     for (File satImage : satImages) {
-                        File metarProcessedDirectory = new File("/d/weather_base_directory/processed/sat/");
-                        if (!metarProcessedDirectory.exists()) metarProcessedDirectory.mkdirs();
-                        File newFile = new File("/d/weather_base_directory/processed/sat/" + satImage.getName());
-                        FileCopyUtils.copy(satImage,newFile);
-                        satImage.delete();
+                        if(satImage.isFile()) {
+                            File newFile = new File("/d/weather_base_directory/processed/sat/" + satImage.getName());
+                            FileCopyUtils.copy(satImage, newFile);
+                            satImage.delete();
+                        }
+                    }
+                }
+
+                File dustImageProcessedDirectory = new File("/d/weather_base_directory/processed/dust/");
+                if (!dustImageProcessedDirectory.exists()) dustImageProcessedDirectory.mkdirs();
+                if (dustImageProcessedDirectory.listFiles() != null) {
+                    List<File> oldDustImages = Arrays.asList(dustImageProcessedDirectory.listFiles());
+                    File oldSatImageProcessedDirectory = new File("/d/weather_base_directory/processed/sat/old/");
+                    if (!oldSatImageProcessedDirectory.exists()) oldSatImageProcessedDirectory.mkdirs();
+                    for (File oldDustImage : oldDustImages) {
+                        if(oldDustImage.isFile()){
+                        File newFile = new File("/d/weather_base_directory/processed/dust/old/" + oldDustImage.getName());
+                        FileCopyUtils.copy(oldDustImage, newFile);
+                        }
+                    }
+                }
+
+                File dustImagesDirectory = new File("/d/weather_base_directory/dust/");
+                if (!dustImagesDirectory.exists()) dustImagesDirectory.mkdirs();
+                if (dustImagesDirectory.listFiles() != null) {
+                    List<File> dusttImages = Arrays.asList(dustImagesDirectory.listFiles());
+                    for (File dusttImage : dusttImages) {
+                        if(dusttImage.isFile()) {
+                            File newFile = new File("/d/weather_base_directory/processed/dust/" + dusttImage.getName());
+                            FileCopyUtils.copy(dusttImage, newFile);
+                            dusttImage.delete();
+                        }
                     }
                 }
                 PROCESS_IN_PROGRESS = false;
@@ -229,12 +258,14 @@ public class WeatherServiceImpl implements WeatherService {
                         SkyCondition skyCondition = getHighestPriority(metar.getSkyConditions());
                         if(skyCondition != null) {
                             weather.setCloud(skyCondition.getContraction());
+                            weather.setCumulonimbus(skyCondition.isCumulonimbus());
                         }
 
                         weather.setDewPoint(metar.getDewPointInCelsius());
                         weather.setTemperature(metar.getTemperatureInCelsius());
                         weather.setTemperaturePrecise(metar.getTemperaturePreciseInCelsius());
                         weather.setPressure(metar.getPressure());
+
                         weather.setCreateDate(new Date());
                         weather.setPhenomena(getHighestPriorityPhenomena(metar.getWeatherConditions()));
                         weather.setFileName(fileName);

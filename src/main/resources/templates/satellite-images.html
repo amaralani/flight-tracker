@@ -164,15 +164,14 @@
 <!--</div>-->
 <div id="images-container"> 
     <div id="slides">
-        <th:block th:each="imageName : ${#lists.sort(files)}">
-            <img th:src='@{${"/satellite/image/" + imageName}}' th:style="'width : 100%; height : 100%'"/>
-        </th:block>
+            <img th:src='dummy.jpg' th:style="'width : 100%; height : 100%'" src=""/>
     </div>
 </div>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    var imageNames = [[${files}]];
+    var satImageNames = [[${satFiles}]];
+    var dustImageNames = [[${dustFiles}]];
 
     var main_content = {
         gravity: 3,
@@ -182,16 +181,47 @@
                 body: {content: 'images-container'}
             },
             {
-                view: "form", id: "controlForm", elements: [
-                {
-                    view: "slider", label: "سرعت نمایش :",labelWidth : 100, value: "100", step: 1, min: 1, max: 100,
-                    on: {
-                        onChange: function (value) {
-                            restartSlides(value);
+                cols: [
+                    {},
+                    {
+                        view: "form", id: "controlForm", elements: [
+                        {
+                            id: "imageType",
+                            view: "segmented",
+                            labelWidth: 100,
+                            align: "left",
+                            label: "نوع تصویر : ",
+                            value: "cloud",
+                            options: [
+                                {id: "cloud", value: "ابر"},
+                                {id: "dust", value: "گرد و خاک"}
+                            ],
+                            on: {
+                                "onChange": function (newValue, oldValue) {
+                                    restartSlides($$("interval").getValue())
+                                }
+                            }
+                        },
+                        {
+                            view: "slider",
+                            id: "interval",
+                            label: "سرعت نمایش :",
+                            labelWidth: 100,
+                            value: "100",
+                            step: 1,
+                            min: 1,
+                            max: 100,
+                            on: {
+                                onChange: function (value) {
+                                    restartSlides(value);
+                                }
+                            }
                         }
-                    }
-                }
-            ]
+                    ]
+                    },
+                    {}
+                ]
+
             }
         ]
     };
@@ -199,9 +229,17 @@
 
     function restartSlides(intervalTime) {
         var slidesContainerString = "<div id='slides'>";
-        $.each(imageNames, function (index, imageName) {
-            slidesContainerString = slidesContainerString + "<img src='/satellite/image/" + imageName + "' style='width : 100%; height : 100%'/>";
-        });
+        var imageType = $$("imageType").getValue() || "cloud";
+        if (imageType === "cloud") {
+            $.each(satImageNames, function (index, imageName) {
+                slidesContainerString = slidesContainerString + "<div   style='background-image: url(/satellite/cloud/image/" + imageName + ");background-size: 100% 100%; width : 100%; height : 100%'><span style='position: absolute; bottom: 0; left: 50%; color :#caff00'>" + imageName + "</span></div>";
+            });
+        } else if (imageType === "dust") {
+            $.each(dustImageNames, function (index, imageName) {
+                slidesContainerString = slidesContainerString + "<div   style='background-image: url(/satellite/dust/image/" + imageName + ");background-size: 100% 100%; width : 100%; height : 100%'><span style='position: absolute; bottom: 0; left: 50%; color :#caff00'>" + imageName + "</span></div>";
+            });
+        }
+
         slidesContainerString = slidesContainerString + "</div>";
         $("#images-container").html(slidesContainerString);
         $('#slides').slidesjs({
@@ -210,7 +248,7 @@
                 swap: true,
                 active: true,
                 auto: true,
-                interval: 10000/intervalTime
+                interval: 10000 / intervalTime
             },
             effect: {
                 fade: {
@@ -237,6 +275,10 @@
                     speed: 1
                 }
             }
+        });
+
+        webix.ready(function () {
+            restartSlides(100);
         });
     });
 </script>

@@ -17,11 +17,13 @@
 <div id="container"></div>
 
 <script th:inline="javascript">
-    var whichMakers = 1;
+    var whichMarkers = 1;
     /*<![CDATA[*/
+    var icons = [[${icons}]];
+
     var map = L.map('container').setView([34.63321, 53.12988], 6);
 
-    L.tileLayer([[${host}]]+'/osm_tiles/{z}/{x}/{y}.png', {
+    L.tileLayer([[${host}]] + '/osm_tiles/{z}/{x}/{y}.png', {
 
         maxZoom: 18,
         attribution: 'معاونت فناوری اطلاعات و ارتباطات ق‌پ‌ه‌خ‌ (ص) | مدیریت فناوری اطلاعات ',
@@ -29,275 +31,15 @@
     }).addTo(map);
     L.control.scale().addTo(map);
 
-    var cloud0 = L.icon({
-        iconUrl: '/icons/0cloud.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud0fog = L.icon({
-        iconUrl: '/icons/0cloud_fog.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud0mist = L.icon({
-        iconUrl: '/icons/0cloud_mist.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud1fog = L.icon({
-        iconUrl: '/icons/1cloud_fog.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud1heavyrain = L.icon({
-        iconUrl: '/icons/1cloud_heavyrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud1lightrain = L.icon({
-        iconUrl: '/icons/1cloud_lightrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud1mist = L.icon({
-        iconUrl: '/icons/1cloud_mist.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud1modrain = L.icon({
-        iconUrl: '/icons/1cloud_modrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud1norain = L.icon({
-        iconUrl: '/icons/1cloud_norain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud1rain = L.icon({
-        iconUrl: '/icons/1cloud_rain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud1snow = L.icon({
-        iconUrl: '/icons/1cloud_snow.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud2fog = L.icon({
-        iconUrl: '/icons/2cloud_fog.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud2hail = L.icon({
-        iconUrl: '/icons/2cloud_hail.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud2heavyrain = L.icon({
-        iconUrl: '/icons/2cloud_heavyrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud2lightrain = L.icon({
-        iconUrl: '/icons/2cloud_lightrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud2mist = L.icon({
-        iconUrl: '/icons/2cloud_mist.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud2modrain = L.icon({
-        iconUrl: '/icons/2cloud_modrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud2norain = L.icon({
-        iconUrl: '/icons/2cloud_norain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud2snow = L.icon({
-        iconUrl: '/icons/2cloud_snow.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud2thunders = L.icon({
-        iconUrl: '/icons/2cloud_thunders.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud3fog = L.icon({
-        iconUrl: '/icons/3cloud_fog.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud3hail = L.icon({
-        iconUrl: '/icons/3cloud_hail.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud3heavyrain = L.icon({
-        iconUrl: '/icons/3cloud_heavyrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud3lightrain = L.icon({
-        iconUrl: '/icons/3cloud_lightrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud3mist = L.icon({
-        iconUrl: '/icons/3cloud_mist.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud3modrain = L.icon({
-        iconUrl: '/icons/3cloud_modrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud3norain = L.icon({
-        iconUrl: '/icons/3cloud_norain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud3snow = L.icon({
-        iconUrl: '/icons/3cloud_snow.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud3thunders = L.icon({
-        iconUrl: '/icons/3cloud_thunders.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4fog = L.icon({
-        iconUrl: '/icons/4cloud_fog.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4hail = L.icon({
-        iconUrl: '/icons/4cloud_hail.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4heavyrain = L.icon({
-        iconUrl: '/icons/4cloud_heavyrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4lightrain = L.icon({
-        iconUrl: '/icons/4cloud_lightrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4mist = L.icon({
-        iconUrl: '/icons/4cloud_mist.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4modrain = L.icon({
-        iconUrl: '/icons/4cloud_modrain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4norain = L.icon({
-        iconUrl: '/icons/4cloud_norain.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4heavyhail = L.icon({
-        iconUrl: '/icons/4cloud_heavyhail.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4heavysnow = L.icon({
-        iconUrl: '/icons/4cloud_heavysnow.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4lighhail = L.icon({
-        iconUrl: '/icons/4cloud_lighthail.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4lightsnow = L.icon({
-        iconUrl: '/icons/4cloud_lightsnow.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4modsnow = L.icon({
-        iconUrl: '/icons/4cloud_modsnow.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4snow = L.icon({
-        iconUrl: '/icons/4cloud_modsnow.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-    var cloud4thunders = L.icon({
-        iconUrl: '/icons/4cloud_thunders.png',
-        iconSize: [45, 45],
-        iconAnchor: [16, 37],
-        popupAnchor: [0, -28]
-    });
-
-
     var popup = L.popup();
 
-        function onMapClick(e) {
-            popup
-                    .setLatLng(e.latlng)
-                    .setContent("You clicked the map at " + e.latlng.toString())
-                    .openOn(map);
-        }
-        map.on('click', onMapClick);
+    function onMapClick(e) {
+        popup
+                .setLatLng(e.latlng)
+                .setContent("You clicked the map at " + e.latlng.toString())
+                .openOn(map);
+    }
+    map.on('click', onMapClick);
 
     var weatherPoints = [];
     var weatherList = [[${weatherList}]];
@@ -308,13 +50,18 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    point.latitude,point.longitude
+                    point.latitude, point.longitude
                 ]
             },
             "type": "Feature",
             "properties": {
                 "popupContent": "<div style='direction:rtl;text-align:right'><h1>" + point.contentHeader + "</h1>" + point.content + "</div>",
-                "markerType": point.markerType
+                "markerType": point.markerType,
+                "isCumulonimbus" : point.isCumulonimbus,
+                "windSpeedInKnots" : point.windSpeedInKnots,
+                "style": {
+                    bill: "good"
+                }
             },
             "id": index
         })
@@ -324,13 +71,14 @@
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                     forecast.latitude,forecast.longitude
+                    forecast.latitude, forecast.longitude
                 ]
             },
             "type": "Feature",
             "properties": {
                 "popupContent": "<div style='direction:rtl;text-align:right'><h1>" + forecast.contentHeader + "</h1>" + forecast.content + "</div>",
-                "markerType": forecast.markerType
+                "markerType": forecast.markerType,
+                "isCumulonimbus" : forecast.isCumulonimbus
             },
             "id": index
         })
@@ -370,144 +118,52 @@
              return feature.properties.zoomlevelMax <= zoomlevel && feature.properties.zoomlevelMin >= zoomlevel;
              },*/
             pointToLayer: function (feature, latlng) {
-                switch (feature.properties.markerType) {
-                    case "0cloud" :
-                        return L.marker(latlng, {icon: cloud0});
-                        break;
-                    case "0cloud_fog" :
-                        return L.marker(latlng, {icon: cloud0fog});
-                        break;
-                    case "0cloud_mist" :
-                        return L.marker(latlng, {icon: cloud0mist});
-                        break;
-                    case "1cloud_fog" :
-                        return L.marker(latlng, {icon: cloud1fog});
-                        break;
-                    case "1cloud_heavyrain" :
-                        return L.marker(latlng, {icon: cloud1heavyrain});
-                        break;
-                    case "1cloud_lightrain" :
-                        return L.marker(latlng, {icon: cloud1lightrain});
-                        break;
-                    case "1cloud_mist" :
-                        return L.marker(latlng, {icon: cloud1mist});
-                        break;
-                    case "1cloud_modrain" :
-                        return L.marker(latlng, {icon: cloud1modrain});
-                        break;
-                    case "1cloud_norain" :
-                        return L.marker(latlng, {icon: cloud1norain});
-                        break;
-                    case "1cloud_rain" :
-                        return L.marker(latlng, {icon: cloud1rain});
-                        break;
-                    case "1cloud_snow" :
-                        return L.marker(latlng, {icon: cloud1snow});
-                        break;
-                    case "2cloud_fog" :
-                        return L.marker(latlng, {icon: cloud2fog});
-                        break;
-                    case "2cloud_hail" :
-                        return L.marker(latlng, {icon: cloud2hail});
-                        break;
-                    case "2cloud_heavyrain" :
-                        return L.marker(latlng, {icon: cloud2heavyrain});
-                        break;
-                    case "2cloud_lightrain" :
-                        return L.marker(latlng, {icon: cloud2lightrain});
-                        break;
-                    case "2cloud_mist" :
-                        return L.marker(latlng, {icon: cloud2mist});
-                        break;
-                    case "2cloud_modrain" :
-                        return L.marker(latlng, {icon: cloud2modrain});
-                        break;
-                    case "2cloud_norain" :
-                        return L.marker(latlng, {icon: cloud2norain});
-                        break;
-                    case "2cloud_snow" :
-                        return L.marker(latlng, {icon: cloud2snow});
-                        break;
-                    case "2cloud_thunders" :
-                        return L.marker(latlng, {icon: cloud2thunders});
-                        break;
-                    case "3cloud_fog" :
-                        return L.marker(latlng, {icon: cloud3fog});
-                        break;
-                    case "3cloud_hail" :
-                        return L.marker(latlng, {icon: cloud3hail});
-                        break;
-                    case "3cloud_heavyrain" :
-                        return L.marker(latlng, {icon: cloud3heavyrain});
-                        break;
-                    case "3cloud_lightrain" :
-                        return L.marker(latlng, {icon: cloud3lightrain});
-                        break;
-                    case "3cloud_mist" :
-                        return L.marker(latlng, {icon: cloud3mist});
-                        break;
-                    case "3cloud_modrain" :
-                        return L.marker(latlng, {icon: cloud3modrain});
-                        break;
-                    case "3cloud_norain" :
-                        return L.marker(latlng, {icon: cloud3norain});
-                        break;
-                    case "3cloud_snow" :
-                        return L.marker(latlng, {icon: cloud3snow});
-                        break;
-                    case "3cloud_thunders" :
-                        return L.marker(latlng, {icon: cloud3thunders});
-                        break;
-                    case "03n" :
-                        return L.marker(latlng, {icon: cloud3norain});
-                        break;
-                    case "4cloud_fog" :
-                        return L.marker(latlng, {icon: cloud4fog});
-                        break;
-                    case "4cloud_hail" :
-                        return L.marker(latlng, {icon: cloud4hail});
-                        break;
-                    case "4cloud_heavyhail" :
-                        return L.marker(latlng, {icon: cloud4heavyhail});
-                        break;
-                    case "4cloud_heavyrain" :
-                        return L.marker(latlng, {icon: cloud4heavyrain});
-                        break;
-                    case "4cloud_heavysnow" :
-                        return L.marker(latlng, {icon: cloud4heavysnow});
-                        break;
-                    case "4cloud_lighthail" :
-                        return L.marker(latlng, {icon: cloud4lighhail});
-                        break;
-                    case "4cloud_lightrain" :
-                        return L.marker(latlng, {icon: cloud4lightrain});
-                        break;
-                    case "4cloud_lightsnow" :
-                        return L.marker(latlng, {icon: cloud4lightsnow});
-                        break;
-                    case "4cloud_mist" :
-                        return L.marker(latlng, {icon: cloud4mist});
-                        break;
-                    case "4cloud_modrain" :
-                        return L.marker(latlng, {icon: cloud4modrain});
-                        break;
-                    case "4cloud_modsnow" :
-                        return L.marker(latlng, {icon: cloud4modsnow});
-                        break;
-                    case "4cloud_snow" :
-                        return L.marker(latlng, {icon: cloud4snow});
-                        break;
-                    case "4cloud_norain" :
-                        return L.marker(latlng, {icon: cloud4norain});
-                        break;
-                    case "4cloud_thunders" :
-                        return L.marker(latlng, {icon: cloud4thunders});
-                        break;
-                    default :
-                        console.log("unknown phenomena", feature.properties.markerType);
-                        return L.circleMarker(latlng);
-                        break;
+                var iconIsAvailable = false;
+                $.each(icons, function (index, icon) {
+                    if (feature.properties.markerType + '.png' == icon) {
+                        iconIsAvailable = true;
+                    }
+                });
+
+                if (iconIsAvailable) {
+                    if (feature.properties.windSpeedInKnots && feature.properties.windSpeedInKnots > 20) {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: '/icons/' + feature.properties.markerType + '.png',
+                                shadowUrl: '/icons/24.png',
+                                shadowSize: [16, 16],
+                                iconSize: [45, 45],
+                                iconAnchor: [16, 37],
+                                shadowAnchor: [-30, 30],
+                                popupAnchor: [0, -28]
+                            })
+                        });
+                    } else if (feature.properties.isCumulonimbus) {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: '/icons/' + feature.properties.markerType + '.png',
+                                shadowUrl: '/icons/CB.png',
+                                shadowSize: [16, 16],
+                                iconSize: [45, 45],
+                                iconAnchor: [16, 37],
+                                shadowAnchor: [-30, 30],
+                                popupAnchor: [0, -28]
+                            })
+                        });
+                    } else {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: '/icons/' + feature.properties.markerType + '.png',
+                                iconSize: [45, 45],
+                                iconAnchor: [16, 37],
+                                popupAnchor: [0, -28]
+                            })
+                        });
+                    }
                 }
+
+                console.log("unknown phenomena", feature.properties.markerType);
+                return L.circleMarker(latlng);
             }
         });
         currentMarkers.addTo(map);
@@ -545,7 +201,7 @@
         if (currentMarkers) {
             map.removeLayer(currentMarkers);
         }
-        if (whichMakers == 1) {
+        if (whichMarkers == 1) {
             showMarkers(map.getZoom());
         } else {
             showForecasts(map.getZoom())
@@ -571,8 +227,7 @@
                                 value: "نمایش اطلاعات هواشناسی",
                                 width: 200,
                                 click: function () {
-                                    whichMakers = 1;
-                                    console.log("kirekhar");
+                                    whichMarkers = 1;
                                     if (currentMarkers) {
                                         map.removeLayer(currentMarkers);
                                     }
@@ -585,8 +240,7 @@
                                 value: "نمایش پیش بینی هوا",
                                 width: 200,
                                 click: function () {
-                                    whichMakers = 2;
-                                    console.log("second");
+                                    whichMarkers = 2;
                                     if (currentMarkers) {
                                         map.removeLayer(currentMarkers);
                                     }

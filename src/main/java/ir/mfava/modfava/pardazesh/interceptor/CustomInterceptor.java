@@ -1,8 +1,10 @@
 package ir.mfava.modfava.pardazesh.interceptor;
 
 import ir.mfava.modfava.pardazesh.model.Constants;
+import ir.mfava.modfava.pardazesh.model.ContentText;
 import ir.mfava.modfava.pardazesh.model.Message;
 import ir.mfava.modfava.pardazesh.model.User;
+import ir.mfava.modfava.pardazesh.service.ContentTextService;
 import ir.mfava.modfava.pardazesh.service.MessageService;
 import ir.mfava.modfava.pardazesh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ public class CustomInterceptor extends HandlerInterceptorAdapter {
     private UserService userService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private ContentTextService contentTextService;
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
@@ -52,6 +56,11 @@ public class CustomInterceptor extends HandlerInterceptorAdapter {
             User user = userService.findByUsername(request.getUserPrincipal().getName());
             List<Message> messageList = messageService.getUserMessagesByType(user.getId(), Constants.MessageStatus.UNREAD);
             session.setAttribute("hasUnreadMessage", !messageList.isEmpty());
+        }
+
+        ContentText contentText = contentTextService.getByTextContext(ContentText.TextContext.BANNER);
+        if (contentText != null && !contentText.getText().isEmpty()) {
+            session.setAttribute("bannerText", contentText.getText());
         }
         super.postHandle(request, response, handler, modelAndView);
     }

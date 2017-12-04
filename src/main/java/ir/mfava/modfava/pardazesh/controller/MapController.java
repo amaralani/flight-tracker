@@ -16,7 +16,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -68,6 +72,7 @@ public class MapController {
             } else {
                 markerType = "0";
             }
+
             markerType = markerType + "cloud";
             Phenomena phenomena = weather.getPhenomena();
             if (phenomena != null) {
@@ -79,59 +84,59 @@ public class MapController {
             weatherDTO.setMarkerType(markerType);
             String stationFarsiName = weather.getWeatherStation().getFarsiName();
             stationFarsiName = (stationFarsiName != null ? stationFarsiName : "");
-            String content = "<ul>";
-            content = content + "<li> ساعت و زمان تهیه گزارش : " + DateUtils.convertJulianToPersian(weather.getReportDate(), "HH:mm:SS dd-MM-YYYY") + "</li>";
-            content = content + "<li> سرعت باد : ";
+            String content = "<table class='weather-info-table' style='font-size: larger;font-weight:bold' border='1'>";
+            content = content + "<tr><td colspan=2> ساعت و زمان تهیه گزارش : " + DateUtils.convertJulianToPersian(weather.getReportDate(), "HH:mm:SS dd-MM-YYYY") + "</td></tr>";
+            content = content + "<tr><td> سرعت باد </td><td> ";
             if (weather.getWindSpeedInKnots() != null) {
-                content = content + weather.getWindSpeedInKnots() + " نات " + "</li>";
+                content = content + weather.getWindSpeedInKnots() + " نات " + "</td><tr>";
             } else {
                 content = printNoDataExists(content);
             }
-            content = content + "<li> جهت باد : ";
+            content = content + "<tr><td> جهت باد </td><td> ";
             if (weather.getWindDirection() != null) {
-                content = content + weather.getWindDirection() + " درجه " + "</li>";
+                content = content + weather.getWindDirection() + " درجه " + "</td></tr>";
             } else {
                 content = printNoDataExists(content);
             }
-            content = content + "<li> فشار هوا : ";
+            content = content + "<tr><td> فشار هوا </td><td> ";
             if (weather.getPressure() != null) {
-                content = content + weather.getPressureInHectoPascals() + " هکتوپاسکال " + "</li>";
+                content = content + weather.getPressureInHectoPascals() + " هکتوپاسکال " + "</td></tr>";
             } else {
                 content = printNoDataExists(content);
             }
-            content = content + "<li> دمای هوا : ";
+            content = content + "<tr><td> دمای هوا </td><td> ";
             if (weather.getTemperature() != null) {
-                content = content + weather.getTemperature() + " درجه سانتیگراد " + "</li>";
+                content = content + weather.getTemperature() + " درجه سانتیگراد " + "</td></tr>";
             } else {
                 content = printNoDataExists(content);
             }
-            content = content + "<li> نقطه شبنم : ";
+            content = content + "<tr><td> نقطه شبنم </td><td> ";
             if (weather.getDewPoint() != null) {
-                content = content + weather.getDewPoint() + " درجه سانتیگراد " + "</li>";
+                content = content + weather.getDewPoint() + " درجه سانتیگراد " + "</td></tr>";
             } else {
                 content = printNoDataExists(content);
             }
-            content = content + "<li> دید افقی : ";
+            content = content + "<tr><td> دید افقی </td><td> ";
             if (weather.getVisibility() != null) {
-                content = content + weather.getVisibility() + " متر " + "</li>";
+                content = content + weather.getVisibility() + " متر " + "</td></tr>";
             } else {
                 content = printNoDataExists(content);
             }
-            content = content + "<li style='direction: ltr; text-align: left'> ";
+            content = content + "<tr style='direction: ltr; text-align: left'><td colspan=2> ";
             if (weather.getOriginalContent() != null) {
-                content = content + weather.getOriginalContent() + "</li>";
+                content = content + weather.getOriginalContent() + "</td></tr>";
             } else {
                 content = printNoDataExists(content);
             }
 
-            content = content + "</ul>";
+            content = content + "</table>";
             weatherDTOList.add(
                     new WeatherDTO(
                             weather.getWeatherStation().getLongitude(),
                             weather.getWeatherStation().getLatitude(),
                             stationFarsiName + " - " + weather.getWeatherStation().getName(),
                             content, markerType,
-                            5, 8
+                            5, 8, weather.isCumulonimbus(), weather.getWindSpeedInKnots()
                     ));
         }
 
@@ -153,7 +158,7 @@ public class MapController {
             content = content + "<li> حداقل دما : " + bulletin.getMinTemperature() + "<img src='/icons/downL.png'></li>";
             content = content + "<li> حداکثر دما : " + bulletin.getMaxTemperature() + " <img src='/icons/upL.png'></li>";
             content = content + "<li>" + bulletin.getPhenomena() + "</li>";
-            content = content + "<li><a href='/bulletin/view?provinceId="+ bulletin.getProvince().getId() +"' >مشاهده پیش بینی چند روزه </a></li>";
+            content = content + "<li><a href='/bulletin/view?provinceId=" + bulletin.getProvince().getId() + "' >مشاهده پیش بینی چند روزه </a></li>";
 
             content = content + "</ul>";
             bulletinDTOs.add(
@@ -162,19 +167,40 @@ public class MapController {
                             bulletin.getProvince().getLongitude(),
                             bulletin.getProvince().getName(),
                             content, bulletin.getIcon(),
-                            5, 8
+                            5, 8, false, 0F
                     ));
         }
         map.put("forecasts", bulletinDTOs);
-
+        List<String> icons = new ArrayList<>();
+        File iconsDirectory = getIconsDirectory();
+        if (iconsDirectory != null) {
+            List<File> files = Arrays.asList(iconsDirectory.listFiles());
+            for (File file : files) {
+                icons.add(file.getName());
+            }
+        }
         StringBuffer url = request.getRequestURL();
         String uri = request.getRequestURI();
-        String host = url.substring(0, url.indexOf(uri) -5); //result
+        String host = url.substring(0, url.indexOf(uri) - 5); //result
         map.put("host", host);
+        map.put("icons", icons);
         return "map";
     }
 
     private String printNoDataExists(String content) {
-        return content + " اطلاعات موجود نیست " + "</li>";
+        return content + " اطلاعات موجود نیست " + "</td><tr>";
+    }
+
+
+    private File getIconsDirectory() {
+        URL url = this.getClass().getClassLoader().getResource("static/icons");
+        File file = null;
+        try {
+            file = new File(url.toURI());
+        } catch (URISyntaxException e) {
+            file = new File(url.getPath());
+        } finally {
+            return file;
+        }
     }
 }

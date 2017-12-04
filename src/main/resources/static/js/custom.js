@@ -22,9 +22,9 @@ var n = moment().utcOffset('+0330').format('HH:mm:ss');
 var n1 = moment().utcOffset(0).format('HH:mm:ss');
 
 var cols;
-if(isLoginPage){
+if (isLoginPage) {
     cols = [main_content];
-}else {
+} else {
     cols = [right_menu, main_content];
 
 }
@@ -46,8 +46,8 @@ var ui = {
                 ]
             },
             {
-                css : "time-and-marquee-section",
-                rows : [
+                css: "time-and-marquee-section",
+                rows: [
                     {
                         cols: [
                             {
@@ -62,7 +62,7 @@ var ui = {
                     },
                     {
                         view: "label",
-                        template: "<marquee class='marquee-text' behavior='scroll' direction='right'>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. کتابهای زیادی در شصت و سه درصد گذشته، حال و آینده شناخت فراوان جامعه و متخصصان را می طلبد تا با نرم افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی و فرهنگ پیشرو در زبان فارسی ایجاد کرد. در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها و شرایط سخت تایپ به پایان رسد وزمان مورد نیاز شامل حروفچینی دستاوردهای اصلی و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.</marquee>"
+                        template: "<marquee class='marquee-text' behavior='scroll' direction='right'>" + bannerText + "</marquee>"
                     }
                 ]
             },
@@ -74,19 +74,19 @@ var ui = {
                 height: 60,
                 elements: [
                     {
-                        rows : [
+                        rows: [
                             {
                                 view: "label",
                                 template: "<span id='footer_label' class='footer_title'> تعداد کاربران آنلاین : " + onlineUsersCount + "</span>"
                             },
                             {
-                                cols : [
-                                    { width : 50},
+                                cols: [
+                                    {width: 50},
                                     {
                                         view: "label",
                                         template: "<div style='text-align: center'><span id='footer_label' class='footer_title'> قرارگاه پدافند هوایی خاتم الانبیا(ص) - معاونت فاوا - مدیریت فناوری اطلاعات</span></div>"
                                     },
-                                    { width : 50}
+                                    {width: 50}
                                 ]
                             }
 

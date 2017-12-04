@@ -154,14 +154,57 @@
                 body: {content: "message"}, height: 36
             },
             {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "bannerText", value: "پیام بنر", width: 150},
+                {id: "else", value: "سایر موارد", width: 150}
+            ]
+            },
+            {
                 view: "multiview",
                 cells: [
                     {
-                        id: "view",
-                        template: "در دست توسعه"
-                    },
+                        cols : [
+                            {
+                                id: "bannerText",
+                                type : "form",
+                                borderless: true,
+                                width: 600,
+                                rows : [
+                                    {
+                                        id: 'id', view: "text", value: [[${contentText.id}]], hidden: true
+                                    },
+                                    {
+                                        id: 'text',
+                                        view: "textarea",
+                                        label: "متن",
+                                        labelAlign: 'right',
+                                        value: [[${contentText.text}]],
+                                        textAlign: 'right',
+                                        labelWidth: 100
+                                    },
+                                    {
+                                        inputWidth: 100,
+                                        view: "button",
+                                        type: "form",
+                                        value: "ثبت",
+                                        align: "left",
+                                        click: function () {
+                                            var id = {name: "id", value: $$("id").getValue()};
+                                            var text = {
+                                                name: "text",
+                                                value: $$("text").getValue().trim()
+                                            };
+                                            webix.send("/base-info/security/config/saveBanner", [id,text], "POST", null);
+                                        }
+                                    }
+                                ]
+                            },
+                            {}
+                        ]
+                    }
+                    ,
                     {
-                        id: "add",
+                        id: "else",
                         template: "در دست توسعه"
                     }
                 ]

@@ -9,9 +9,11 @@ public class WeatherDTO {
     private String markerType;
     private Integer zoomLevelMax;
     private Integer zoomLevelMin;
+    private Boolean isCumulonimbus = false;
+    private Float windSpeedInKnots;
 
     public WeatherDTO(){}
-    public WeatherDTO(String latitude, String longitude, String contentHeader, String content, String markerType, Integer zoomLevelMax, Integer zoomLevelMin) {
+    public WeatherDTO(String latitude, String longitude, String contentHeader, String content, String markerType, Integer zoomLevelMax, Integer zoomLevelMin,Boolean isCumulonimbus, Float windSpeedInKnots) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.contentHeader = contentHeader;
@@ -19,6 +21,8 @@ public class WeatherDTO {
         this.markerType = markerType;
         this.zoomLevelMax = zoomLevelMax;
         this.zoomLevelMin = zoomLevelMin;
+        this.isCumulonimbus = isCumulonimbus;
+        this.windSpeedInKnots = windSpeedInKnots;
     }
 
     public String getLatitude() {
@@ -75,5 +79,21 @@ public class WeatherDTO {
 
     public void setZoomLevelMin(Integer zoomLevelMin) {
         this.zoomLevelMin = zoomLevelMin;
+    }
+
+    public Boolean getIsCumulonimbus() {
+        return isCumulonimbus;
+    }
+
+    public void setIsCumulonimbus(Boolean isCumulonimbus) {
+        this.isCumulonimbus = isCumulonimbus;
+    }
+
+    public Float getWindSpeedInKnots() {
+        return windSpeedInKnots;
+    }
+
+    public void setWindSpeedInKnots(Float windSpeedInKnots) {
+        this.windSpeedInKnots = windSpeedInKnots;
     }
 }

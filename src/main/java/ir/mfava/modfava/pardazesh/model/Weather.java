@@ -52,6 +52,7 @@ public class Weather extends BaseModel {
     private Float temperaturePrecise = null;
     private Float dewPoint = null;
     private Float dewPointPrecise = null;
+    private boolean isCumulonimbus = false;
 
     public Long getId() {
         return id;
@@ -371,6 +372,14 @@ public class Weather extends BaseModel {
         f = Math.round(f);
 
         return new Float(f);
+    }
+
+    public boolean isCumulonimbus() {
+        return isCumulonimbus;
+    }
+
+    public void setCumulonimbus(boolean cumulonimbus) {
+        isCumulonimbus = cumulonimbus;
     }
 
     @Override

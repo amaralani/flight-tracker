@@ -12,6 +12,7 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     var onlineUsersCount = [[${session.onlineUserCount}]] || 0;
+    var bannerText = [[${session.bannerText}]] || ' ';
     /*]]>*/
 </script>
 <script th:src="@{/js/custom.js}" type="text/javascript" charset="utf-8"></script>

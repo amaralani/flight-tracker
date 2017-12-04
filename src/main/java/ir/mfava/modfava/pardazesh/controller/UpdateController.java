@@ -27,11 +27,11 @@ public class UpdateController {
     }
 
     @RequestMapping(value = "/process",method = RequestMethod.GET)
-    public String processData(ModelMap map){
+    public String processData(ModelMap map, HttpSession session){
         if(weatherService.process()) {
-            map.put("successMessage", "فرآیند با موفقیت شروع شد.");
+            session.setAttribute("successMessage","فرآیند با موفقیت شروع شد.");
         }else {
-            map.put("errorMessage", "فرآیند به روزرسانی قبلی هنوز به اتمام نرسیده است.");
+            session.setAttribute("errorMessage","فرآیند به روزرسانی قبلی هنوز به اتمام نرسیده است.");
         }
         return "redirect:/update/";
     }
