@@ -180,6 +180,9 @@ public class UserController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(Model model, String error, String logout) {
+
+         // TODO : There's a problem with this method, fix it
+
         if (error != null)
             model.addAttribute("error", "نام کاربری و رمز عبور معتیر نیست.");
 

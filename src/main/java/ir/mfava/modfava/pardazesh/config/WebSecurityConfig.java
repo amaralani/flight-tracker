@@ -1,5 +1,7 @@
 package ir.mfava.modfava.pardazesh.config;
 
+import ir.mfava.modfava.pardazesh.listener.CustomAuthenticationFailureHandler;
+import ir.mfava.modfava.pardazesh.listener.CustomAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    @Autowired
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -25,6 +31,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        customAuthenticationSuccessHandler.setUseReferer(true);
+
         http
                 .authorizeRequests()
                 .antMatchers("/images/**").permitAll()
@@ -33,6 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/webix/**").permitAll()
                 .antMatchers("/persian-datepicker/**").permitAll()
                 .antMatchers("/registration").permitAll()
+                .antMatchers("/login**").permitAll()
                 .antMatchers("/map/**").hasRole("USER")
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/base-info/station/**").hasRole("WEATHER_STATION_MANAGER")
@@ -56,6 +65,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login")
+                .successHandler(customAuthenticationSuccessHandler)
+                .failureHandler(customAuthenticationFailureHandler)
                 .permitAll()
                 .and()
                 .logout()
