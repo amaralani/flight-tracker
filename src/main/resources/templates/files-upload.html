@@ -1,0 +1,286 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>مدیریت فایل ها</title>
+</head>
+<body>
+<div class="edit-file-dialog" id="editFileDialog" style="display: none">
+
+</div>
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+    function oneForAll(value, filter, obj) {
+        if (equals(obj.provinceCode, filter)) return true;
+        if (equals(obj.farsiName, filter)) return true;
+        if (equals(obj.name, filter)) return true;
+        if (equals(obj.stationId, filter)) return true;
+        if (equals(obj.stationNo, filter)) return true;
+        if (equals(obj.latitude, filter)) return true;
+        if (equals(obj.longitude, filter)) return true;
+        return !!equals(obj.altitude, filter);
+    }
+
+    function activeFormat(text) {
+        if (text === true)
+            return 'فعال';
+        if (text === false)
+            return 'غیرفعال';
+    }
+    /*<![CDATA[*/
+    var allUploadFileTypes = [[${allUploadFileTypes}]];
+    var all_file_types = [];
+    for (var i = 0; i < allUploadFileTypes.length; i++) {
+        all_file_types.push({value: allUploadFileTypes[i].name, id: allUploadFileTypes[i].id});
+    }
+
+    var activeUploadFileTypes = [[${activeUploadFileTypes}]];
+    var active_file_types = [];
+    var active_file_types_options = "";
+    for (var j = 0; j < activeUploadFileTypes.length; j++) {
+        active_file_types.push({value: activeUploadFileTypes[j].name, id: activeUploadFileTypes[j].id});
+        active_file_types_options = active_file_types_options + "<option value=" + activeUploadFileTypes[j].id + ">" + activeUploadFileTypes[j].name + "</option>";
+    }
+    function fileTypeFormat(inputFileType) {
+        return inputFileType.name;
+    }
+
+    function fileTypeSort(file1, file2) {
+        var a = file1.fileType.name.toString().length;
+        var b = file2.fileType.name.toString().length;
+        return a > b ? 1 : (a < b ? -1 : 0);
+    }
+
+    webix.ui({
+        id: "edit-file",
+        container: "editFileDialog",
+        view: "form",
+        cols: [
+            {
+                type: "form",
+                borderless: true,
+                width: 400,
+                rows: [
+                    {template: "ویرایش مشخصات", type: "header"},
+                    {
+                        id: 'id', view: "text", disabled: true
+                    },
+                    {
+                        id: 'title',
+                        view: "text",
+                        label: "عنوان",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'code',
+                        view: "text",
+                        label: "کد",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        id: 'type',
+                        view: "select",
+                        options: all_file_types,
+                        label: "نوع فایل",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
+                    },
+                    {
+                        inputWidth: 100,
+                        view: "button",
+                        type: "form",
+                        value: "ثبت",
+                        align: "left",
+                        click: function () {
+                            var id = {name: "id", value: $$("id").getValue().trim()};
+                            var title = {name: "title", value: $$("title").getValue().trim()};
+                            var code = {name: "code", value: $$("code").getValue().trim()};
+                            var type = {name: "type", value: $$("type").getValue().trim()};
+                            var isNew = {name: "isNew", value: false};
+                            webix.send("/base-info/file/save", [id, title, code, type, isNew], "POST", null);
+                        }
+                    }
+                ]
+            },
+            {}
+
+        ]
+    });
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "adr", options: [
+                {id: "view", value: "مشاهده فایل ها", width: 150},
+                {id: "adr", value: "افزودن فایل ", width: 150},
+                {id: "addType", value: "افزودن نوع فایل", width: 150}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "view",
+                        view: "datatable", select: true,
+                        columns: [
+                            {
+                                id: "fileName",
+                                header: ["عنوان ", {
+                                    content: "textFilter",
+                                    compare: oneForAll,
+                                    placeholder: "جستجو",
+                                    colspan: 2
+                                }],
+                                sort: "string",
+                                fillspace: true
+                            },
+                            {
+                                id: "fileType",
+                                header: ["نوع ", null],
+                                fillspace: true,
+                                sort: fileTypeSort,
+                                format: fileTypeFormat
+                            },
+                            {
+                                id: "remove",
+                                header: "حذف",
+                                css: "webix_el_button",
+                                width: 150,
+                                template: "<span class='webix_icon fa-close has-cursor-pointer red remove_file'></span>"
+                            }
+                        ],
+                        data: [[${uploadFiles}]],
+                        onClick: {
+                            "remove_file": function (e, id) {
+                                var item = this.getItem(id);
+                                var fileId = {name: "id", value: item.id};
+                                webix.send("/base-info/files/remove", [fileId], "POST", null);
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        id: "adr",
+                        template: "    <div class='myform'> <form action='/base-info/files/save' method='post' enctype='multipart/form-data'> <div class='block'> <div class='webix_view webix_control webix_el_select' view_id='type_new' style='border-width: 0px; margin-left: 8px; margin-top: 8px; width: 584px; height: 30px;'><div class='webix_el_box' style='width:584px; height:30px'><label style='width: 100px;text-align: right;line-height:26px;' onclick='' for='x1514360671134' class='webix_inp_label '>نوع </label><select id='x1514360671134' name='typeId' style='width:480px;'>" + active_file_types_options + "</select></div></div> <div style='margin: 20px 100px 20px 20px;'> <input type='file' name='file'/> </div> <div><div class='webix_view webix_control webix_el_button' style='border-width: 0px; margin-left: 8px; margin-top: 8px; width: 584px; height: 30px;'><div class='webix_el_box' style='width: 100px; height: 30px; float: left;'><input type='hidden' name='_csrf' value='" + csrf_token + "'/><button type='submit' class='webixtype_form'>ثبت</button></div></div> </div> </form> </div>"
+                    },
+                    {
+                        id: "addType",
+                        rows: [
+                            {
+                                view: "form",
+                                cols: [
+                                    {
+                                        type: "form",
+                                        borderless: true,
+                                        width: 600,
+                                        rows: [
+                                            {template: "افزودن نوع", type: "header"},
+                                            {
+                                                id: 'name_new',
+                                                view: "text",
+                                                label: "نام",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                labelWidth: 100
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                value: "ثبت",
+                                                align: "left",
+                                                click: function () {
+                                                    var name = {
+                                                        name: "name",
+                                                        value: $$("name_new").getValue().trim()
+                                                    };
+                                                    webix.send("/base-info/files/type/save", [name], "POST", null);
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {}
+                                ]
+                            },
+                            {
+                                id: "view-types",
+                                view: "datatable", select: true,
+                                columns: [
+                                    {
+                                        id: "name",
+                                        header: "عنوان ",
+                                        fillspace: true
+                                    },
+                                    {
+                                        id: "active",
+                                        header: "وضعیت",
+                                        fillspace: true,
+                                        format: activeFormat
+                                    },
+                                    {
+                                        id: "setActive",
+                                        header: "فعالسازی",
+                                        css: "webix_el_button",
+                                        width: 150,
+                                        template: "<span class='webix_icon fa-check has-cursor-pointer green setActive'></span>"
+                                    },
+                                    {
+                                        id: "setInActive",
+                                        header: "غیرفعال سازی",
+                                        css: "webix_el_button",
+                                        width: 150,
+                                        template: "<span class='webix_icon fa-close has-cursor-pointer red setInActive'></span>"
+                                    }
+                                ],
+                                data: [[${allUploadFileTypes}]],
+                                onClick: {
+                                    "setActive": function (e, id) {
+                                        var item = this.getItem(id);
+                                        var typeId = {name: "id", value: item.id};
+                                        var active = {name: "active", value: true};
+                                        webix.send("/base-info/files/type/update", [typeId, active], "POST", null);
+                                    },
+                                    "setInActive": function (e, id) {
+                                        var item = this.getItem(id);
+                                        var typeId = {name: "id", value: item.id};
+                                        var active = {name: "active", value: false};
+                                        webix.send("/base-info/files/type/update", [typeId, active], "POST", null);
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    /*]]>*/
+
+    $("#editFileDialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
+
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

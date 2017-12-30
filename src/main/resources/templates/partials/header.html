@@ -60,6 +60,11 @@
                 id: 6, "name": "مديريت تنظیمات امنیتی", href: "/base-info/security/config", icon: "users"
             });
         }
+        if ([[${#httpServletRequest.isUserInRole("ROLE_FILES_MANAGER")}]]) {
+            right_menu_base_info.push({
+                id: 7, "name": "بارگذاری فایل های کاربردی", href: "/base-info/files", icon: "users"
+            });
+        }
 
         var right_menu_usage = [
             {id: 1, "name": "نمایش نقشه", href: "/map/", icon: "id-badge"},
@@ -74,6 +79,7 @@
         }else {
             right_menu_usage.push({id: 7, "name": "ارسال پیام", href: "/message", icon: "id-badge"});
         }
+        right_menu_usage.push({id: 8, "name": "فایل های کاربردی", href: "/files", icon: "id-badge"});
 
         var right_menu_report = [
             {id: 1, "name": "مشاهده ورود و خروج کاربران", href: "#"/*, href: "/report/login/"*/, icon: "id-badge"},

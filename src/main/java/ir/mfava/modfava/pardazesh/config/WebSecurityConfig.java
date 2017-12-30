@@ -41,6 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/manage/**").hasRole("USER_MANAGER")
                 .antMatchers("/base-info/phenomena/**").hasRole("EVENTS_MANAGER")
                 .antMatchers("/base-info/unit/**").hasRole("UNITS_MANAGER")
+                .antMatchers("/base-info/unit/**").hasRole("FILES_MANAGER")
                 .antMatchers("/bulletin/**").hasRole("VIEW_BULLETIN")
                 .antMatchers("/message/**").hasRole("USER")
                 .antMatchers("/message/save").hasRole("MESSAGE_SENDER")

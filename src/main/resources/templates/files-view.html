@@ -1,0 +1,44 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>مدیریت فایل ها</title>
+    <style>
+        .webix_unit_header {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "unitlist",
+                id: "list",
+                select: true,
+                uniteBy: function (file) {
+                    return file.fileType.name;
+                },
+                template: "<a href='/files/get/#id#'>#fileName#</a>",
+                data: [[${uploadFiles}]]
+            }
+        ]
+    };
+    /*]]>*/
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>
