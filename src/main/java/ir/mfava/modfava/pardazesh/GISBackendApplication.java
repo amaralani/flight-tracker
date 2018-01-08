@@ -27,6 +27,7 @@ public class GISBackendApplication extends SpringBootServletInitializer {
 
     private static Log logger = LogFactory.getLog(GISBackendApplication.class);
 
+    private static int SESSION_TIMEOUT_IN_SECONDS =  5 * 60;
     public static void main(String[] args) throws Exception {
         SpringApplication.run(GISBackendApplication.class, args);
     }

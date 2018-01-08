@@ -17,134 +17,6 @@
 </div>
 
 <script th:inline="javascript">
-    function equals(a, b) {
-        a = a.toString().toLowerCase();
-        return a.indexOf(b) !== -1;
-    }
-    function oneForAll(value, filter, obj) {
-        if (equals(obj.username, filter)) return true;
-        if (equals(obj.firstName, filter)) return true;
-        if (equals(obj.lastName, filter)) return true;
-        if (equals(obj.nationalCode, filter)) return true;
-        return !!equals(obj.personNumber, filter);
-    }
-
-    function activeFormat(text) {
-        if (text === true)
-            return 'فعال';
-        if (text === false)
-            return 'غیرفعال';
-    }
-
-    webix.ui({
-        id: "edit-user",
-        container: "editUserDialog",
-        view: "form",
-        cols: [
-            {
-                type: "form",
-                borderless: true,
-                width: 400,
-                rows: [
-                    {template: "ویرایش مشخصات", type: "header"},
-                    {
-                        id: 'username',
-                        view: "text",
-                        label: "نام کاربری",
-                        labelAlign: 'right',
-                        textAlign: 'right',
-                        labelWidth: 100
-                    },
-                    {
-                        id: 'firstName',
-                        view: "text",
-                        label: "نام",
-                        labelAlign: 'right',
-                        textAlign: 'right',
-                        labelWidth: 100
-                    },
-                    {
-                        id: 'lastName',
-                        view: "text",
-                        label: "نام خانوادگی",
-                        labelAlign: 'right',
-                        textAlign: 'right',
-                        labelWidth: 100
-                    },
-                    {
-                        id: 'nationalCode',
-                        view: "text",
-                        label: "کد ملی",
-                        labelAlign: 'right',
-                        textAlign: 'right',
-                        labelWidth: 100
-                    },
-                    {
-                        id: 'personNumber',
-                        view: "text",
-                        label: "کد پرسنلی",
-                        labelAlign: 'right',
-                        textAlign: 'right',
-                        labelWidth: 100
-                    },
-                    {
-                        id: "enabled",
-                        view: "segmented",
-                        width: 270,
-                        align: "left",
-                        options: [
-                            {id: "1", value: "فعال"},
-                            {id: "0", value: "غیرفعال"}
-                        ]
-                    },
-                    {
-                        id: "password",
-                        view: "text",
-                        type: "password",
-                        value: null,
-                        label: "رمز عبور جدید",
-                        labelAlign: 'right',
-                        textAlign: 'right',
-                        labelWidth: 100
-
-                    },
-                    {
-                        id: "re-password",
-                        view: "text",
-                        type: "password",
-                        value: null,
-                        label: "تکرار رمز عبور جدید",
-                        labelAlign: 'right',
-                        textAlign: 'right',
-                        labelWidth: 100
-
-                    },
-                    {
-                        inputWidth: 100,
-                        view: "button",
-                        type: "form",
-                        value: "ثبت",
-                        align: "left",
-                        click: function () {
-                            var username = {name: "username", value: $$("username").getValue().trim()};
-                            var firstName = {name: "firstName", value: $$("firstName").getValue().trim()};
-                            var lastName = {name: "lastName", value: $$("lastName").getValue().trim()};
-                            var nationalCode = {name: "nationalCode", value: $$("nationalCode").getValue().trim()};
-                            var personNumber = {name: "personNumber", value: $$("personNumber").getValue().trim()};
-                            var enabled = {name: "enabled", value: $$("enabled").getValue().trim()};
-                            var password = {name: "password", value: $$("password").getValue().trim()};
-                            var rePassword = {name: "re-password", value: $$("re-password").getValue().trim()};
-                            var isNew = {name: "isNew", value: false};
-                            webix.send("/base-info/user/save", [username, firstName, lastName, nationalCode, personNumber, enabled, password, rePassword, isNew], "POST", null);
-                        }
-                    }
-                ]
-            },
-            {}
-
-        ]
-    });
-
     /*<![CDATA[*/
     var main_content = {
         gravity: 3,
@@ -155,8 +27,8 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
-                {id: "bannerText", value: "پیام بنر", width: 150},
-                {id: "else", value: "سایر موارد", width: 150}
+                {id: "securityConfigs", value: "موارد امنیتی", width: 150},
+                {id: "bannerText", value: "پیام بنر", width: 150}
             ]
             },
             {
@@ -164,14 +36,14 @@
                 cells: [
                     {
                         id: "bannerText",
-                        cols : [
+                        cols: [
                             {
 
-                                type : "form",
+                                type: "form",
                                 borderless: true,
-                                rows : [
+                                rows: [
                                     {
-                                        id: 'id', view: "text", value: [[${contentText.id}]], hidden: true
+                                        id: 'contentText-id', view: "text", value: [[${contentText.id}]], hidden: true
                                     },
                                     {
                                         id: 'text',
@@ -189,12 +61,12 @@
                                         value: "ثبت",
                                         align: "left",
                                         click: function () {
-                                            var id = {name: "id", value: $$("id").getValue()};
+                                            var id = {name: "id", value: $$("contentText-id").getValue()};
                                             var text = {
                                                 name: "text",
                                                 value: $$("text").getValue().trim()
                                             };
-                                            webix.send("/base-info/security/config/saveBanner", [id,text], "POST", null);
+                                            webix.send("/base-info/security/config/saveBanner", [id, text], "POST", null);
                                         }
                                     }
                                 ]
@@ -204,8 +76,128 @@
                     }
                     ,
                     {
-                        id: "else",
-                        template: "در دست توسعه"
+                        id: "securityConfigs",
+                        cols: [
+                            {
+                                type: "form",
+                                borderless: true,
+                                rows: [
+                                    {
+                                        id: 'configuration-id',
+                                        value: [[${configuration.id}]],
+                                        hidden: true
+                                    },
+                                    {
+                                        id: "loginFailureAccountLockCount",
+                                        view: "counter",
+                                        value: [[${configuration.loginFailureAccountLockCount}]],
+                                        label: "تعداد دفعات مجاز ورود پسورد",
+                                        labelAlign: "right",
+                                        labelWidth: 170,
+                                        bottomPadding: 35,
+                                        bottomLabel: "پس از این تعداد تلاش ناموفق جهت ورود، نام کاربری قفل شده و باید توسط مدیر باز شود."
+                                    },
+                                    {
+                                        id: "passwordComplexity",
+                                        view: "segmented",
+                                        animate: {type: "flip", subtype: "vertical"},
+                                        labelWidth: 170,
+                                        labelAlign: "right",
+                                        align: "right",
+                                        label: "پیچیدگی رمز عبور ",
+                                        options: [
+                                            {id: "0", value: "ساده"},
+                                            {id: "1", value: "حرف و عدد"},
+                                            {id: "2", value: "حروف بزرگ و کوچک"},
+                                            {id: "3", value: "حروف بزرگ و کوچک و عدد"},
+                                            {id: "4", value: "حروف بزرگ و کوچک و عدد و علائم"}
+                                        ],
+                                        value: [[${complexity}]],
+                                        bottomLabel: " ",
+                                        on: {
+                                            "onChange": function (newval, oldval) {
+                                                var description;
+                                                switch (newval) {
+                                                    case "0":
+                                                        description = "";
+                                                        break;
+                                                    case "1":
+                                                        description = "هنگام انتخاب رمز عبور حداقل یک حرف و حداقل یک عدد لازم است.";
+                                                        break;
+                                                    case "2":
+                                                        description = "هنگام انتخاب رمز عبور حداقل یک حرف  کوچک و حداقل یک حرف بزرگ انگلیسی لازم است.";
+                                                        break;
+                                                    case "3":
+                                                        description = "هنگام انتخاب رمز عبور حداقل یک حرف  کوچک و حداقل یک حرف بزرگ و حداقل یک عدد لازم است.";
+                                                        break;
+                                                    case "4":
+                                                        description = "هنگام انتخاب رمز عبور حداقل یک حرف  کوچک، حداقل یک حرف بزرگ، حداقل یک عدد و حداقل یک علامت خاص لازم است.";
+                                                        break;
+                                                }
+                                                this.define("bottomLabel", description);
+                                                this.render();
+                                            }
+                                        }
+                                    },
+                                    {
+                                        id: "passwordLength",
+                                        view: "counter",
+                                        value: [[${configuration.passwordLength}]],
+                                        label: "طول رمز عبور",
+                                        labelAlign: "right",
+                                        labelWidth: 170,
+                                        bottomPadding: 35,
+                                        bottomLabel: "حداقل تعداد حروف جهت انتخاب رمز عبور."
+                                    },
+                                    {
+                                        id: "passwordResetPeriod",
+                                        view: "counter",
+                                        value: [[${configuration.passwordResetPeriod}]],
+                                        label: "دوره اعتبار رمز عبور",
+                                        labelAlign: "right",
+                                        labelWidth: 170,
+                                        bottomPadding: 35,
+                                        bottomLabel: "تعداد روزهایی که پس از آن کاربر باید رمز عبور خود را تغییر دهد."
+                                    },
+                                    {
+                                        id: "sessionTimeoutInSeconds",
+                                        view: "counter",
+                                        value: [[${configuration.sessionTimeoutInSeconds}]],
+                                        label: "مدت انقضای نشسست",
+                                        labelAlign: "right",
+                                        labelWidth: 170,
+                                        bottomPadding: 35,
+                                        bottomLabel: "مدت زمانی که کاربر در صورت عدم فعالیت از سیستم خارج خواهد شد. (به ثانیه)"
+                                    },
+
+                                    {
+                                        inputWidth: 100,
+                                        view: "button",
+                                        type: "form",
+                                        value: "ثبت",
+                                        align: "right",
+                                        click: function () {
+                                            var idValue = $$("configuration-id").config.value;
+                                            var id = null;
+                                            if(idValue){
+                                                id = {name: "id", value: idValue};
+                                            }
+
+                                            var loginFailureAccountLockCount = {name: "loginFailureAccountLockCount", value: $$("loginFailureAccountLockCount").getValue()};
+                                            var passwordComplexity = {name: "passwordComplexity", value: $$("passwordComplexity").getValue()};
+                                            var passwordLength = {name: "passwordLength", value: $$("passwordLength").getValue()};
+                                            var passwordResetPeriod = {name: "passwordResetPeriod", value: $$("passwordResetPeriod").getValue()};
+                                            var sessionTimeoutInSeconds = {name: "sessionTimeoutInSeconds", value: $$("sessionTimeoutInSeconds").getValue()};
+                                            var dataList = [loginFailureAccountLockCount,passwordComplexity,passwordLength,passwordResetPeriod,sessionTimeoutInSeconds];
+                                            if(id){
+                                                dataList.push(id);
+                                            }
+                                            webix.send("/base-info/security/config/save",dataList , "POST", null);
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }

@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface UserSessionInformationRepository extends JpaRepository<UserSessionInformation, Long> {
 
     UserSessionInformation getBySessionId(String sessionId);
+
+    UserSessionInformation getTop1ByUserIdOrderByStartDateDesc(Long userId);
 }

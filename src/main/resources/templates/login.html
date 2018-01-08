@@ -22,9 +22,11 @@
             background: url("/images/sky-clouds.jpg") no-repeat;
             background-size: cover;
         }
+
         .webix_layout_wide {
             background: transparent;
         }
+
         .webix_el_text input {
             background-color: #9fdbe3;
             color: #000;
@@ -35,7 +37,14 @@
 <body style="direction: rtl">
 <div id="message">
     <span th:if="${message != null}" th:text="${message}" th:class="success-message"></span>
-    <span th:if="${error != null}" th:text="${error}" th:class="error-message"></span>
+    <div th:if="${session.loginError != null}">
+        <span th:if="${session.loginError eq 'account-disabled'}" th:class="error-message">حساب کاربری شما غیر فعال شده است. با مدیر سیستم تماس بگیرید.</span>
+        <span th:if="${session.loginError eq 'password-expired'}" th:class="error-message">رمز عبور شما منقضی شده است. با مدیر سیستم تماس بگیرید.</span>
+        <span th:if="${session.loginError eq 'account-locked'}" th:class="error-message">حساب کاربری شما قفل شده است. با مدیر سیستم تماس بگیرید.</span>
+        <span th:if="${session.loginError eq 'login-error'}"
+              th:class="error-message">نام کاربری یا رمز عبور صحیح نیست.</span>
+    </div>
+
 </div>
 
 <script th:inline="javascript">
@@ -46,13 +55,13 @@
     var main_content = {
         gravity: 3,
         type: "clean",
-        css : "transparent-background",
+        css: "transparent-background",
         rows: [
             {
                 cols: [
                     {},
                     {
-                        id : "loginForm",
+                        id: "loginForm",
                         type: "form",
                         borderless: true,
                         rows: [
@@ -92,7 +101,7 @@
                                 }
                             }
                         ]
-                    },{}
+                    }, {}
                 ]
             }
         ]

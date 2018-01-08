@@ -17,6 +17,28 @@ function ajaxCall(url, data, method, successCallBack, errorCallback) {
     });
 }
 
+function passwordHasAcceptableComplexity(password) {
+
+    var hasUpperCase = /[A-Z]/.test(password);
+    var hasLowerCase = /[a-z]/.test(password);
+    var hasNumbers = /\d/.test(password);
+    var hasNonalphas = /\W/.test(password);
+
+    if (sessionPasswordComplexity === 1) {
+        return hasNumbers > 0;
+    } else if (sessionPasswordComplexity === 2) {
+        return hasUpperCase + hasLowerCase > 1;
+    } else if (sessionPasswordComplexity === 3) {
+        return hasUpperCase + hasLowerCase + hasNumbers > 2;
+    } else if (sessionPasswordComplexity === 4) {
+        return hasUpperCase + hasLowerCase + hasNumbers + hasNonalphas > 3;
+    } else {
+        return true;
+    }
+}
+function isGreaterThanOrEquals(val1, val2) {
+    return val1 >= val2;
+}
 
 var n = moment().utcOffset('+0330').format('HH:mm:ss');
 var n1 = moment().utcOffset(0).format('HH:mm:ss');

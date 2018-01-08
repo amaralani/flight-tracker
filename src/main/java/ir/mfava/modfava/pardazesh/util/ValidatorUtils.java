@@ -43,4 +43,40 @@ public class ValidatorUtils {
     public static boolean isValidMobileNumber(String number) {
         return StringUtils.isNotBlank(number) && StringUtils.isNumeric(number) && number.length() >= 11 && number.length() <= 12;
     }
+
+    public static boolean isValidPassword(String password, Integer passwordComplexityLevel) {
+
+        switch (passwordComplexityLevel) {
+            case 1:
+                if (!password.matches("^(?=.*[0-9]).*$")) {
+                    throw new IllegalArgumentException("must-contain-number");
+                } else {
+                    break;
+                }
+            case 2:
+                if (!password.matches("^(?=.*[a-z])(?=.*[A-Z]).*$")) {
+                    throw new IllegalArgumentException("must-contain-upper-lower");
+                } else {
+                    break;
+                }
+            case 3:
+                if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$")) {
+                    throw new IllegalArgumentException("must-contain-upper-lower-number");
+                } else {
+                    break;
+                }
+            case 4:
+                if (!password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#!$%^&+=]).*$")) {
+                    throw new IllegalArgumentException("must-contain-upper-lower-number-special");
+                } else {
+                    break;
+                }
+            default: {
+                if (!password.matches("^.+$")) {
+                    throw new IllegalArgumentException("must-not-be-empty");
+                }
+            }
+        }
+        return true;
+    }
 }

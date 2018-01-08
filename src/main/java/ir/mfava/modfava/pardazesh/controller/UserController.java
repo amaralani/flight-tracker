@@ -1,12 +1,15 @@
 package ir.mfava.modfava.pardazesh.controller;
 
 
+import ir.mfava.modfava.pardazesh.model.Configuration;
 import ir.mfava.modfava.pardazesh.model.DTO.JSONMessage;
 import ir.mfava.modfava.pardazesh.model.Role;
 import ir.mfava.modfava.pardazesh.model.User;
 import ir.mfava.modfava.pardazesh.security.SecurityService;
+import ir.mfava.modfava.pardazesh.service.ConfigurationService;
 import ir.mfava.modfava.pardazesh.service.RoleService;
 import ir.mfava.modfava.pardazesh.service.UserService;
+import ir.mfava.modfava.pardazesh.util.ValidatorUtils;
 import ir.mfava.modfava.pardazesh.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -25,8 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
-import static com.ibm.icu.impl.ValidIdentifiers.Datatype.u;
-
 @Controller
 public class UserController {
     @Autowired
@@ -43,6 +44,8 @@ public class UserController {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private SessionRegistry sessionRegistry;
+    @Autowired
+    private ConfigurationService configurationService;
 
     @RequestMapping(value = {"/base-info/user"}, method = RequestMethod.GET)
     public String getAllUsers(ModelMap map, HttpSession session) {
@@ -62,6 +65,7 @@ public class UserController {
                            @RequestParam(name = "nationalCode") String nationalCode,
                            @RequestParam(name = "personNumber") String personNumber,
                            @RequestParam(name = "enabled") Boolean enabled,
+                           @RequestParam(name = "locked") Boolean locked,
                            @RequestParam(name = "password", required = false) String newPassword,
                            @RequestParam(name = "re-password", required = false) String newPasswordRepeat,
                            @RequestParam(name = "isNew", required = false) Boolean isNew,
@@ -75,10 +79,44 @@ public class UserController {
             user = userService.findByUsername(username);
         }
         user.setEnabled(enabled);
+        user.setLocked(locked);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setNationalCode(nationalCode);
         user.setPersonNumber(personNumber);
+
+        List<Configuration> configurationList = configurationService.getAll();
+        if (!configurationList.isEmpty() && newPassword != null && !newPassword.isEmpty()) {
+            Configuration configuration = configurationList.get(0);
+            if (newPassword.length() < configuration.getPasswordLength()) {
+                session.setAttribute("errorMessage", "رمز عبور باید حداقل " + configuration.getPasswordLength() + "  کاراکتر باشد.");
+                return "redirect:/base-info/user";
+            }
+            try {
+                ValidatorUtils.isValidPassword(newPassword, configuration.getPasswordComplexity().ordinal());
+            } catch (IllegalArgumentException e) {
+                String errorMessage = "";
+                switch (e.getMessage()) {
+                    case "must-contain-number":
+                        errorMessage = "رمز عبور باید شامل حداقل یک عدد باشد.";
+                        break;
+                    case "must-contain-upper-lower":
+                        errorMessage = "رمز عبور باید حداقل شامل یک حرف بزرگ و یک حرف کوچک باشد.";
+                        break;
+                    case "must-contain-upper-lower-number":
+                        errorMessage = "رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک و یک عدد باشد.";
+                        break;
+                    case "must-contain-upper-lower-number-special":
+                        errorMessage = "رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک علامت خاص باشد.";
+                        break;
+                    case "must-not-be-empty":
+                        errorMessage = "رمز عبور باید شامل حداقل یک کاراکتر باشد.";
+                        break;
+                }
+                session.setAttribute("errorMessage", errorMessage);
+                return "redirect:/base-info/user";
+            }
+        }
         if (newPassword != null && !newPassword.isEmpty()) {
             if (newPasswordRepeat != null && newPassword.equals(newPasswordRepeat)) {
                 if (isNew) {
@@ -181,7 +219,7 @@ public class UserController {
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(Model model, String error, String logout) {
 
-         // TODO : There's a problem with this method, fix it
+        // TODO : There's a problem with this method, fix it (error message is not shown)
 
         if (error != null)
             model.addAttribute("error", "نام کاربری و رمز عبور معتیر نیست.");
@@ -197,7 +235,7 @@ public class UserController {
         new SecurityContextLogoutHandler().logout(request, response, authentication);
         List<SessionInformation> infos = sessionRegistry.getAllSessions(authentication.getPrincipal(), false);
 
-        for(SessionInformation info : infos) {
+        for (SessionInformation info : infos) {
             info.expireNow(); //expire the session
 //            sessionRegistry.removeSessionInformation(info.getSessionId()); //remove session
         }

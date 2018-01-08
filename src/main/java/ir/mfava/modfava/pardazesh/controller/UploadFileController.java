@@ -62,7 +62,7 @@ public class UploadFileController {
         File file = new File("/d/file_upload_base/" + uploadFile.getFileType().getId() + "/" + uploadFile.getId() + "/" + uploadFile.getFileName());
         if (file.exists()) {
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename='"+ uploadFile.getFileName() +"'");
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+ uploadFile.getFileName());
             FileCopyUtils.copy(new FileInputStream(file), response.getOutputStream());
             response.getOutputStream().flush();
         }

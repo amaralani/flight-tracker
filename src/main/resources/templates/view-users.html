@@ -50,6 +50,12 @@
         if (text === false)
             return 'غیرفعال';
     }
+    function lockFormat(text) {
+        if (text === true)
+            return 'قفل شده';
+        if (text === false)
+            return 'باز';
+    }
 
     webix.ui({
         id: "edit-user",
@@ -113,6 +119,16 @@
                         ]
                     },
                     {
+                        id: "locked",
+                        view: "segmented",
+                        width: 270,
+                        align: "left",
+                        options: [
+                            {id: "1", value: "قفل شده"},
+                            {id: "0", value: "باز"}
+                        ]
+                    },
+                    {
                         id: "password",
                         view: "text",
                         type: "password",
@@ -147,11 +163,34 @@
                             var nationalCode = {name: "nationalCode", value: $$("nationalCode").getValue().trim()};
                             var personNumber = {name: "personNumber", value: $$("personNumber").getValue().trim()};
                             var enabled = {name: "enabled", value: $$("enabled").getValue()};
-                            console.log("password : ", $$("password").getValue());
+                            var locked = {name: "locked", value: $$("locked").getValue()};
                             var password = {name: "password", value: $$("password").getValue().trim()};
                             var rePassword = {name: "re-password", value: $$("re-password").getValue().trim()};
                             var isNew = {name: "isNew", value: false};
-                            webix.send("/base-info/user/save", [username, firstName, lastName, nationalCode, personNumber, enabled, password, rePassword, isNew], "POST", null);
+
+                            if(password.value.length > 0) {
+                                if (password.value !== rePassword.value) {
+                                    webix.alert("رمز عبور وارد شده با تکرار آن برابر نیست.");
+                                    return;
+                                }
+                                if (!isGreaterThanOrEquals(password.value.length, sessionPasswordLength)) {
+                                    webix.alert("رمز عبور باید حداقل شامل " + sessionPasswordLength + " کاراکتر باشد.");
+                                    return;
+                                }
+                                if (!passwordHasAcceptableComplexity(password.value)) {
+                                    if (sessionPasswordComplexity === 1) {
+                                        webix.alert("رمز عبور باید حداقل شامل یک عدد باشد.");
+                                    } else if (sessionPasswordComplexity === 2) {
+                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ و یک حرف کوچک باشد.");
+                                    } else if (sessionPasswordComplexity === 3) {
+                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک و یک عدد باشد.");
+                                    } else if (sessionPasswordComplexity === 4) {
+                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک علامت خاص باشد.");
+                                    }
+                                    return;
+                                }
+                            }
+                            webix.send("/base-info/user/save", [username, firstName, lastName, nationalCode, personNumber, enabled, locked,password, rePassword, isNew], "POST", null);
                         }
                     }
                 ]
@@ -229,6 +268,9 @@
                                 id: "enabled", header: ["فعال", null], format: activeFormat, width: 100
                             },
                             {
+                                id: "locked", header: ["قفل شده", null], format: lockFormat, width: 100
+                            },
+                            {
                                 id: "view_roles",
                                 header: "نمایش دسترسی ها",
                                 css: "webix_el_button",
@@ -261,6 +303,7 @@
                                 $$("personNumber").setValue(item.personNumber);
                                 $$("password").setValue(null);
                                 $$("enabled").setValue(item.enabled ? 1 : 0);
+                                $$("locked").setValue(item.locked ? 1 : 0);
                                 $("#editUserDialog").dialog("open");
                             },
                             "remove_user": function (e, id) {
@@ -275,9 +318,9 @@
                                 var item = this.getItem(id);
                                 ajaxCall(
                                         "/base-info/user/roles",
-                                        {userId : item.id},
+                                        {userId: item.id},
                                         "GET",
-                                        function(data){
+                                        function (data) {
                                             userRoles = data.roles;
                                             var allRoles = [[${roles}]];
                                             var roles = [];
@@ -323,15 +366,15 @@
                                                                         "/base-info/grant/role",
                                                                         {
                                                                             userId: item.id,
-                                                                            roleId : item_id,
-                                                                            grant : newv,
-                                                                            _csrf : csrf_token
+                                                                            roleId: item_id,
+                                                                            grant: newv,
+                                                                            _csrf: csrf_token
                                                                         },
                                                                         "POST",
-                                                                        function(data){
+                                                                        function (data) {
                                                                             webix.message("تغییرات با موفقیت ثبت شد.");
                                                                         },
-                                                                        function(response){
+                                                                        function (response) {
                                                                             webix.message("خطا در عملیات. لطفا صفحه را بازیابی و مجددا تلاش کنید.")
                                                                         }
                                                                 );
@@ -350,7 +393,7 @@
 
                                             $("#viewRolesDialog").dialog("open");
                                         },
-                                        function(response){
+                                        function (response) {
                                             webix.message("خطا در دریافت نقش های کاربر");
                                         }
                                 );
@@ -420,6 +463,16 @@
                                         ]
                                     },
                                     {
+                                        id: "locked_new",
+                                        view: "segmented",
+                                        width: 270,
+                                        align: "left",
+                                        options: [
+                                            {id: "1", value: "قفل شده"},
+                                            {id: "0", value: "باز"}
+                                        ]
+                                    },
+                                    {
                                         id: "password_new",
                                         view: "text",
                                         type: 'password',
@@ -469,6 +522,7 @@
                                                 value: $$("personNumber_new").getValue().trim()
                                             };
                                             var enabled = {name: "enabled", value: $$("enabled_new").getValue().trim()};
+                                            var locked = {name: "locked", value: $$("locked_new").getValue().trim()};
                                             var password = {
                                                 name: "password",
                                                 value: $$("password_new").getValue().trim()
@@ -478,7 +532,31 @@
                                                 value: $$("re-password_new").getValue().trim()
                                             };
                                             var isNew = {name: "isNew", value: true};
-                                            webix.send("/base-info/user/save", [username, firstName, lastName, nationalCode, personNumber, enabled, password, rePassword, isNew], "POST", null);
+
+                                            if(password.value.length > 0) {
+                                                if (password.value !== rePassword.value) {
+                                                    webix.alert("رمز عبور وارد شده با تکرار آن برابر نیست.");
+                                                    return;
+                                                }
+                                                if (!isGreaterThanOrEquals(password.value.length, sessionPasswordLength)) {
+                                                    webix.alert("رمز عبور باید حداقل شامل " + sessionPasswordLength + " کاراکتر باشد.");
+                                                    return;
+                                                }
+                                                if (!passwordHasAcceptableComplexity(password.value)) {
+                                                    if (sessionPasswordComplexity === 1) {
+                                                        webix.alert("رمز عبور باید حداقل شامل یک عدد باشد.");
+                                                    } else if (sessionPasswordComplexity === 2) {
+                                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ و یک حرف کوچک باشد.");
+                                                    } else if (sessionPasswordComplexity === 3) {
+                                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک و یک عدد باشد.");
+                                                    } else if (sessionPasswordComplexity === 4) {
+                                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک علامت خاص باشد.");
+                                                    }
+                                                    return;
+                                                }
+                                            }
+
+                                            webix.send("/base-info/user/save", [username, firstName, lastName, nationalCode, personNumber, enabled, locked, password, rePassword, isNew], "POST", null);
                                         }
                                     }
                                 ]

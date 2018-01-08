@@ -22,6 +22,10 @@ public class User extends BaseModel {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDate;
     private Boolean enabled;
+    private Boolean passwordExpired;
+    private Boolean locked;
+    @Temporal(TemporalType.DATE)
+    private Date passwordUpdatedDate;
 
     private Set<Role> roles;
 
@@ -115,6 +119,30 @@ public class User extends BaseModel {
 
     public void setNationalCode(String nationalCode) {
         this.nationalCode = nationalCode;
+    }
+
+    public Boolean getPasswordExpired() {
+        return passwordExpired;
+    }
+
+    public void setPasswordExpired(Boolean passwordExpired) {
+        this.passwordExpired = passwordExpired;
+    }
+
+    public Boolean getLocked() {
+        return locked;
+    }
+
+    public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
+
+    public Date getPasswordUpdatedDate() {
+        return passwordUpdatedDate;
+    }
+
+    public void setPasswordUpdatedDate(Date passwordUpdatedDate) {
+        this.passwordUpdatedDate = passwordUpdatedDate;
     }
 
     @Override

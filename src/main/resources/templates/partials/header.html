@@ -24,6 +24,8 @@
         var main_content = {};
         var isLoginPage = false;
         /*<![CDATA[*/
+        var sessionPasswordComplexity = [[${session.passwordComplexity}]] || false;
+        var sessionPasswordLength = [[${session.passwordLength}]] || 0;
         var hasUnreadMessage = [[${session.hasUnreadMessage}]] || false;
         var csrf_token = [[${_csrf.token}]];
         var right_menu_base_info = [];
