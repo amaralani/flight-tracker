@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,34 +19,18 @@ import java.util.List;
 
 @Controller
 @RequestMapping(value = "/satellite")
-public class SatImagesController {
+public class SatImagesController extends BaseController {
 
 
     @RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
-    public String getSatImages(ModelMap map, HttpSession session) {
+    public String getSatImages(ModelMap map) {
         List<String> satFileNames = new ArrayList<>();
-        File satImageProcessedDirectory = new File("/d/weather_base_directory/processed/sat/");
-        if (!satImageProcessedDirectory.exists()) satImageProcessedDirectory.mkdirs();
-        if (satImageProcessedDirectory.listFiles() != null) {
-            List<File> oldSatImages = Arrays.asList(satImageProcessedDirectory.listFiles());
-            for (File oldSatImage : oldSatImages) {
-                if (oldSatImage.isFile()) {
-                    satFileNames.add(oldSatImage.getName());
-                }
-            }
-        }
+        File satImageProcessedDirectory = getSatImageProcessedDirectory();
+        putImagesInList(satFileNames, satImageProcessedDirectory);
 
         List<String> dustFileNames = new ArrayList<>();
-        File dustImageProcessedDirectory = new File("/d/weather_base_directory/processed/dust/");
-        if (!dustImageProcessedDirectory.exists()) dustImageProcessedDirectory.mkdirs();
-        if (dustImageProcessedDirectory.listFiles() != null) {
-            List<File> oldSatImages = Arrays.asList(dustImageProcessedDirectory.listFiles());
-            for (File oldSatImage : oldSatImages) {
-                if (oldSatImage.isFile()) {
-                    dustFileNames.add(oldSatImage.getName());
-                }
-            }
-        }
+        File dustImageProcessedDirectory = getDustImageProcessedDirectory();
+        putImagesInList(dustFileNames, dustImageProcessedDirectory);
 
         Collections.sort(dustFileNames);
         Collections.sort(satFileNames);
@@ -56,17 +39,27 @@ public class SatImagesController {
         return "satellite-images";
     }
 
+    private void putImagesInList(List<String> fileNames, File ImagesDirectory) {
+        if (ImagesDirectory.listFiles() != null) {
+            List<File> oldSatImages = Arrays.asList(ImagesDirectory.listFiles());
+            for (File oldSatImage : oldSatImages) {
+                if (oldSatImage.isFile()) {
+                    fileNames.add(oldSatImage.getName());
+                }
+            }
+        }
+    }
+
     @RequestMapping(value = "/{imageType:cloud|dust}/image/{fileName:.+}")
     public void getImage(@PathVariable(value = "fileName") String filename,
                          @PathVariable(value = "imageType") String imageType,
                          HttpServletResponse httpResponse) throws IOException {
         File satImage = null;
         if (imageType.equals("cloud")) {
-            satImage = new File("/d/weather_base_directory/processed/sat/" + filename);
+            satImage = new File(getSatImageProcessedDirectory() + filename);
         } else if (imageType.equals("dust")) {
-            satImage = new File("/d/weather_base_directory/processed/dust/" + filename);
+            satImage = new File(getDustImageProcessedDirectory() + filename);
         }
-
         if (satImage != null) {
             IOUtils.copy(new FileInputStream(satImage), httpResponse.getOutputStream());
         }

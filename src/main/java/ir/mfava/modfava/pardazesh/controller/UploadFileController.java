@@ -27,7 +27,7 @@ import java.nio.file.Paths;
 import java.util.Date;
 
 @Controller
-public class UploadFileController {
+public class UploadFileController extends BaseController{
 
     @Autowired
     private UploadFileTypeService uploadFileTypeService;
@@ -59,7 +59,7 @@ public class UploadFileController {
     public void downloadFile(@PathVariable(name = "uploadFileId") Long uploadFileId,
                              HttpServletResponse response) throws IOException {
         UploadFile uploadFile = uploadFileService.getById(uploadFileId);
-        File file = new File("/d/file_upload_base/" + uploadFile.getFileType().getId() + "/" + uploadFile.getId() + "/" + uploadFile.getFileName());
+        File file = new File(getFileUploadBaseDirectory().getAbsolutePath() + uploadFile.getFileType().getId() + "/" + uploadFile.getId() + "/" + uploadFile.getFileName());
         if (file.exists()) {
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
             response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+ uploadFile.getFileName());
@@ -109,7 +109,7 @@ public class UploadFileController {
                 uploadFile = uploadFileService.save(uploadFile);
                 session.setAttribute("successMessage", "ثبت اطلاعات با موفقیت انجام شد.");
 
-                File fileDirectory = new File("/d/file_upload_base/" + uploadFileType.getId() + "/" + uploadFile.getId());
+                File fileDirectory = new File(getFileUploadBaseDirectory().getAbsolutePath() + uploadFileType.getId() + "/" + uploadFile.getId());
                 if (!fileDirectory.exists()) {
                     fileDirectory.mkdirs();
                 }

@@ -6,6 +6,8 @@ import ir.mfava.modfava.pardazesh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
+import java.io.File;
+
 /**
  * @author Drago
  */
@@ -21,4 +23,35 @@ public class BaseController {
         return getUser(authentication).getId();
     }
 
+    public File getIconsDirectory(){
+        File file = new File("/d/gis_backend_repository/icons_directory");
+        if(!file.exists()){
+            file.mkdirs();
+        }
+        return file;
+    }
+
+    public File getSatImageProcessedDirectory(){
+        File file = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/");
+        if(!file.exists()){
+            file.mkdirs();
+        }
+        return file;
+    }
+
+    public File getDustImageProcessedDirectory(){
+        File file = new File("/d/gis_backend_repository/weather_base_directory/processed/dust/");
+        if(!file.exists()){
+            file.mkdirs();
+        }
+        return file;
+    }
+
+    public File getFileUploadBaseDirectory(){
+        File file = new File("/d/gis_backend_repository/file_upload_base/");
+        if(!file.exists()){
+            file.mkdirs();
+        }
+        return file;
+    }
 }

@@ -75,6 +75,7 @@ public class UserController {
             user = new User();
             user.setUsername(username);
             user.setCreateDate(new Date());
+            user.setPasswordExpired(false);
         } else {
             user = userService.findByUsername(username);
         }
@@ -121,8 +122,10 @@ public class UserController {
             if (newPasswordRepeat != null && newPassword.equals(newPasswordRepeat)) {
                 if (isNew) {
                     user.setPassword(newPassword);
+                    user.setPasswordUpdatedDate(new Date());
                 } else {
                     user.setPassword(bCryptPasswordEncoder.encode(newPassword));
+                    user.setPasswordUpdatedDate(new Date());
                 }
             } else {
                 session.setAttribute("errorMessage", "رمز عبور با تکرار رمز عبور همسان نیست.");

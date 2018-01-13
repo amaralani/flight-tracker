@@ -17,15 +17,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.File;
-import java.net.URISyntaxException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 @Controller
 @RequestMapping(value = "/map")
-public class MapController {
+public class MapController extends BaseController {
 
     @Autowired
     private WeatherService weatherService;
@@ -33,7 +36,7 @@ public class MapController {
     private BulletinService bulletinService;
 
     @RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
-    public String showMap(ModelMap map, HttpServletRequest request) {
+    public String showMap(ModelMap map, HttpServletRequest request) throws IOException {
 
         List<WeatherDTO> weatherDTOList = new ArrayList<>();
 
@@ -173,7 +176,7 @@ public class MapController {
         map.put("forecasts", bulletinDTOs);
         List<String> icons = new ArrayList<>();
         File iconsDirectory = getIconsDirectory();
-        if (iconsDirectory != null) {
+        if (iconsDirectory != null && iconsDirectory.listFiles() != null) {
             List<File> files = Arrays.asList(iconsDirectory.listFiles());
             for (File file : files) {
                 icons.add(file.getName());
@@ -191,16 +194,4 @@ public class MapController {
         return content + " اطلاعات موجود نیست " + "</td><tr>";
     }
 
-
-    private File getIconsDirectory() {
-        URL url = this.getClass().getClassLoader().getResource("static/icons");
-        File file = null;
-        try {
-            file = new File(url.toURI());
-        } catch (URISyntaxException e) {
-            file = new File(url.getPath());
-        } finally {
-            return file;
-        }
-    }
 }

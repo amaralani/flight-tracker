@@ -2,7 +2,6 @@ package ir.mfava.modfava.pardazesh.listener;
 
 import ir.mfava.modfava.pardazesh.model.Configuration;
 import ir.mfava.modfava.pardazesh.service.ConfigurationService;
-import ir.mfava.modfava.pardazesh.service.UserService;
 import ir.mfava.modfava.pardazesh.service.UserSessionInformationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -22,8 +21,6 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     private UserSessionInformationService userSessionInformationService;
     @Autowired
     private ConfigurationService configurationService;
-    @Autowired
-    private UserService userService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -32,8 +29,8 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
         if (!configurationList.isEmpty()) {
             Configuration configuration = configurationList.get(0);
             request.getSession().setMaxInactiveInterval(configuration.getSessionTimeoutInSeconds());
-            request.getSession().setAttribute("passwordComplexity",configuration.getPasswordComplexity().ordinal());
-            request.getSession().setAttribute("passwordLength",configuration.getPasswordLength());
+            request.getSession().setAttribute("passwordComplexity", configuration.getPasswordComplexity().ordinal());
+            request.getSession().setAttribute("passwordLength", configuration.getPasswordLength());
         }
 
         userSessionInformationService.createUserSessionInformation(request.getSession().getId(), authentication.getName(), request.getRemoteAddr());

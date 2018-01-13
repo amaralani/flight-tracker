@@ -74,11 +74,11 @@ public class WeatherServiceImpl implements WeatherService {
         } else {
             PROCESS_IN_PROGRESS = true;
             try {
-                File baseDirectory = new File("/d/weather_base_directory/");
+                File baseDirectory = new File("/d/gis_backend_repository/weather_base_directory/");
                 if (!baseDirectory.exists()) baseDirectory.mkdirs();
-                File baseProcessedDirectory = new File("/d/weather_base_directory/processed/");
+                File baseProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/");
                 if (!baseProcessedDirectory.exists()) baseProcessedDirectory.mkdirs();
-                File metarDirectory = new File("/d/weather_base_directory/metar/");
+                File metarDirectory = new File("/d/gis_backend_repository/weather_base_directory/metar/");
                 if (!metarDirectory.exists()) metarDirectory.mkdirs();
                 if (metarDirectory.listFiles() != null) {
                     List<File> metarFiles = Arrays.asList(metarDirectory.listFiles());
@@ -87,17 +87,17 @@ public class WeatherServiceImpl implements WeatherService {
                         dataFile.setFileName(metarFile.getName());
                         dataFile.setFileType("METAR");
                         dataFile.setProcessStartDate(new Date());
-                        processFile("/d/weather_base_directory/metar/" + metarFile.getName());
+                        processFile("/d/gis_backend_repository/weather_base_directory/metar/" + metarFile.getName());
                         dataFile.setProcessEndDate(new Date());
-                        File metarProcessedDirectory = new File("/d/weather_base_directory/processed/metar/");
+                        File metarProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/metar/");
                         if (!metarProcessedDirectory.exists()) metarProcessedDirectory.mkdirs();
-                        File newFile = new File("/d/weather_base_directory/processed/metar/" + metarFile.getName());
+                        File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/metar/" + metarFile.getName());
                         FileCopyUtils.copy(metarFile,newFile);
                         metarFile.delete();
                         dataFileService.save(dataFile);
                     }
                 }
-                File taforDirectory = new File("/d/weather_base_directory/tafor/");
+                File taforDirectory = new File("/d/gis_backend_repository/weather_base_directory/tafor/");
                 if (!taforDirectory.exists()) taforDirectory.mkdirs();
                 if (taforDirectory.listFiles() != null) {
                     List<File> taforFiles = Arrays.asList(taforDirectory.listFiles());
@@ -106,19 +106,19 @@ public class WeatherServiceImpl implements WeatherService {
                         dataFile.setFileName(taforFile.getName());
                         dataFile.setFileType("TAFOR");
                         dataFile.setProcessStartDate(new Date());
-                        processFile("/d/weather_base_directory/tafor/"+ taforFile.getName());
+                        processFile("/d/gis_backend_repository/weather_base_directory/tafor/"+ taforFile.getName());
                         dataFile.setProcessEndDate(new Date());
 
-                        File taforProcessedDirectory = new File("/d/weather_base_directory/processed/tafor/");
+                        File taforProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/tafor/");
                         if (!taforProcessedDirectory.exists()) taforProcessedDirectory.mkdirs();
-                        File newFile = new File("/d/weather_base_directory/processed/tafor/" + taforFile.getName());
+                        File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/tafor/" + taforFile.getName());
                         FileCopyUtils.copy(taforFile,newFile);
                         taforFile.delete();
 
                         dataFileService.save(dataFile);
                     }
                 }
-                File speciDirectory = new File("/d/weather_base_directory/speci/");
+                File speciDirectory = new File("/d/gis_backend_repository/weather_base_directory/speci/");
                 if (!speciDirectory.exists()) speciDirectory.mkdirs();
                 if (speciDirectory.listFiles() != null) {
                     List<File> speciFiles = Arrays.asList(speciDirectory.listFiles());
@@ -127,12 +127,12 @@ public class WeatherServiceImpl implements WeatherService {
                         dataFile.setFileName(speciFile.getName());
                         dataFile.setFileType("SPECI");
                         dataFile.setProcessStartDate(new Date());
-                        processFile("/d/weather_base_directory/speci/"+ speciFile.getName());
+                        processFile("/d/gis_backend_repository/weather_base_directory/speci/"+ speciFile.getName());
                         dataFile.setProcessEndDate(new Date());
 
-                        File speciProcessedDirectory = new File("/d/weather_base_directory/processed/speci/");
+                        File speciProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/speci/");
                         if (!speciProcessedDirectory.exists()) speciProcessedDirectory.mkdirs();
-                        File newFile = new File("/d/weather_base_directory/processed/speci/" + speciFile.getName());
+                        File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/speci/" + speciFile.getName());
                         FileCopyUtils.copy(speciFile,newFile);
                         speciFile.delete();
 
@@ -140,54 +140,54 @@ public class WeatherServiceImpl implements WeatherService {
                     }
                 }
 
-                File satImageProcessedDirectory = new File("/d/weather_base_directory/processed/sat/");
+                File satImageProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/");
                 if (!satImageProcessedDirectory.exists()) satImageProcessedDirectory.mkdirs();
                 if (satImageProcessedDirectory.listFiles() != null) {
                     List<File> oldSatImages = Arrays.asList(satImageProcessedDirectory.listFiles());
-                    File oldSatImageProcessedDirectory = new File("/d/weather_base_directory/processed/sat/old/");
+                    File oldSatImageProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/old/");
                     if (!oldSatImageProcessedDirectory.exists()) oldSatImageProcessedDirectory.mkdirs();
                     for (File oldSatImage : oldSatImages) {
                         if(oldSatImage.isFile()){
-                        File newFile = new File("/d/weather_base_directory/processed/sat/old/" + oldSatImage.getName());
+                        File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/old/" + oldSatImage.getName());
                         FileCopyUtils.copy(oldSatImage, newFile);
                         }
                     }
                 }
 
-                File satImagesDirectory = new File("/d/weather_base_directory/sat/");
+                File satImagesDirectory = new File("/d/gis_backend_repository/weather_base_directory/sat/");
                 if (!satImagesDirectory.exists()) satImagesDirectory.mkdirs();
                 if (satImagesDirectory.listFiles() != null) {
                     List<File> satImages = Arrays.asList(satImagesDirectory.listFiles());
                     for (File satImage : satImages) {
                         if(satImage.isFile()) {
-                            File newFile = new File("/d/weather_base_directory/processed/sat/" + satImage.getName());
+                            File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/" + satImage.getName());
                             FileCopyUtils.copy(satImage, newFile);
                             satImage.delete();
                         }
                     }
                 }
 
-                File dustImageProcessedDirectory = new File("/d/weather_base_directory/processed/dust/");
+                File dustImageProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/dust/");
                 if (!dustImageProcessedDirectory.exists()) dustImageProcessedDirectory.mkdirs();
                 if (dustImageProcessedDirectory.listFiles() != null) {
                     List<File> oldDustImages = Arrays.asList(dustImageProcessedDirectory.listFiles());
-                    File oldSatImageProcessedDirectory = new File("/d/weather_base_directory/processed/sat/old/");
+                    File oldSatImageProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/old/");
                     if (!oldSatImageProcessedDirectory.exists()) oldSatImageProcessedDirectory.mkdirs();
                     for (File oldDustImage : oldDustImages) {
                         if(oldDustImage.isFile()){
-                        File newFile = new File("/d/weather_base_directory/processed/dust/old/" + oldDustImage.getName());
+                        File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/dust/old/" + oldDustImage.getName());
                         FileCopyUtils.copy(oldDustImage, newFile);
                         }
                     }
                 }
 
-                File dustImagesDirectory = new File("/d/weather_base_directory/dust/");
+                File dustImagesDirectory = new File("/d/gis_backend_repository/weather_base_directory/dust/");
                 if (!dustImagesDirectory.exists()) dustImagesDirectory.mkdirs();
                 if (dustImagesDirectory.listFiles() != null) {
                     List<File> dusttImages = Arrays.asList(dustImagesDirectory.listFiles());
                     for (File dusttImage : dusttImages) {
                         if(dusttImage.isFile()) {
-                            File newFile = new File("/d/weather_base_directory/processed/dust/" + dusttImage.getName());
+                            File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/dust/" + dusttImage.getName());
                             FileCopyUtils.copy(dusttImage, newFile);
                             dusttImage.delete();
                         }
