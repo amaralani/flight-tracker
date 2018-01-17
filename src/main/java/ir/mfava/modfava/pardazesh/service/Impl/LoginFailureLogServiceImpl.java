@@ -73,4 +73,9 @@ public class LoginFailureLogServiceImpl implements LoginFailureLogService {
             return loginFailureLogRepository.countByDateTimeGreaterThanAndUsername(DateUtils.addDays(new Date(), -1), username);
         }
     }
+
+    @Override
+    public List<LoginFailureLog> getByDateAndUsername(Date startDate, Date endDate, String username, String ip){
+        return loginFailureLogRepository.getAllByDateTimeAndUsernameAndIp(startDate,endDate,username,ip);
+    }
 }

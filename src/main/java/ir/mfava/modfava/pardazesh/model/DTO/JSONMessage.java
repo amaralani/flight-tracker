@@ -1,5 +1,7 @@
 package ir.mfava.modfava.pardazesh.model.DTO;
 
+import org.springframework.http.HttpStatus;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -34,14 +36,14 @@ public class JSONMessage implements Serializable {
 
     public static JSONMessage Success(String message){
         JSONMessage jsonMessage = new JSONMessage();
-        jsonMessage.setStatus(200);
+        jsonMessage.setStatus(HttpStatus.OK.value());
         jsonMessage.setMessage(message);
         return jsonMessage;
     }
 
     public static JSONMessage Success(Map<String,Object> data){
         JSONMessage jsonMessage = new JSONMessage();
-        jsonMessage.setStatus(200);
+        jsonMessage.setStatus(HttpStatus.OK.value());
         jsonMessage.setMessage("");
         jsonMessage.setData(data);
         return jsonMessage;
@@ -49,13 +51,13 @@ public class JSONMessage implements Serializable {
 
     public static JSONMessage Success(){
         JSONMessage jsonMessage = new JSONMessage();
-        jsonMessage.setStatus(200);
+        jsonMessage.setStatus(HttpStatus.OK.value());
         return jsonMessage;
     }
 
     public static JSONMessage Success(String message,Map<String,Object> data){
         JSONMessage jsonMessage = new JSONMessage();
-        jsonMessage.setStatus(200);
+        jsonMessage.setStatus(HttpStatus.OK.value());
         jsonMessage.setData(data);
         jsonMessage.setMessage(message);
         return jsonMessage;
@@ -63,7 +65,7 @@ public class JSONMessage implements Serializable {
 
     public static JSONMessage Error(String message){
         JSONMessage jsonMessage = new JSONMessage();
-        jsonMessage.setStatus(200);
+        jsonMessage.setStatus(HttpStatus.BAD_REQUEST.value());
         jsonMessage.setMessage(message);
         return jsonMessage;
     }

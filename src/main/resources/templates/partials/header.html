@@ -83,10 +83,13 @@
         }
         right_menu_usage.push({id: 8, "name": "فایل های کاربردی", href: "/files", icon: "id-badge"});
 
-        var right_menu_report = [
-            {id: 1, "name": "مشاهده ورود و خروج کاربران", href: "#"/*, href: "/report/login/"*/, icon: "id-badge"},
-            {id: 2, "name": "گزارشات", href: "#", icon: "id-badge"}
-        ];
+        var right_menu_report = [];
+        if ([[${#httpServletRequest.isUserInRole("ROLE_LOGIN_REPORT")}]]) {
+            right_menu_report.push({id: 1, "name": "مشاهده ورود و خروج کاربران", href: "/report/login-report/view", icon: "id-badge"});
+        }
+        if ([[${#httpServletRequest.isUserInRole("ROLE_REPORT")}]]) {
+            right_menu_report.push({id: 2, "name": "گزارشات", href: "#", icon: "id-badge"});
+        }
 
         var right_menu =
 

@@ -24,6 +24,8 @@ public class Defactor extends BaseModel {
     @Temporal(TemporalType.DATE)
     private Date date;
 
+    private String persianDate;
+
     private Integer height300;
     private Integer temperature300;
     private Integer windSpeed300;
@@ -213,6 +215,14 @@ public class Defactor extends BaseModel {
         return DateUtils.convertJulianToPersian(this.date);
     }
 
+    public String getPersianDate() {
+        return persianDate;
+    }
+
+    public void setPersianDate(String persianDate) {
+        this.persianDate = persianDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -254,6 +264,7 @@ public class Defactor extends BaseModel {
                 ", hoursFrom=" + hoursFrom +
                 ", hoursTo=" + hoursTo +
                 ", date=" + date +
+                ", persianDate='" + persianDate + '\'' +
                 ", height300=" + height300 +
                 ", temperature300=" + temperature300 +
                 ", windSpeed300=" + windSpeed300 +
@@ -266,6 +277,7 @@ public class Defactor extends BaseModel {
                 ", temperature700=" + temperature700 +
                 ", windSpeed700=" + windSpeed700 +
                 ", windDirection700=" + windDirection700 +
+                ", visible=" + visible +
                 '}';
     }
 }

@@ -34,6 +34,7 @@ public class DefactorController {
         map.put("defactors", defactorService.getAll());
         map.put("provinces", provinceService.getAll());
 
+        map.put("currentDate",DateUtils.convertJulianToPersian(new Date(),"yyyy/MM/dd"));
         map.put("successMessage", session.getAttribute("successMessage"));
         map.put("errorMessage", session.getAttribute("errorMessage"));
         session.removeAttribute("successMessage");
@@ -69,7 +70,7 @@ public class DefactorController {
                                @RequestParam(name = "windDirection700") Integer windDirection700,
                                @RequestParam(name = "id", required = false) Long id,
                                @RequestParam(name = "isNew", required = false) Boolean isNew,
-                               HttpSession session) throws ParseException {
+                               HttpSession session)  {
 
         Defactor defactor;
         if (isNew) {
@@ -77,11 +78,22 @@ public class DefactorController {
         } else {
             defactor = defactorService.getById(id);
         }
+        Date realDate;
+        if(date != null && !date.isEmpty()) {
+            try {
+                realDate = DateUtils.convertPersianToJulian(date);
+                if(realDate == null) throw new Exception("bad format");
+
+                defactor.setDate(realDate);
+            } catch (Exception e) {
+                session.setAttribute("errorMessage", "خطا در خواندن تاریخ. لطفا فرمت تاریخ را بررسی و مجددا امتحان کنید.");
+                return "redirect:/defactor/view";
+            }
+        }
+
         defactor.setProvince(provinceService.getById(provinceId));
-        // Wed Nov 01 2017 12:55:03 GMT+0330
-        defactor.setDate(new Date(Long.parseLong(date)));
-        //FIXME‌: Fix date
-//        defactor.setDate(date);
+
+        defactor.setPersianDate(date);
         defactor.setHoursFrom(hoursFrom);
         defactor.setHoursTo(hoursTo);
         defactor.setHeight300(height300);
@@ -112,7 +124,7 @@ public class DefactorController {
         Defactor defactor = defactorService.getById(defactorId);
         try {
             defactorService.remove(defactor);
-            session.setAttribute("successMessage", "حذف اطلاعت با موفقیت انجام شد.");
+            session.setAttribute("successMessage", "حذف اطلاعات با موفقیت انجام شد.");
         } catch (Exception ex) {
             ex.printStackTrace();
             session.setAttribute("errorMessage", "خطا در حذف اطلاعات.");

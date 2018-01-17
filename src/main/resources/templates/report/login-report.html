@@ -1,0 +1,363 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>نمایش جدول</title>
+</head>
+<style>
+    .webix_cell {
+        direction: ltr;
+    }
+</style>
+<body>
+
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<div id="session-grid-container"></div>
+<div id="failure-grid-container"></div>
+
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+
+    function oneForAll(value, filter, obj) {
+        if (obj.stationId)
+            return !!equals(obj.metar, filter);
+        return false;
+    }
+
+    function getUsername(user) {
+        return user.username;
+    }
+
+
+    function getPersianDate(date) {
+        var newPersianDate = persianDate(date).pDate;
+        return newPersianDate.year + "/" + newPersianDate.month + "/" + newPersianDate.monthDayNumber + "\t" + newPersianDate.hours + ":" + newPersianDate.minutes + ":" + newPersianDate.seconds;
+    }
+    /*<![CDATA[*/
+    var users = [[${AllUsers}]];
+    var comboUsers = [];
+    $.each(users, function (index, user) {
+        comboUsers.push({id: user.id, fullName: user.firstName + " " + user.lastName, username: user.username});
+    });
+
+    var gridBaseData = [];
+
+    function refreshSessionGridData() {
+        var items = [];
+        var userId = $$("user").getValue();
+        if (!userId) {
+            webix.message("لطفا کاربر را انتخاب کنید.");
+            return;
+        }
+        var startDate = $$("sessionFromDate").getValue().trim();
+        var endDate = $$("sessionToDate").getValue().trim();
+
+        if (!startDate || !endDate) {
+            webix.message("لطفا بازه زمانی گزارش را انتخاب کنید.");
+            return;
+        }
+
+        ajaxCall(
+                "/report/login-report/search-sessions",
+                {
+                    userId: userId,
+                    startDate: startDate,
+                    endDate: endDate
+                },
+                "GET",
+                function (response) {
+                    $$("sessionGrid").parse(response.userSessionInformations);
+                    $$("sessionGrid").refresh();
+                },
+                function (error) {
+                    webix.message(error.message);
+                }
+        );
+
+    }
+
+    function refreshFailureGridData() {
+        var items = [];
+        var username = $$("failureUsername").getValue();
+
+        var startDate = $$("failureFromDate").getValue().trim();
+        var endDate = $$("failureToDate").getValue().trim();
+        var ip = $$("failureIP").getValue().trim();
+
+        if (!startDate || !endDate) {
+            webix.message("لطفا بازه زمانی گزارش را انتخاب کنید.");
+            return;
+        }
+
+        ajaxCall(
+                "/report/login-report/search-login-failures",
+                {
+                    username: username,
+                    startDate: startDate,
+                    endDate: endDate,
+                    ip: ip
+                },
+                "GET",
+                function (response) {
+                    $$("failureGrid").parse(response.loginFailureLogs);
+                    $$("failureGrid").refresh();
+                },
+                function (error) {
+                    webix.message(error.message);
+                }
+        );
+
+    }
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "sessions", value: "مشاهده ورود و خروج کاربران", width: 250},
+                {id: "loginFailures", value: "مشاهده لاگین های ناموفق", width: 250}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "sessions",
+                        rows: [
+                            {
+                                cols: [
+                                    {
+                                        rows: [
+
+                                            {
+                                                view: "combo",
+                                                id: "user",
+                                                label: 'کاربر ',
+                                                labelWidth: 150,
+                                                labelAlign: 'right',
+                                                name: "users-combo",
+                                                value: null,
+                                                options: {
+                                                    filter: function (item, value) {
+                                                        return item.username.toString().toLowerCase().indexOf(value.toLowerCase()) != -1 || item.fullName.toString().toLowerCase().indexOf(value.toLowerCase()) != -1;
+
+                                                    },
+                                                    body: {
+                                                        template: "#username# (#fullName#)",
+                                                        data: comboUsers,
+                                                        type: {
+                                                            height: 40
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                id: 'sessionFromDate',
+                                                view: "text",
+                                                label: " از تاریخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                id: 'sessionToDate',
+                                                view: "text",
+                                                label: "تا تاریخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                value: "جستجو",
+                                                align: "left",
+                                                click: function () {
+                                                    refreshSessionGridData();
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {},
+                                    {}
+                                ]
+
+                            },
+                            {
+                                inputWidth: 100,
+                                view: "button",
+                                type: "form",
+                                value: "خروجی اکسل",
+                                align: "right",
+                                click: function () {
+                                    webix.toExcel($$("sessionGrid"));
+                                }
+                            },
+                            {
+                                id: "sessionGrid",
+                                container: "session-grid-container",
+                                view: "datatable",
+                                columns: [
+                                    {
+                                        id: "user",
+                                        header: ["نام کاربری", {
+                                            content: "textFilter",
+                                            compare: oneForAll,
+                                            placeholder: "جستجو",
+                                            colspan: 2
+                                        }],
+                                        format: getUsername
+                                    },
+                                    {id: "ip", header: ["آدرس", null], fillspace: true},
+                                    {id: "sessionId", header: ["شناسه Session", null], fillspace: true},
+                                    {id: "startDate", header: ["شروع", null], fillspace: true, format: getPersianDate},
+                                    {id: "endDate", header: ["پایان", null], fillspace: true, format: getPersianDate}
+                                ],
+                                select: "row",
+                                tooltip: true,
+                                navigation: true,
+                                autowidth: false,
+                                autoheight: false,
+                                scroll: true,
+                                data: []
+                            }
+
+                        ]
+                    },
+                    {
+                        id: "loginFailures",
+                        rows: [
+                            {
+                                cols: [
+                                    {
+                                        rows: [
+
+                                            {
+                                                view: "text",
+                                                id: "failureUsername",
+                                                label: 'نام کاربری ',
+                                                labelWidth: 150,
+                                                labelAlign: 'right'
+                                            },
+                                            {
+                                                id: 'failureFromDate',
+                                                view: "text",
+                                                label: "از تاریخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                id: 'failureToDate',
+                                                view: "text",
+                                                label: "تا تاریخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                id: 'failureIP',
+                                                view: "text",
+                                                label: " IP ",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                value: "جستجو",
+                                                align: "left",
+                                                click: function () {
+                                                    refreshFailureGridData();
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {},
+                                    {}
+                                ]
+
+                            },
+                            {
+                                inputWidth: 100,
+                                view: "button",
+                                type: "form",
+                                value: "خروجی CSV",
+                                align: "right",
+                                click: function () {
+                                    webix.toCSV($$("failureGrid"));
+                                }
+                            },
+                            {
+                                cols: [{
+                                    view: "multiview",
+                                    cells: [
+                                        {
+                                            id: "failureGrid",
+                                            container: "failure-grid-container",
+                                            view: "datatable",
+                                            columns: [
+                                                {
+                                                    id: "username",
+                                                    header: ["نام کاربری", {
+                                                        content: "textFilter",
+                                                        compare: oneForAll,
+                                                        placeholder: "جستجو",
+                                                        colspan: 2
+                                                    }],
+                                                    fillspace: true
+                                                },
+                                                {id: "ip", header: ["آدرس", null], fillspace: true},
+                                                {
+                                                    id: "dateTime",
+                                                    header: ["ساعت و تاریخ", null],
+                                                    fillspace: true,
+                                                    format: getPersianDate
+                                                }
+                                            ],
+                                            select: "row",
+                                            tooltip: true,
+                                            navigation: true,
+                                            autowidth: false,
+                                            autoheight: false,
+                                            scroll: true,
+                                            data: []
+                                        }
+                                    ]
+                                }
+                                ]
+                            }
+                        ]
+                    }
+
+                ]
+            }
+        ]
+    };
+
+    /*]]>*/
+
+
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

@@ -10,7 +10,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.InetAddress;
 import java.util.Date;
 import java.util.List;
 
@@ -72,5 +71,10 @@ public class UserSessionInformationServiceImpl implements UserSessionInformation
             userSessionInformation.setSessionId(sessionId);
             save(userSessionInformation);
         }
+    }
+
+    @Override
+    public List<UserSessionInformation> searchSessionInformations(Long userId, Date startDate, Date endDate){
+        return userSessionInformationRepository.getAllByStartDateGreaterThanAndEndDateLessThanAndUser(startDate,endDate,userService.getById(userId));
     }
 }

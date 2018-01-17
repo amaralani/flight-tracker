@@ -59,8 +59,8 @@
                             },
                             {
                                 id: 'date',
-                                view: "datepicker",
-                                format:"%d-%m-%Y",
+                                view: "text",
+
                                 label: "تاریخ",
                                 labelAlign: 'right',
                                 textAlign: 'right',
@@ -414,19 +414,19 @@
                                                 view: "richselect",
                                                 id: "provinceId_new",
                                                 label: 'استان',
-                                                labelWidth: 100,
+                                                labelWidth: 150,
                                                 labelAlign: 'right',
                                                 name: "provinceId",
                                                 options: comboProvinces
                                             },
                                             {
                                                 id: 'date_new',
-                                                view: "datepicker",
-                                                format:"%d-%m-%Y",
-                                                label: "تاریخ",
+                                                view: "text",
+                                                label: "تاریخ (روز/ماه/سال)",
                                                 labelAlign: 'right',
                                                 textAlign: 'right',
-                                                labelWidth: 100
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
                                             },
                                             {
                                                 id: 'hoursFrom_new',
@@ -434,7 +434,7 @@
                                                 label: "از ساعت",
                                                 labelAlign: 'right',
                                                 textAlign: 'right',
-                                                labelWidth: 100
+                                                labelWidth: 150
                                             },
                                             {
                                                 id: 'hoursTo_new',
@@ -442,7 +442,7 @@
                                                 label: "تا ساعت",
                                                 labelAlign: 'right',
                                                 textAlign: 'right',
-                                                labelWidth: 100
+                                                labelWidth: 150
                                             }
                                         ]
                                     },
@@ -585,7 +585,7 @@
                                                 name: "provinceId",
                                                 value: $$("provinceId_new").getValue()
                                             };
-                                            var date = {name: "date", value: $$("date_new").getValue().getTime() };
+                                            var date = {name: "date", value: $$("date_new").getValue() };
                                             var hoursFrom = {name: "hoursFrom", value: $$("hoursFrom_new").getValue()};
                                             var hoursTo = {name: "hoursTo", value: $$("hoursTo_new").getValue()};
                                             var height300 = {name: "height300", value: $$("height300_new").getValue()};
