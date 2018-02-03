@@ -28,22 +28,30 @@
     webix.ui({
         id: "edit-province",
         container: "editProvinceDialog",
-        view: "form",
         cols: [
             {
-                type: "form",
+                view: "form",
                 borderless: true,
                 width: 400,
-                rows: [
+                elements: [
                     {template: "ویرایش مشخصات", type: "header"},
                     {
                         id: 'id', view: "text", disabled: true
                     },
                     {
-                        id: 'name', view: "text", label: "نام", labelAlign: 'right', textAlign: 'right', labelWidth: 100
+                        id: 'name',
+                        name: 'name',
+                        invalidMessage: "این فیلد الزامی است.",
+                        view: "text",
+                        label: "نام",
+                        labelAlign: 'right',
+                        textAlign: 'right',
+                        labelWidth: 100
                     },
                     {
                         id: 'latitude',
+                        name: 'latitude',
+                        invalidMessage: "این فیلد الزامی است. فقط مقادیر عددی وارد کنید.",
                         view: "text",
                         label: "عرض جغرافیایی",
                         labelAlign: 'right',
@@ -52,6 +60,8 @@
                     },
                     {
                         id: 'longitude',
+                        name: 'longitude',
+                        invalidMessage: "این فیلد الزامی است. فقط مقادیر عددی وارد کنید.",
                         view: "text",
                         label: "طول جغرافیایی",
                         labelAlign: 'right',
@@ -65,15 +75,37 @@
                         value: "ثبت",
                         align: "left",
                         click: function () {
-                            var id = {name: "id", value: $$("id").getValue().trim()};
-                            var name = {name: "name", value: $$("name").getValue().trim()};
-                            var latitude = {name: "latitude", value: $$("latitude").getValue().trim()};
-                            var longitude = {name: "longitude", value: $$("longitude").getValue().trim()};
-                            var isNew = {name: "isNew", value: false};
-                            webix.send("/base-info/province/save", [id, name, latitude, longitude, isNew], "POST", null);
+                            if (this.getParentView().validate()) {
+                                var id = {name: "id", value: $$("id").getValue().trim()};
+                                var name = {name: "name", value: $$("name").getValue().trim()};
+                                var latitude = {name: "latitude", value: $$("latitude").getValue().trim()};
+                                var longitude = {name: "longitude", value: $$("longitude").getValue().trim()};
+                                var isNew = {name: "isNew", value: false};
+                                webix.send("/base-info/province/save", [id, name, latitude, longitude, isNew], "POST", null);
+                            } else {
+                                webix.message({
+                                    type: "error",
+                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                })
+                            }
                         }
                     }
-                ]
+                ],
+                rules: {
+                    name: webix.rules.isNotEmpty,
+                    latitude: function (value) {
+                        if (webix.rules.isNotEmpty(value)) {
+                            return webix.rules.isNumber(value)
+                        }
+                        return false;
+                    },
+                    longitude: function (value) {
+                        if (webix.rules.isNotEmpty(value)) {
+                            return webix.rules.isNumber(value)
+                        }
+                        return false;
+                    }
+                }
             },
             {}
 
@@ -111,10 +143,10 @@
                                 fillspace: true
                             },
                             {
-                                id: "latitude", header: ["عرض جغرافیایی", null],fillspace: true
+                                id: "latitude", header: ["عرض جغرافیایی", null], fillspace: true
                             },
                             {
-                                id: "longitude", header: ["طول جغرافیای", null],fillspace: true
+                                id: "longitude", header: ["طول جغرافیای", null], fillspace: true
                             },
                             {
                                 id: "edit",
@@ -153,17 +185,18 @@
                     },
                     {
                         id: "add",
-                        view: "form",
                         cols: [
                             {
-                                type: "form",
+                                view: "form",
                                 borderless: true,
                                 width: 600,
 
-                                rows: [
+                                elements: [
                                     {template: "افزودن شهرستان", type: "header"},
                                     {
                                         id: 'name_new',
+                                        name: 'name_new',
+                                        invalidMessage: "این فیلد الزامی است.",
                                         view: "text",
                                         label: "نام",
                                         labelAlign: 'right',
@@ -172,6 +205,8 @@
                                     },
                                     {
                                         id: 'latitude_new',
+                                        name: 'latitude_new',
+                                        invalidMessage: "این فیلد الزامی است. فقط مقادیر عددی وارد کنید.",
                                         view: "text",
                                         label: "عرض جغرافیایی",
                                         labelAlign: 'right',
@@ -180,6 +215,8 @@
                                     },
                                     {
                                         id: 'longitude_new',
+                                        name: 'longitude_new',
+                                        invalidMessage: "این فیلد الزامی است. فقط مقادیر عددی وارد کنید.",
                                         view: "text",
                                         label: "طول جغرافیایی",
                                         labelAlign: 'right',
@@ -193,25 +230,39 @@
                                         value: "ثبت",
                                         align: "left",
                                         click: function () {
-
-                                            var name = {name: "name", value: $$("name_new").getValue().trim()};
-
-                                            var latitude = {
-                                                name: "latitude",
-                                                value: $$("latitude_new").getValue().trim()
-                                            };
-                                            var longitude = {
-                                                name: "longitude",
-                                                value: $$("longitude_new").getValue().trim()
-                                            };
-                                            var isNew = {
-                                                name: "isNew",
-                                                value: true
-                                            };
-                                            webix.send("/base-info/province/save", [name, latitude, longitude, isNew], "POST", null);
+                                            if (this.getParentView().validate()) {
+                                                var name = {name: "name", value: $$("name_new").getValue().trim()};
+                                                var latitude = {
+                                                    name: "latitude",
+                                                    value: $$("latitude_new").getValue().trim()
+                                                };
+                                                var longitude = {
+                                                    name: "longitude",
+                                                    value: $$("longitude_new").getValue().trim()
+                                                };
+                                                var isNew = {
+                                                    name: "isNew",
+                                                    value: true
+                                                };
+                                                webix.send("/base-info/province/save", [name, latitude, longitude, isNew], "POST", null);
+                                            } else {
+                                                webix.message({
+                                                    type: "error",
+                                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                                })
+                                            }
                                         }
                                     }
-                                ]
+                                ],
+                                rules: {
+                                    name_new: webix.rules.isNotEmpty,
+                                    latitude_new: function (value) {
+                                        return webix.rules.isNotEmpty(value) && webix.rules.isNumber(value)
+                                    },
+                                    longitude_new: function (value) {
+                                        return webix.rules.isNotEmpty(value) && webix.rules.isNumber(value)
+                                    }
+                                }
                             },
                             {}
 

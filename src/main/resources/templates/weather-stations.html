@@ -15,6 +15,7 @@
 
 <script th:inline="javascript">
     function equals(a, b) {
+        if(!a || !b) return false;
         a = a.toString().toLowerCase();
         return a.indexOf(b) !== -1;
     }
@@ -34,69 +35,153 @@
         id: "edit-weatherStation",
         container: "editWeatherStationDialog",
         view: "form",
-        cols: [
+        width: 400,
+        elements: [
+            {template: "ویرایش مشخصات", type: "header"},
             {
-                type: "form",
-                borderless: true,
-                width: 400,
-                rows: [
-                    {template: "ویرایش مشخصات", type: "header"},
-                    {
-                        id: 'id', view: "text", disabled: true
-                    },
-                    {
-                        id: 'provinceCode', view: "text", label: "کد شهرستان", labelAlign: 'right', textAlign: 'right', labelWidth: 100
-                    },
-                    {
-                        id: 'farsiName', view: "text", label: "نام فارسی", labelAlign: 'right', textAlign: 'right', labelWidth: 100
-                    },
-                    {
-                        id: 'name', view: "text", label: "نام", labelAlign: 'right', textAlign: 'right', labelWidth: 100
-                    },
-                    {
-                        id: 'stationId', view: "text", label: "Station ID", labelAlign: 'right', textAlign: 'right', labelWidth: 100
-                    },
-                    {
-                        id: 'stationNo', view: "text", label: "شماره ایستگاه", labelAlign: 'right', textAlign: 'right', labelWidth: 100
-                    },
-                    {
-                        id: 'latitude', view: "text", label: "عرض جغرافیایی", labelAlign: 'right', textAlign: 'right', labelWidth: 100
-                    },
-                    {
-                        id: 'longitude', view: "text", label: "طول جغرافیایی", labelAlign: 'right', textAlign: 'right', labelWidth: 100
-                    },
-                    {
-                        id: 'altitude', view: "text", label: "ارتفاع", labelAlign: 'right', textAlign: 'right', labelWidth: 100
-                    },
-                    {
-                        id: 'level', view: "text", label: "سطح", labelAlign: 'right', textAlign: 'right', labelWidth: 100
-                    },
-                    {
-                        inputWidth: 100,
-                        view: "button",
-                        type: "form",
-                        value: "ثبت",
-                        align: "left",
-                        click: function () {
-                            var id = {name: "id", value: $$("id").getValue().trim()};
-                            var provinceCode = {name: "provinceCode", value: $$("provinceCode").getValue().trim()};
-                            var farsiName = {name: "farsiName", value: $$("farsiName").getValue().trim()};
-                            var name = {name: "name", value: $$("name").getValue().trim()};
-                            var stationId = {name: "stationId", value: $$("stationId").getValue().trim()};
-                            var stationNo = {name: "stationNo", value: $$("stationNo").getValue().trim()};
-                            var latitude = {name: "latitude", value: $$("latitude").getValue().trim()};
-                            var longitude = {name: "longitude", value: $$("longitude").getValue().trim()};
-                            var altitude = {name: "altitude", value: $$("altitude").getValue().trim()};
-                            var level = {name: "level", value: $$("level").getValue().trim()};
-                            var isNew = {name: "isNew", value: false};
-                            webix.send("/base-info/station/save", [id,provinceCode, farsiName, name, stationId, stationNo, latitude, longitude, altitude, level, isNew], "POST", null);
-                        }
-                    }
-                ]
+                id: 'id', view: "text", disabled: true
             },
-            {}
-
-        ]
+            {
+                id: 'provinceCode',
+                name: 'provinceCode',
+                invalidMessage: 'کد شهرستان باید دقیقا ۴ حرف باشد.',
+                view: "text",
+                label: "کد شهرستان",
+                labelAlign: 'right',
+                textAlign: 'right',
+                labelWidth: 100
+            },
+            {
+                id: 'farsiName',
+                name: 'farsiName',
+                view: "text",
+                label: "نام فارسی",
+                labelAlign: 'right',
+                textAlign: 'right',
+                labelWidth: 100
+            },
+            {
+                id: 'name',
+                name: 'name',
+                invalidMessage: 'درج نام الزامی است.',
+                view: "text",
+                label: "نام",
+                labelAlign: 'right',
+                textAlign: 'right',
+                labelWidth: 100
+            },
+            {
+                id: 'stationId',
+                name: 'stationId',
+                invalidMessage: ' مقدار Station Id باید دقیقا ۴ حرف باشد.',
+                view: "text",
+                label: "Station ID",
+                labelAlign: 'right',
+                textAlign: 'right',
+                labelWidth: 100
+            },
+            {
+                id: 'stationNo',
+                name: 'stationNo',
+                invalidMessage: ' شماره ایستگاه باید عدد باشد.',
+                view: "text",
+                label: "شماره ایستگاه",
+                labelAlign: 'right',
+                textAlign: 'right',
+                labelWidth: 100
+            },
+            {
+                id: 'latitude',
+                name: 'latitude',
+                invalidMessage: ' عرض جغرافیایی باید عدد باشد.',
+                view: "text",
+                label: "عرض جغرافیایی",
+                labelAlign: 'right',
+                textAlign: 'right',
+                labelWidth: 100
+            },
+            {
+                id: 'longitude',
+                name: 'longitude',
+                invalidMessage: ' طول جغرافیایی باید عدد باشد.',
+                view: "text",
+                label: "طول جغرافیایی",
+                labelAlign: 'right',
+                textAlign: 'right',
+                labelWidth: 100
+            },
+            {
+                id: 'altitude',
+                name: 'altitude',
+                invalidMessage: ' ارتفاع باید عدد باشد.',
+                view: "text",
+                label: "ارتفاع",
+                labelAlign: 'right',
+                textAlign: 'right',
+                labelWidth: 100
+            },
+            {
+                id: 'level',
+                name: 'level',
+                invalidMessage: ' سطح باید عدد باشد.',
+                view: "text",
+                label: "سطح",
+                labelAlign: 'right',
+                textAlign: 'right',
+                labelWidth: 100
+            },
+            {
+                inputWidth: 100,
+                view: "button",
+                type: "form",
+                value: "ثبت",
+                align: "left",
+                click: function () {
+                    if (this.getParentView().validate()) {
+                        var id = {name: "id", value: $$("id").getValue().trim()};
+                        var provinceCode = {name: "provinceCode", value: $$("provinceCode").getValue().trim()};
+                        var farsiName = {name: "farsiName", value: $$("farsiName").getValue().trim()};
+                        var name = {name: "name", value: $$("name").getValue().trim()};
+                        var stationId = {name: "stationId", value: $$("stationId").getValue().trim()};
+                        var stationNo = {name: "stationNo", value: $$("stationNo").getValue().trim()};
+                        var latitude = {name: "latitude", value: $$("latitude").getValue().trim()};
+                        var longitude = {name: "longitude", value: $$("longitude").getValue().trim()};
+                        var altitude = {name: "altitude", value: $$("altitude").getValue().trim()};
+                        var level = {name: "level", value: $$("level").getValue().trim()};
+                        var isNew = {name: "isNew", value: false};
+                        webix.send("/base-info/station/save", [id, provinceCode, farsiName, name, stationId, stationNo, latitude, longitude, altitude, level, isNew], "POST", null);
+                    } else {
+                        webix.message({
+                            type: "error",
+                            text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                        })
+                    }
+                }
+            }
+        ],
+        rules: {
+            "provinceCode": function (value) {
+                return value.length == 4;
+            },
+            "name": function (value) {
+                return value.length > 1;
+            },
+            "stationId": function (value) {
+                return value.length == 4
+            },
+            "latitude": function (value) {
+                return webix.rules.isNumber(value);
+            },
+            "longitude": function (value) {
+                return webix.rules.isNumber(value);
+            },
+            "altitude": function (value) {
+                return webix.rules.isNumber(value);
+            },
+            "level": function (value) {
+                return webix.rules.isNumber(value);
+            }
+        }
     });
     /*<![CDATA[*/
     var main_content = {
@@ -196,17 +281,15 @@
                     },
                     {
                         id: "add",
-                        view: "form",
                         cols: [
                             {
-                                type: "form",
-                                borderless: true,
-                                width: 600,
-
-                                rows: [
+                                view: "form",
+                                elements: [
                                     {template: "افزودن ایستگاه", type: "header"},
                                     {
                                         id: 'provinceCode_new',
+                                        name: 'provinceCode_new',
+                                        invalidMessage: 'کد شهرستان باید دقیقا ۴ حرف باشد.',
                                         view: "text",
                                         label: "کد شهرستان",
                                         labelAlign: 'right',
@@ -215,6 +298,7 @@
                                     },
                                     {
                                         id: 'farsiName_new',
+                                        name: 'farsiName_new',
                                         view: "text",
                                         label: "نام فارسی",
                                         labelAlign: 'right',
@@ -223,6 +307,8 @@
                                     },
                                     {
                                         id: 'name_new',
+                                        name: 'name_new',
+                                        invalidMessage: 'درج نام الزامی است.',
                                         view: "text",
                                         label: "نام",
                                         labelAlign: 'right',
@@ -231,6 +317,8 @@
                                     },
                                     {
                                         id: 'stationId_new',
+                                        name: 'stationId_new',
+                                        invalidMessage: ' مقدار Station Id باید دقیقا ۴ حرف باشد.',
                                         view: "text",
                                         label: "Station ID",
                                         labelAlign: 'right',
@@ -239,6 +327,8 @@
                                     },
                                     {
                                         id: 'stationNo_new',
+                                        name: 'stationNo_new',
+                                        invalidMessage: ' شماره ایستگاه باید عدد باشد.',
                                         view: "text",
                                         label: "شماره ایستگاه",
                                         labelAlign: 'right',
@@ -247,6 +337,8 @@
                                     },
                                     {
                                         id: 'latitude_new',
+                                        name: 'latitude_new',
+                                        invalidMessage: ' عرض جغرافیایی باید عدد باشد.',
                                         view: "text",
                                         label: "عرض جغرافیایی",
                                         labelAlign: 'right',
@@ -255,6 +347,8 @@
                                     },
                                     {
                                         id: 'longitude_new',
+                                        name: 'longitude_new',
+                                        invalidMessage: ' طول جغرافیایی باید عدد باشد.',
                                         view: "text",
                                         label: "طول جغرافیایی",
                                         labelAlign: 'right',
@@ -263,6 +357,8 @@
                                     },
                                     {
                                         id: 'altitude_new',
+                                        name: 'altitude_new',
+                                        invalidMessage: ' ارتفاع باید عدد باشد.',
                                         view: "text",
                                         label: "ارتفاع",
                                         labelAlign: 'right',
@@ -271,6 +367,8 @@
                                     },
                                     {
                                         id: 'level_new',
+                                        name: 'level_new',
+                                        invalidMessage: ' سطح باید عدد باشد.',
                                         view: "text",
                                         label: "سطح",
                                         labelAlign: 'right',
@@ -284,44 +382,75 @@
                                         value: "ثبت",
                                         align: "left",
                                         click: function () {
-                                            var provinceCode = {
-                                                name: "provinceCode",
-                                                value: $$("provinceCode_new").getValue().trim()
-                                            };
-                                            var farsiName = {
-                                                name: "farsiName",
-                                                value: $$("farsiName_new").getValue().trim()
-                                            };
-                                            var name = {name: "name", value: $$("name_new").getValue().trim()};
-                                            var stationId = {
-                                                name: "stationId",
-                                                value: $$("stationId_new").getValue().trim()
-                                            };
-                                            var stationNo = {
-                                                name: "stationNo",
-                                                value: $$("stationNo_new").getValue().trim()
-                                            };
-                                            var latitude = {
-                                                name: "latitude",
-                                                value: $$("latitude_new").getValue().trim()
-                                            };
-                                            var longitude = {
-                                                name: "longitude",
-                                                value: $$("longitude_new").getValue().trim()
-                                            };
-                                            var altitude = {
-                                                name: "altitude",
-                                                value: $$("altitude_new").getValue().trim()
-                                            };
-                                            var level = {name: "level", value: $$("level_new").getValue().trim()};
-                                            var isNew = {
-                                                name: "isNew",
-                                                value: true
-                                            };
-                                            webix.send("/base-info/station/save", [provinceCode, farsiName, name, stationId, stationNo, latitude, longitude, altitude, level, isNew], "POST", null);
+                                            if (this.getParentView().validate()) {
+                                                var provinceCode = {
+                                                    name: "provinceCode",
+                                                    value: $$("provinceCode_new").getValue().trim()
+                                                };
+                                                var farsiName = {
+                                                    name: "farsiName",
+                                                    value: $$("farsiName_new").getValue().trim()
+                                                };
+                                                var name = {name: "name", value: $$("name_new").getValue().trim()};
+                                                var stationId = {
+                                                    name: "stationId",
+                                                    value: $$("stationId_new").getValue().trim()
+                                                };
+                                                var stationNo = {
+                                                    name: "stationNo",
+                                                    value: $$("stationNo_new").getValue().trim()
+                                                };
+                                                var latitude = {
+                                                    name: "latitude",
+                                                    value: $$("latitude_new").getValue().trim()
+                                                };
+                                                var longitude = {
+                                                    name: "longitude",
+                                                    value: $$("longitude_new").getValue().trim()
+                                                };
+                                                var altitude = {
+                                                    name: "altitude",
+                                                    value: $$("altitude_new").getValue().trim()
+                                                };
+                                                var level = {name: "level", value: $$("level_new").getValue().trim()};
+                                                var isNew = {
+                                                    name: "isNew",
+                                                    value: true
+                                                };
+                                                webix.send("/base-info/station/save", [provinceCode, farsiName, name, stationId, stationNo, latitude, longitude, altitude, level, isNew], "POST", null);
+                                            } else {
+                                                webix.message({
+                                                    type: "error",
+                                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                                })
+                                            }
                                         }
                                     }
-                                ]
+
+                                ],
+                                rules: {
+                                    "provinceCode_new": function (value) {
+                                        return value && value.length == 4 && !/\W/.test(value)
+                                    },
+                                    "name_new": function (value) {
+                                        return value && !/\W/.test(value)
+                                    },
+                                    "stationId_new": function (value) {
+                                        return value && value.length == 4 && !/\W/.test(value)
+                                    },
+                                    "latitude_new": function (value) {
+                                        return value && webix.rules.isNumber(value)
+                                    },
+                                    "longitude_new": function (value) {
+                                        return value && webix.rules.isNumber(value);
+                                    },
+                                    "altitude_new": function (value) {
+                                        return value && webix.rules.isNumber(value)
+                                    },
+                                    "level_new": function (value) {
+                                        return value && webix.rules.isNumber(value)
+                                    }
+                                }
                             },
                             {}
 

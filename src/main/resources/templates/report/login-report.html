@@ -39,7 +39,7 @@
 
     function getPersianDate(date) {
         var newPersianDate = persianDate(date).pDate;
-        return newPersianDate.year + "/" + newPersianDate.month + "/" + newPersianDate.monthDayNumber + "\t" + newPersianDate.hours + ":" + newPersianDate.minutes + ":" + newPersianDate.seconds;
+        return newPersianDate.year + "/" + newPersianDate.month + "/" + newPersianDate.day + "\t" + newPersianDate.hours + ":" + newPersianDate.minutes + ":" + newPersianDate.seconds;
     }
     /*<![CDATA[*/
     var users = [[${AllUsers}]];
@@ -51,7 +51,6 @@
     var gridBaseData = [];
 
     function refreshSessionGridData() {
-        var items = [];
         var userId = $$("user").getValue();
         if (!userId) {
             webix.message("لطفا کاربر را انتخاب کنید.");
@@ -74,6 +73,7 @@
                 },
                 "GET",
                 function (response) {
+                    $$("sessionGrid").clearAll();
                     $$("sessionGrid").parse(response.userSessionInformations);
                     $$("sessionGrid").refresh();
                 },
@@ -85,7 +85,6 @@
     }
 
     function refreshFailureGridData() {
-        var items = [];
         var username = $$("failureUsername").getValue();
 
         var startDate = $$("failureFromDate").getValue().trim();
@@ -107,6 +106,7 @@
                 },
                 "GET",
                 function (response) {
+                    $$("failureGrid").clearAll();
                     $$("failureGrid").parse(response.loginFailureLogs);
                     $$("failureGrid").refresh();
                 },
@@ -202,10 +202,20 @@
                                 inputWidth: 100,
                                 view: "button",
                                 type: "form",
-                                value: "خروجی اکسل",
+                                value: "خروجی CSV",
                                 align: "right",
                                 click: function () {
-                                    webix.toExcel($$("sessionGrid"));
+                                    webix.toCSV($$("sessionGrid"), {
+                                        filename: "اطلاعات ورود و خروج کاربران",
+                                        name: "اطلاعات ورود و خروج کاربران",
+                                        columns: {
+                                            "user": {header: "نام کاربری", width: 150},
+                                            "ip": {header: "IP", width: 300},
+                                            "sessionId": {header: "شناسه Session", width: 300},
+                                            "startDate": {header: "تاریخ شروع\t", width: 200},
+                                            "endDate": {header: "تاریخ پایان", width: 200}
+                                        }
+                                    });
                                 }
                             },
                             {
@@ -304,7 +314,15 @@
                                 value: "خروجی CSV",
                                 align: "right",
                                 click: function () {
-                                    webix.toCSV($$("failureGrid"));
+                                    webix.toCSV($$("failureGrid"),{
+                                        filename: "اطلاعات ورود ناموفق کاربران",
+                                        name: "اطلاعات ورود ناموفق کاربران",
+                                        columns: {
+                                            "username": {header: "نام کاربری", width: 150},
+                                            "ip": {header: "IP", width: 300},
+                                            "dateTime": {header: "تاریخ \t ساعت", width: 200}
+                                        }
+                                    });
                                 }
                             },
                             {

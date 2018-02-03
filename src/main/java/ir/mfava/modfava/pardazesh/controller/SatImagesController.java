@@ -56,9 +56,9 @@ public class SatImagesController extends BaseController {
                          HttpServletResponse httpResponse) throws IOException {
         File satImage = null;
         if (imageType.equals("cloud")) {
-            satImage = new File(getSatImageProcessedDirectory() + filename);
+            satImage = new File(getSatImageProcessedDirectory() + "/" + filename);
         } else if (imageType.equals("dust")) {
-            satImage = new File(getDustImageProcessedDirectory() + filename);
+            satImage = new File(getDustImageProcessedDirectory()+ "/" + filename);
         }
         if (satImage != null) {
             IOUtils.copy(new FileInputStream(satImage), httpResponse.getOutputStream());

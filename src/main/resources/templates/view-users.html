@@ -60,16 +60,17 @@
     webix.ui({
         id: "edit-user",
         container: "editUserDialog",
-        view: "form",
         cols: [
             {
-                type: "form",
+                view: "form",
                 borderless: true,
                 width: 400,
-                rows: [
+                elements: [
                     {template: "ویرایش مشخصات", type: "header"},
                     {
                         id: 'username',
+                        name: 'username',
+                        invalidMessage: "این فیلد الزامی است.",
                         view: "text",
                         label: "نام کاربری",
                         labelAlign: 'right',
@@ -78,6 +79,8 @@
                     },
                     {
                         id: 'firstName',
+                        name: 'firstName',
+                        invalidMessage: "این فیلد الزامی است.",
                         view: "text",
                         label: "نام",
                         labelAlign: 'right',
@@ -86,6 +89,8 @@
                     },
                     {
                         id: 'lastName',
+                        name: 'lastName',
+                        invalidMessage: "این فیلد الزامی است.",
                         view: "text",
                         label: "نام خانوادگی",
                         labelAlign: 'right',
@@ -94,6 +99,8 @@
                     },
                     {
                         id: 'nationalCode',
+                        name: 'nationalCode',
+                        invalidMessage: "این فیلد الزامی است، تنها مقادیر عددی میپذیرد و  باید حداکثر 10 رقم باشد.",
                         view: "text",
                         label: "کد ملی",
                         labelAlign: 'right',
@@ -102,6 +109,8 @@
                     },
                     {
                         id: 'personNumber',
+                        name: 'personNumber',
+                        invalidMessage: "لطفا فقط عدد وارد کنید.",
                         view: "text",
                         label: "کد پرسنلی",
                         labelAlign: 'right',
@@ -130,8 +139,9 @@
                     },
                     {
                         id: "password",
+                        name: "password",
                         view: "text",
-                        type: "password",
+                        type: 'password',
                         value: null,
                         label: "رمز عبور جدید",
                         labelAlign: 'right',
@@ -141,8 +151,9 @@
                     },
                     {
                         id: "re-password",
+                        name: "re-password",
                         view: "text",
-                        type: "password",
+                        type: 'password',
                         value: null,
                         label: "تکرار رمز عبور جدید",
                         labelAlign: 'right',
@@ -157,43 +168,61 @@
                         value: "ثبت",
                         align: "left",
                         click: function () {
-                            var username = {name: "username", value: $$("username").getValue().trim()};
-                            var firstName = {name: "firstName", value: $$("firstName").getValue().trim()};
-                            var lastName = {name: "lastName", value: $$("lastName").getValue().trim()};
-                            var nationalCode = {name: "nationalCode", value: $$("nationalCode").getValue().trim()};
-                            var personNumber = {name: "personNumber", value: $$("personNumber").getValue().trim()};
-                            var enabled = {name: "enabled", value: $$("enabled").getValue()};
-                            var locked = {name: "locked", value: $$("locked").getValue()};
-                            var password = {name: "password", value: $$("password").getValue().trim()};
-                            var rePassword = {name: "re-password", value: $$("re-password").getValue().trim()};
-                            var isNew = {name: "isNew", value: false};
+                            if (this.getParentView().validate()) {
+                                var username = {name: "username", value: $$("username").getValue().trim()};
+                                var firstName = {name: "firstName", value: $$("firstName").getValue().trim()};
+                                var lastName = {name: "lastName", value: $$("lastName").getValue().trim()};
+                                var nationalCode = {name: "nationalCode", value: $$("nationalCode").getValue().trim()};
+                                var personNumber = {name: "personNumber", value: $$("personNumber").getValue().trim()};
+                                var enabled = {name: "enabled", value: $$("enabled").getValue()};
+                                var locked = {name: "locked", value: $$("locked").getValue()};
+                                var password = {name: "password", value: $$("password").getValue().trim()};
+                                var rePassword = {name: "re-password", value: $$("re-password").getValue().trim()};
+                                var isNew = {name: "isNew", value: false};
 
-                            if(password.value.length > 0) {
-                                if (password.value !== rePassword.value) {
-                                    webix.alert("رمز عبور وارد شده با تکرار آن برابر نیست.");
-                                    return;
-                                }
-                                if (!isGreaterThanOrEquals(password.value.length, sessionPasswordLength)) {
-                                    webix.alert("رمز عبور باید حداقل شامل " + sessionPasswordLength + " کاراکتر باشد.");
-                                    return;
-                                }
-                                if (!passwordHasAcceptableComplexity(password.value)) {
-                                    if (sessionPasswordComplexity === 1) {
-                                        webix.alert("رمز عبور باید حداقل شامل یک عدد باشد.");
-                                    } else if (sessionPasswordComplexity === 2) {
-                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ و یک حرف کوچک باشد.");
-                                    } else if (sessionPasswordComplexity === 3) {
-                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک و یک عدد باشد.");
-                                    } else if (sessionPasswordComplexity === 4) {
-                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک علامت خاص باشد.");
+                                if (password.value.length > 0) {
+                                    if (password.value !== rePassword.value) {
+                                        webix.alert("رمز عبور وارد شده با تکرار آن برابر نیست.");
+                                        return;
                                     }
-                                    return;
+                                    if (!isGreaterThanOrEquals(password.value.length, sessionPasswordLength)) {
+                                        webix.alert("رمز عبور باید حداقل شامل " + sessionPasswordLength + " کاراکتر باشد.");
+                                        return;
+                                    }
+                                    if (!passwordHasAcceptableComplexity(password.value)) {
+                                        if (sessionPasswordComplexity === 1) {
+                                            webix.alert("رمز عبور باید حداقل شامل یک عدد باشد.");
+                                        } else if (sessionPasswordComplexity === 2) {
+                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ و یک حرف کوچک باشد.");
+                                        } else if (sessionPasswordComplexity === 3) {
+                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک و یک عدد باشد.");
+                                        } else if (sessionPasswordComplexity === 4) {
+                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک علامت خاص باشد.");
+                                        }
+                                        return;
+                                    }
                                 }
+                                webix.send("/base-info/user/save", [username, firstName, lastName, nationalCode, personNumber, enabled, locked, password, rePassword, isNew], "POST", null);
+                            } else {
+                                webix.message({
+                                    type: "error",
+                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                })
                             }
-                            webix.send("/base-info/user/save", [username, firstName, lastName, nationalCode, personNumber, enabled, locked,password, rePassword, isNew], "POST", null);
                         }
                     }
-                ]
+                ],
+                rules: {
+                    "username": webix.rules.isNotEmpty,
+                    "firstName": webix.rules.isNotEmpty,
+                    "lastName": webix.rules.isNotEmpty,
+                    "nationalCode": function (value) {
+                        return 11 > value.length
+                    },
+                    "personNumber": function (value) {
+                        return !value || webix.rules.isNumber(value)
+                    }
+                }
             },
             {}
 
@@ -404,16 +433,18 @@
                     },
                     {
                         id: "add",
-                        view: "form",
+
                         cols: [
                             {
-                                type: "form",
+                                view: "form",
                                 borderless: true,
                                 width: 400,
-                                rows: [
+                                elements: [
                                     {template: "افزودن کاربر", type: "header"},
                                     {
                                         id: 'username_new',
+                                        name: 'username_new',
+                                        invalidMessage: "این فیلد الزامی است.",
                                         view: "text",
                                         label: "نام کاربری",
                                         labelAlign: 'right',
@@ -422,6 +453,8 @@
                                     },
                                     {
                                         id: 'firstName_new',
+                                        name: 'firstName_new',
+                                        invalidMessage: "این فیلد الزامی است.",
                                         view: "text",
                                         label: "نام",
                                         labelAlign: 'right',
@@ -430,6 +463,8 @@
                                     },
                                     {
                                         id: 'lastName_new',
+                                        name: 'lastName_new',
+                                        invalidMessage: "این فیلد الزامی است.",
                                         view: "text",
                                         label: "نام خانوادگی",
                                         labelAlign: 'right',
@@ -438,6 +473,8 @@
                                     },
                                     {
                                         id: 'nationalCode_new',
+                                        name: 'nationalCode_new',
+                                        invalidMessage: "این فیلد الزامی است، تنها مقادیر عددی میپذیرد و  باید حداکثر 10 رقم باشد.",
                                         view: "text",
                                         label: "کد ملی",
                                         labelAlign: 'right',
@@ -446,6 +483,8 @@
                                     },
                                     {
                                         id: 'personNumber_new',
+                                        name: 'personNumber_new',
+                                        invalidMessage: "لطفا فقط عدد وارد کنید.",
                                         view: "text",
                                         label: "کد پرسنلی",
                                         labelAlign: 'right',
@@ -474,6 +513,7 @@
                                     },
                                     {
                                         id: "password_new",
+                                        name: "password_new",
                                         view: "text",
                                         type: 'password',
                                         value: null,
@@ -485,6 +525,7 @@
                                     },
                                     {
                                         id: "re-password_new",
+                                        name: "re-password_new",
                                         view: "text",
                                         type: 'password',
                                         value: null,
@@ -501,65 +542,89 @@
                                         value: "ثبت",
                                         align: "left",
                                         click: function () {
-                                            var username = {
-                                                name: "username",
-                                                value: $$("username_new").getValue().trim()
-                                            };
-                                            var firstName = {
-                                                name: "firstName",
-                                                value: $$("firstName_new").getValue().trim()
-                                            };
-                                            var lastName = {
-                                                name: "lastName",
-                                                value: $$("lastName_new").getValue().trim()
-                                            };
-                                            var nationalCode = {
-                                                name: "nationalCode",
-                                                value: $$("nationalCode_new").getValue().trim()
-                                            };
-                                            var personNumber = {
-                                                name: "personNumber",
-                                                value: $$("personNumber_new").getValue().trim()
-                                            };
-                                            var enabled = {name: "enabled", value: $$("enabled_new").getValue().trim()};
-                                            var locked = {name: "locked", value: $$("locked_new").getValue().trim()};
-                                            var password = {
-                                                name: "password",
-                                                value: $$("password_new").getValue().trim()
-                                            };
-                                            var rePassword = {
-                                                name: "re-password",
-                                                value: $$("re-password_new").getValue().trim()
-                                            };
-                                            var isNew = {name: "isNew", value: true};
+                                            if (this.getParentView().validate()) {
+                                                var username = {
+                                                    name: "username",
+                                                    value: $$("username_new").getValue().trim()
+                                                };
+                                                var firstName = {
+                                                    name: "firstName",
+                                                    value: $$("firstName_new").getValue().trim()
+                                                };
+                                                var lastName = {
+                                                    name: "lastName",
+                                                    value: $$("lastName_new").getValue().trim()
+                                                };
+                                                var nationalCode = {
+                                                    name: "nationalCode",
+                                                    value: $$("nationalCode_new").getValue().trim()
+                                                };
+                                                var personNumber = {
+                                                    name: "personNumber",
+                                                    value: $$("personNumber_new").getValue().trim()
+                                                };
+                                                var enabled = {
+                                                    name: "enabled",
+                                                    value: $$("enabled_new").getValue().trim()
+                                                };
+                                                var locked = {
+                                                    name: "locked",
+                                                    value: $$("locked_new").getValue().trim()
+                                                };
+                                                var password = {
+                                                    name: "password",
+                                                    value: $$("password_new").getValue().trim()
+                                                };
+                                                var rePassword = {
+                                                    name: "re-password",
+                                                    value: $$("re-password_new").getValue().trim()
+                                                };
+                                                var isNew = {name: "isNew", value: true};
 
-                                            if(password.value.length > 0) {
-                                                if (password.value !== rePassword.value) {
-                                                    webix.alert("رمز عبور وارد شده با تکرار آن برابر نیست.");
-                                                    return;
-                                                }
-                                                if (!isGreaterThanOrEquals(password.value.length, sessionPasswordLength)) {
-                                                    webix.alert("رمز عبور باید حداقل شامل " + sessionPasswordLength + " کاراکتر باشد.");
-                                                    return;
-                                                }
-                                                if (!passwordHasAcceptableComplexity(password.value)) {
-                                                    if (sessionPasswordComplexity === 1) {
-                                                        webix.alert("رمز عبور باید حداقل شامل یک عدد باشد.");
-                                                    } else if (sessionPasswordComplexity === 2) {
-                                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ و یک حرف کوچک باشد.");
-                                                    } else if (sessionPasswordComplexity === 3) {
-                                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک و یک عدد باشد.");
-                                                    } else if (sessionPasswordComplexity === 4) {
-                                                        webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک علامت خاص باشد.");
+                                                if (password.value.length > 0) {
+                                                    if (password.value !== rePassword.value) {
+                                                        webix.alert("رمز عبور وارد شده با تکرار آن برابر نیست.");
+                                                        return;
                                                     }
-                                                    return;
+                                                    if (!isGreaterThanOrEquals(password.value.length, sessionPasswordLength)) {
+                                                        webix.alert("رمز عبور باید حداقل شامل " + sessionPasswordLength + " کاراکتر باشد.");
+                                                        return;
+                                                    }
+                                                    if (!passwordHasAcceptableComplexity(password.value)) {
+                                                        if (sessionPasswordComplexity === 1) {
+                                                            webix.alert("رمز عبور باید حداقل شامل یک عدد باشد.");
+                                                        } else if (sessionPasswordComplexity === 2) {
+                                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ و یک حرف کوچک باشد.");
+                                                        } else if (sessionPasswordComplexity === 3) {
+                                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک و یک عدد باشد.");
+                                                        } else if (sessionPasswordComplexity === 4) {
+                                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک علامت خاص باشد.");
+                                                        }
+                                                        return;
+                                                    }
+                                                } else {
+                                                    webix.message({
+                                                        type: "error",
+                                                        text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                                    })
                                                 }
                                             }
 
                                             webix.send("/base-info/user/save", [username, firstName, lastName, nationalCode, personNumber, enabled, locked, password, rePassword, isNew], "POST", null);
                                         }
                                     }
-                                ]
+                                ],
+                                rules: {
+                                    "username_new": webix.rules.isNotEmpty,
+                                    "firstName_new": webix.rules.isNotEmpty,
+                                    "lastName_new": webix.rules.isNotEmpty,
+                                    "nationalCode_new": function (value) {
+                                        return value && value.length <= 10 && webix.rules.isNumber(value);
+                                    },
+                                    "personNumber_new": function (value) {
+                                        return !value || webix.rules.isNumber(value);
+                                    }
+                                }
                             },
                             {}
 
