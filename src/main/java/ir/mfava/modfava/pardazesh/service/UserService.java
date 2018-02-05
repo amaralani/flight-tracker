@@ -1,7 +1,11 @@
 package ir.mfava.modfava.pardazesh.service;
 
 
+import ir.mfava.modfava.pardazesh.model.Role;
 import ir.mfava.modfava.pardazesh.model.User;
+
+import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author Drago
@@ -12,4 +16,6 @@ public interface UserService extends BaseService<User> {
     User save(User user);
 
     User findByUsername(String username);
+
+    List<BigInteger> getRoleUsers(Long roleId);
 }

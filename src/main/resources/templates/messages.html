@@ -36,10 +36,16 @@
 
     /*<![CDATA[*/
     var users = [[${users}]];
+    var roles = [[${roles}]];
     var comboUsers = [];
+    var comboRoles = [];
 
     $.each(users, function (index, user) {
         comboUsers.push({id: user.id, value: user.firstName + " " + user.lastName})
+    });
+
+    $.each(roles, function (index, role) {
+        comboRoles.push({id: role.id, value: role.label})
     });
 
     var gridBaseData = [[${userMessages}]];
@@ -203,7 +209,8 @@
                                     {
                                         id: 'receiverIds',
                                         view: "multicombo",
-                                        label: "گیرندگان",
+                                        labelWidth : 150,
+                                        label: "کاربران دریافت کننده",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         suggest: {
@@ -214,14 +221,30 @@
                                         }
                                     },
                                     {
+                                        id: 'roleIds',
+                                        view: "multicombo",
+                                        labelWidth : 150,
+                                        label: "نقش های دریافت کننده",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        suggest: {
+                                            body: {
+                                                data: comboRoles,
+                                                template: webix.template("#value#")
+                                            }
+                                        }
+                                    },
+                                    {
                                         id: "subject",
                                         view: "text",
+                                        labelWidth : 150,
                                         label: "موضوع",
                                         labelAlign: 'right',
                                         textAlign: 'right'
                                     },
                                     {
                                         id: "text",
+                                        labelWidth : 150,
                                         view: "textarea",
                                         label: "متن پیام",
                                         labelAlign: 'right',
@@ -235,6 +258,7 @@
                                         align: "left",
                                         click: function () {
                                             var receiverIds = {name: "receiverIds", value: $$("receiverIds").getValue()};
+                                            var roleIds = {name: "roleIds", value: $$("roleIds").getValue()};
                                             var subject = {
                                                 name: "subject",
                                                 value: $$("subject").getValue().trim()
@@ -243,7 +267,7 @@
                                                 name: "text",
                                                 value: $$("text").getValue().trim()
                                             };
-                                            webix.send("/message/save", [receiverIds, subject, lastName], "POST", null);
+                                            webix.send("/message/save", [receiverIds, roleIds, subject, lastName], "POST", null);
                                         }
                                     }
                                 ]
