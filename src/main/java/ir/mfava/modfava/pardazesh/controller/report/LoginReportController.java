@@ -55,12 +55,21 @@ public class LoginReportController extends BaseController {
             if (realStartDate == null) throw new Exception("bad format");
             realEndDate = DateUtils.convertPersianToJulian(endDate);
             if (realEndDate == null) throw new Exception("bad format");
-
+            realEndDate = DateUtils.addDays(realEndDate, 1);
         } catch (Exception e) {
             return JSONMessage.Error("خطا در خواندن تاریخ. لطفا فرمت تاریخ را بررسی و مجددا امتحان کنید.");
         }
 
         List<UserSessionInformation> userSessionInformations = userSessionInformationService.searchSessionInformations(userId, realStartDate, realEndDate);
+        Map<String, Object> map = new HashMap<>();
+        map.put("userSessionInformations", userSessionInformations);
+        return JSONMessage.Success(map);
+    }
+
+    @ResponseBody
+    @RequestMapping("online-users")
+    public JSONMessage getOnlineUsers() {
+        List<UserSessionInformation> userSessionInformations = userSessionInformationService.getOnlineUsers();
         Map<String, Object> map = new HashMap<>();
         map.put("userSessionInformations", userSessionInformations);
         return JSONMessage.Success(map);
@@ -84,15 +93,15 @@ public class LoginReportController extends BaseController {
             if (realStartDate == null) throw new Exception("bad format");
             realEndDate = DateUtils.convertPersianToJulian(endDate);
             if (realEndDate == null) throw new Exception("bad format");
-
+            realEndDate = DateUtils.addDays(realEndDate, 1);
         } catch (Exception e) {
             return JSONMessage.Error("خطا در خواندن تاریخ. لطفا فرمت تاریخ را بررسی و مجددا امتحان کنید.");
         }
 
-        if(username.isEmpty()){
+        if (username.isEmpty()) {
             username = null;
         }
-        if(ip.isEmpty()){
+        if (ip.isEmpty()) {
             ip = null;
         }
         List<LoginFailureLog> loginFailureLogs = loginFailureLogService.getByDateAndUsername(realStartDate, realEndDate, username, ip);

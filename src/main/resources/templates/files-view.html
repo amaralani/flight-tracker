@@ -6,6 +6,30 @@
     <style>
         .webix_unit_header {
             text-align: right;
+            color: white;
+            font-size: large;
+            font-weight: bold;
+            height: 35px !important;
+        }
+
+        .overall‌ {
+
+        }
+
+        .title {
+            float: right;
+            padding: 0 15px;
+            min-width: 100px;
+        }
+
+        .download {
+            width: 60px;
+            float: right;
+            text-align: center;
+        }
+        .lightskyblue-button {
+            border-radius: 10px;
+            background: radial-gradient(lightskyblue,lightgray) !important;
         }
     </style>
 </head>
@@ -28,11 +52,11 @@
             {
                 view: "unitlist",
                 id: "list",
-                select: true,
+                select: false,
                 uniteBy: function (file) {
                     return file.fileType.name;
                 },
-                template: "<a href='/files/get/#id#'>#fileName#</a>",
+                template: "<div class='overall'><div class='title'>#title#</div> <div class='download lightskyblue-button'><a class='' href='/files/get/#id#'> دانلود<i class='webix_icon fa-download has-cursor-pointer green'></i> </a> </div> </div>",
                 data: [[${uploadFiles}]]
             }
         ]

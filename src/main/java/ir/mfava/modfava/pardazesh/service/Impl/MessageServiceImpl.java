@@ -4,7 +4,7 @@ import ir.mfava.modfava.pardazesh.model.Message;
 import ir.mfava.modfava.pardazesh.model.User;
 import ir.mfava.modfava.pardazesh.repository.MessageRepository;
 import ir.mfava.modfava.pardazesh.service.MessageService;
-import ir.mfava.modfava.pardazesh.service.RoleService;
+import ir.mfava.modfava.pardazesh.service.UserGroupService;
 import ir.mfava.modfava.pardazesh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -21,8 +21,6 @@ public class MessageServiceImpl implements MessageService {
     private MessageRepository messageRepository;
     @Autowired
     private UserService userService;
-    @Autowired
-    private RoleService roleService;
 
     @Override
     public boolean exists(Message entity) {
@@ -46,13 +44,13 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
-    public void sendMessage(String[] userIds, Message messageExample, String[] roleIds) {
+    public void sendMessage(String[] userIds, Message messageExample, String[] groupIds) {
         for (String stringUserId : userIds) {
             saveNewMessage(messageExample, userService.getById(Long.valueOf(stringUserId)));
         }
-        for (String roleId : roleIds) {
-            for (BigInteger userId : userService.getRoleUsers(Long.valueOf(roleId))) {
-                saveNewMessage(messageExample, userService.getById(userId.longValue()));
+        for (String groupId : groupIds) {
+            for (User user: userService.getUsersByGroupId(Long.valueOf(groupId))) {
+                saveNewMessage(messageExample, user);
             }
         }
     }

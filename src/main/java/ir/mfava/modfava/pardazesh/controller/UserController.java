@@ -5,10 +5,9 @@ import ir.mfava.modfava.pardazesh.model.Configuration;
 import ir.mfava.modfava.pardazesh.model.DTO.JSONMessage;
 import ir.mfava.modfava.pardazesh.model.Role;
 import ir.mfava.modfava.pardazesh.model.User;
+import ir.mfava.modfava.pardazesh.model.UserGroup;
 import ir.mfava.modfava.pardazesh.security.SecurityService;
-import ir.mfava.modfava.pardazesh.service.ConfigurationService;
-import ir.mfava.modfava.pardazesh.service.RoleService;
-import ir.mfava.modfava.pardazesh.service.UserService;
+import ir.mfava.modfava.pardazesh.service.*;
 import ir.mfava.modfava.pardazesh.util.ValidatorUtils;
 import ir.mfava.modfava.pardazesh.validator.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,7 @@ import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @Controller
-public class UserController {
+public class UserController extends BaseController {
     @Autowired
     private UserService userService;
     @Autowired
@@ -46,11 +45,16 @@ public class UserController {
     private SessionRegistry sessionRegistry;
     @Autowired
     private ConfigurationService configurationService;
+    @Autowired
+    private UserSessionInformationService userSessionInformationService;
+    @Autowired
+    private UserGroupService userGroupService;
 
     @RequestMapping(value = {"/base-info/user"}, method = RequestMethod.GET)
     public String getAllUsers(ModelMap map, HttpSession session) {
         map.put("users", userService.getAll());
         map.put("roles", roleService.getAll());
+        map.put("userGroups", userGroupService.getAll());
         map.put("successMessage", session.getAttribute("successMessage"));
         map.put("errorMessage", session.getAttribute("errorMessage"));
         session.removeAttribute("successMessage");
@@ -68,6 +72,7 @@ public class UserController {
                            @RequestParam(name = "locked") Boolean locked,
                            @RequestParam(name = "password", required = false) String newPassword,
                            @RequestParam(name = "re-password", required = false) String newPasswordRepeat,
+                           @RequestParam(name = "userGroup") Long userGroupId,
                            @RequestParam(name = "isNew", required = false) Boolean isNew,
                            HttpSession session) {
         User user;
@@ -85,6 +90,7 @@ public class UserController {
         user.setLastName(lastName);
         user.setNationalCode(nationalCode);
         user.setPersonNumber(personNumber);
+        user.setUserGroupId(userGroupId);
 
         List<Configuration> configurationList = configurationService.getAll();
         if (!configurationList.isEmpty() && newPassword != null && !newPassword.isEmpty()) {
@@ -142,6 +148,49 @@ public class UserController {
         } catch (Exception ex) {
             ex.printStackTrace();
             session.setAttribute("errorMessage", "خطا در ثبت اطلاعات.");
+        }
+        return "redirect:/base-info/user";
+    }
+
+    @RequestMapping(value = {"/base-info/user/group/save"}, method = RequestMethod.POST)
+    public String saveUserGroup(@RequestParam(name = "name") String name,
+                                @RequestParam(name = "userGroupId", required = false) Long id,
+                                @RequestParam(name = "isNew", required = false) Boolean isNew,
+                                HttpSession session) {
+        UserGroup userGroup;
+        if (isNew) {
+            userGroup = new UserGroup();
+        } else {
+            userGroup = userGroupService.getById(id);
+        }
+        userGroup.setName(name);
+        try {
+            userGroupService.save(userGroup);
+            session.setAttribute("successMessage", "ثبت گروه کاربری با موفقیت انجام شد.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            session.setAttribute("errorMessage", "خطا در ثبت اطلاعات.");
+        }
+        return "redirect:/base-info/user";
+    }
+
+    @RequestMapping(value = {"/base-info/user/group/delete"}, method = RequestMethod.DELETE)
+    public String deleteUserGroup(@RequestParam(name = "id", required = false) Long id,
+                                  HttpSession session) {
+        UserGroup userGroup = userGroupService.getById(id);
+        User user = new User();
+        user.setUserGroupId(userGroup.getId());
+        if (userService.exists(user)) {
+            session.setAttribute("errorMessage", "کاربر عضو این گروه موجود است و امکان حذف آن وجود ندارد.");
+        } else {
+            try {
+                userGroupService.remove(userGroup);
+                session.setAttribute("successMessage", "حذف گروه کاربری با موفقیت انجام شد.");
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                session.setAttribute("errorMessage", "خطا در حذف اطلاعات.");
+            }
         }
         return "redirect:/base-info/user";
     }
@@ -240,7 +289,6 @@ public class UserController {
 
         for (SessionInformation info : infos) {
             info.expireNow(); //expire the session
-//            sessionRegistry.removeSessionInformation(info.getSessionId()); //remove session
         }
         return "redirect:/login?logout";
     }
@@ -248,6 +296,11 @@ public class UserController {
     @RequestMapping(value = {"/", "/welcome"}, method = RequestMethod.GET)
     public String welcome(ModelMap map, Authentication authentication) {
         if (authentication != null && authentication.isAuthenticated()) {
+            try {
+                map.put("userLastSessions", userSessionInformationService.getTop10LastUserSessions(getUser(authentication)));
+            } catch (Exception ignore) {
+
+            }
             map.put("isAuthenticated", true);
         }
         return "welcome";

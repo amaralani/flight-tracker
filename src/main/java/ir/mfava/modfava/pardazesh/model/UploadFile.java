@@ -12,6 +12,8 @@ public class UploadFile extends BaseModel{
 
     private String fileName;
 
+    private String title;
+
     @ManyToOne
     @JoinColumn
     private UploadFileType fileType;
@@ -61,6 +63,14 @@ public class UploadFile extends BaseModel{
         this.deleted = deleted;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -68,7 +78,7 @@ public class UploadFile extends BaseModel{
 
         UploadFile that = (UploadFile) o;
 
-        return getId() != null ? getId().equals(that.getId()) : that.getId() == null && (getFileName() != null ? getFileName().equals(that.getFileName()) : that.getFileName() == null && (getFileType() != null ? getFileType().equals(that.getFileType()) : that.getFileType() == null && (getCreateDate() != null ? getCreateDate().equals(that.getCreateDate()) : that.getCreateDate() == null && (getDeleted() != null ? getDeleted().equals(that.getDeleted()) : that.getDeleted() == null))));
+        return getId() != null ? getId().equals(that.getId()) : that.getId() == null && (getFileName() != null ? getFileName().equals(that.getFileName()) : that.getFileName() == null && (getTitle() != null ? getTitle().equals(that.getTitle()) : that.getTitle() == null && (getFileType() != null ? getFileType().equals(that.getFileType()) : that.getFileType() == null && (getCreateDate() != null ? getCreateDate().equals(that.getCreateDate()) : that.getCreateDate() == null && (getDeleted() != null ? getDeleted().equals(that.getDeleted()) : that.getDeleted() == null)))));
 
     }
 
@@ -76,6 +86,7 @@ public class UploadFile extends BaseModel{
     public int hashCode() {
         int result = getId() != null ? getId().hashCode() : 0;
         result = 31 * result + (getFileName() != null ? getFileName().hashCode() : 0);
+        result = 31 * result + (getTitle() != null ? getTitle().hashCode() : 0);
         result = 31 * result + (getFileType() != null ? getFileType().hashCode() : 0);
         result = 31 * result + (getCreateDate() != null ? getCreateDate().hashCode() : 0);
         result = 31 * result + (getDeleted() != null ? getDeleted().hashCode() : 0);
@@ -87,6 +98,7 @@ public class UploadFile extends BaseModel{
         return "UploadFile{" +
                 "id=" + id +
                 ", fileName='" + fileName + '\'' +
+                ", title='" + title + '\'' +
                 ", fileType=" + fileType +
                 ", createDate=" + createDate +
                 ", deleted=" + deleted +

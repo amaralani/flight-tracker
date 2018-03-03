@@ -17,29 +17,60 @@
 </div>
 
 <div id="session-grid-container"></div>
+<div id="online-grid-container"></div>
 <div id="failure-grid-container"></div>
 
-
+<div id="view-roles-dialog">
+    <div id="role-list"></div>
+</div>
 <script th:inline="javascript">
     function equals(a, b) {
         a = a.toString().toLowerCase();
         return a.indexOf(b) !== -1;
     }
 
-    function oneForAll(value, filter, obj) {
-        if (obj.stationId)
-            return !!equals(obj.metar, filter);
-        return false;
+    function oneForAllOnline(value, filter, obj) {
+            if (equals(obj.user.username, filter)) return true;
+            if (equals(obj.user.firstName, filter)) return true;
+            if (equals(obj.user.lastName, filter)) return true;
+            if (equals(obj.ip, filter)) return true;
+            return !!equals(getPersianDate(new Date(obj.startDate), filter));
+    }
+
+    function oneForAllSession(value, filter, obj) {
+        if (equals(obj.user.username, filter)) return true;
+        if (equals(obj.ip, filter)) return true;
+        if (equals(obj.sessionId, filter)) return true;
+        if (equals(getPersianDate(obj.startDate), filter)) return true;
+        return !!equals(getPersianDate(obj.endDate), filter);
+    }
+
+    function oneForAllFailure(value, filter, obj) {
+        if (equals(obj.username, filter)) return true;
+        if (equals(obj.ip, filter)) return true;
+        return !!equals(getPersianDate(obj.dateTime), filter);
     }
 
     function getUsername(user) {
         return user.username;
     }
 
+    function getFullName(user) {
+        return (user.firstName || ' ') + " " + (user.lastName || ' ');
+    }
+
+    function getRoles(user) {
+        var rolesString = '<div style="direction: rtl;text-align: right"><ul> ';
+        $.each(user.roles, function (index, role) {
+            rolesString = rolesString + ' <li>' + role.label + '</li>';
+        });
+        rolesString = rolesString + "</ul></div>";
+        return rolesString;
+    }
 
     function getPersianDate(date) {
         var newPersianDate = persianDate(date).pDate;
-        return newPersianDate.year + "/" + newPersianDate.month + "/" + newPersianDate.day + "\t" + newPersianDate.hours + ":" + newPersianDate.minutes + ":" + newPersianDate.seconds;
+        return newPersianDate.year + "/" + newPersianDate.month + "/" + newPersianDate.date + "\t" + newPersianDate.hours + ":" + newPersianDate.minutes + ":" + newPersianDate.seconds;
     }
     /*<![CDATA[*/
     var users = [[${AllUsers}]];
@@ -76,6 +107,24 @@
                     $$("sessionGrid").clearAll();
                     $$("sessionGrid").parse(response.userSessionInformations);
                     $$("sessionGrid").refresh();
+                },
+                function (error) {
+                    webix.message(error.message);
+                }
+        );
+
+    }
+
+    function refreshOnlineGridData() {
+
+        ajaxCall(
+                "/report/login-report/online-users",
+                {},
+                "GET",
+                function (response) {
+                    $$("onlineGrid").clearAll();
+                    $$("onlineGrid").parse(response.userSessionInformations);
+                    $$("onlineGrid").refresh();
                 },
                 function (error) {
                     webix.message(error.message);
@@ -126,6 +175,7 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "online", value: "مشاهده کاربران آنلاین", width: 250},
                 {id: "sessions", value: "مشاهده ورود و خروج کاربران", width: 250},
                 {id: "loginFailures", value: "مشاهده لاگین های ناموفق", width: 250}
             ]
@@ -133,6 +183,71 @@
             {
                 view: "multiview",
                 cells: [
+                    {
+                        id: "online",
+                        rows: [
+                            {
+                                cols: [
+                                    {
+                                        rows: [
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                icon : "refresh",
+                                                value: "جستجو",
+                                                align: "left",
+                                                click: function () {
+                                                    refreshOnlineGridData();
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {},
+                                    {}
+                                ]
+
+                            },
+                            {
+                                id: "onlineGrid",
+                                container: "online-grid-container",
+                                view: "datatable",
+                                columns: [
+                                    {
+                                        id: "user",
+                                        header: ["نام کاربری", {
+                                            content: "textFilter",
+                                            compare: oneForAllOnline,
+                                            placeholder: "جستجو",
+                                            colspan: 2
+                                        }],
+                                        format: getUsername
+                                    },
+                                    {id: "user", header: ["نام و نام خانوادگی", null], fillspace: true, format: getFullName},
+                                    {id: "ip", header: ["آدرس", null], fillspace: true},
+                                    {id: "startDate", header: ["شروع", null], fillspace: true, format: getPersianDate},
+                                    {id: "user", header: ["نقش ها", null], fillspace: true,template: "<span class='webix_icon fa-sticky-note has-cursor-pointer green view_roles'></span>"}
+
+                                ],
+                                select: "row",
+                                tooltip: true,
+                                navigation: true,
+                                autowidth: false,
+                                autoheight: false,
+                                scroll: true,
+                                data: [],
+                                onClick: {
+                                    "view_roles": function (e, id) {
+                                        var item = this.getItem(id);
+                                        $("#role-list").html(" ");
+                                        $("#role-list").html(getRoles(item.user));
+                                        $("#view-roles-dialog").dialog("open");
+                                    }
+                                }
+                            }
+
+                        ]
+                    },
                     {
                         id: "sessions",
                         rows: [
@@ -227,7 +342,7 @@
                                         id: "user",
                                         header: ["نام کاربری", {
                                             content: "textFilter",
-                                            compare: oneForAll,
+                                            compare: oneForAllSession,
                                             placeholder: "جستجو",
                                             colspan: 2
                                         }],
@@ -314,7 +429,7 @@
                                 value: "خروجی CSV",
                                 align: "right",
                                 click: function () {
-                                    webix.toCSV($$("failureGrid"),{
+                                    webix.toCSV($$("failureGrid"), {
                                         filename: "اطلاعات ورود ناموفق کاربران",
                                         name: "اطلاعات ورود ناموفق کاربران",
                                         columns: {
@@ -338,7 +453,7 @@
                                                     id: "username",
                                                     header: ["نام کاربری", {
                                                         content: "textFilter",
-                                                        compare: oneForAll,
+                                                        compare: oneForAllFailure,
                                                         placeholder: "جستجو",
                                                         colspan: 2
                                                     }],
@@ -374,7 +489,11 @@
 
     /*]]>*/
 
-
+    $("#view-roles-dialog").dialog({
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
 </script>
 <!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
 </body>

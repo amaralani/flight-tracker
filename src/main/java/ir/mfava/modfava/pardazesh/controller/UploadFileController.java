@@ -92,6 +92,7 @@ public class UploadFileController extends BaseController{
     @RequestMapping(value = "/base-info/files/save", method = RequestMethod.POST)
     public String saveFile(@RequestParam(name = "typeId") Long typeId,
                            @RequestParam(name = "file") MultipartFile file,
+                           @RequestParam(name = "title") String title,
                            HttpSession session) {
         UploadFile uploadFile = new UploadFile();
 
@@ -105,6 +106,7 @@ public class UploadFileController extends BaseController{
             try {
                 uploadFile.setFileName(file.getOriginalFilename());
                 uploadFile.setCreateDate(new Date());
+                uploadFile.setTitle(title);
                 uploadFile.setDeleted(false);
                 uploadFile = uploadFileService.save(uploadFile);
                 session.setAttribute("successMessage", "ثبت اطلاعات با موفقیت انجام شد.");

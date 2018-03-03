@@ -61,7 +61,7 @@
                     {
                         id: 'code',
                         name: 'code',
-                        invalidMessage:"این فیلد الزامی است.",
+                        invalidMessage:"این فیلد الزامی است. فقط عدد وارد کنید.",
                         view: "text",
                         label: "کد",
                         labelAlign: 'right',
@@ -102,7 +102,12 @@
                 ],
                 rules : {
                     title : webix.rules.isNotEmpty,
-                    code : webix.rules.isNotEmpty
+                    code : function (value) {
+                        if (webix.rules.isNotEmpty(value)) {
+                            return webix.rules.isNumber(value)
+                        }
+                        return false;
+                    }
                 }
             },
             {}
@@ -204,7 +209,7 @@
                                     {
                                         id: 'code_new',
                                         name: 'code_new',
-                                        invalidMessage:"این فیلد الزامی است.",
+                                        invalidMessage:"این فیلد الزامی است. فقط عدد وارد کنید.",
                                         view: "text",
                                         label: "کد",
                                         labelAlign: 'right',
@@ -255,9 +260,14 @@
                                         }
                                     }
                                 ],
-                                rules : {
-                                    title_new : webix.rules.isNotEmpty,
-                                    code_new : webix.rules.isNotEmpty
+                                rules: {
+                                    code_new: function (value) {
+                                        if (webix.rules.isNotEmpty(value)) {
+                                            return webix.rules.isNumber(value)
+                                        }
+                                        return false;
+                                    },
+                                    title_new: webix.rules.isNotEmpty
                                 }
                             },
                             {}

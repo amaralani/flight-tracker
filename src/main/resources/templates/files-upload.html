@@ -5,13 +5,12 @@
     <title>مدیریت فایل ها</title>
 </head>
 <body>
-<div class="edit-file-dialog" id="editFileDialog" style="display: none">
-
-</div>
 <div id="message">
     <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
     <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
 </div>
+<div class='webix_view webix_control webix_el_text' view_id='title_new' style='border-width: 0px; margin-left: 8px; margin-top: 8px; width: 584px; height: 30px;'> <div class='webix_el_box' style='width:584px; height:30px'> <label style='width: 100px;text-align: right;line-height:26px;' onclick='' for='file-title' class='webix_inp_label '>عنوان</label> <input id='file-title' value='' style='width: 480px; text-align: left;' type='text'/> </div> </div>
+
 
 <script th:inline="javascript">
     function equals(a, b) {
@@ -59,67 +58,6 @@
         return a > b ? 1 : (a < b ? -1 : 0);
     }
 
-    webix.ui({
-        id: "edit-file",
-        container: "editFileDialog",
-        view: "form",
-        cols: [
-            {
-                type: "form",
-                borderless: true,
-                width: 400,
-                rows: [
-                    {template: "ویرایش مشخصات", type: "header"},
-                    {
-                        id: 'id', view: "text", disabled: true
-                    },
-                    {
-                        id: 'title',
-                        view: "text",
-                        label: "عنوان",
-                        labelAlign: 'right',
-                        textAlign: 'right',
-                        labelWidth: 100
-                    },
-                    {
-                        id: 'code',
-                        view: "text",
-                        label: "کد",
-                        labelAlign: 'right',
-                        textAlign: 'right',
-                        labelWidth: 100
-                    },
-                    {
-                        id: 'type',
-                        view: "select",
-                        options: all_file_types,
-                        label: "نوع فایل",
-                        labelAlign: 'right',
-                        textAlign: 'right',
-                        labelWidth: 100
-                    },
-                    {
-                        inputWidth: 100,
-                        view: "button",
-                        type: "form",
-                        value: "ثبت",
-                        align: "left",
-                        click: function () {
-                            var id = {name: "id", value: $$("id").getValue().trim()};
-                            var title = {name: "title", value: $$("title").getValue().trim()};
-                            var code = {name: "code", value: $$("code").getValue().trim()};
-                            var type = {name: "type", value: $$("type").getValue().trim()};
-                            var isNew = {name: "isNew", value: false};
-                            webix.send("/base-info/file/save", [id, title, code, type, isNew], "POST", null);
-                        }
-                    }
-                ]
-            },
-            {}
-
-        ]
-    });
-
     var main_content = {
         gravity: 3,
         type: "clean",
@@ -142,7 +80,7 @@
                         view: "datatable", select: true,
                         columns: [
                             {
-                                id: "fileName",
+                                id: "title",
                                 header: ["عنوان ", {
                                     content: "textFilter",
                                     compare: oneForAll,
@@ -150,6 +88,11 @@
                                     colspan: 2
                                 }],
                                 sort: "string",
+                                fillspace: true
+                            },
+                            {
+                                id: "fileName",
+                                header: ["نام فایل ", null],
                                 fillspace: true
                             },
                             {
@@ -179,7 +122,7 @@
                     },
                     {
                         id: "adr",
-                        template: "    <div class='myform'> <form action='/base-info/files/save' method='post' enctype='multipart/form-data'> <div class='block'> <div class='webix_view webix_control webix_el_select' view_id='type_new' style='border-width: 0px; margin-left: 8px; margin-top: 8px; width: 584px; height: 30px;'><div class='webix_el_box' style='width:584px; height:30px'><label style='width: 100px;text-align: right;line-height:26px;' onclick='' for='x1514360671134' class='webix_inp_label '>نوع </label><select id='x1514360671134' name='typeId' style='width:480px;'>" + active_file_types_options + "</select></div></div> <div style='margin: 20px 100px 20px 20px;'> <input type='file' name='file'/> </div> <div><div class='webix_view webix_control webix_el_button' style='border-width: 0px; margin-left: 8px; margin-top: 8px; width: 584px; height: 30px;'><div class='webix_el_box' style='width: 100px; height: 30px; float: left;'><input type='hidden' name='_csrf' value='" + csrf_token + "'/><button type='submit' class='webixtype_form'>ثبت</button></div></div> </div> </form> </div>"
+                        template: "    <div class='myform'> <form action='/base-info/files/save' method='post' enctype='multipart/form-data'> <div class='block'> <div class='webix_view webix_control webix_el_text' view_id='title_new' style='border-width: 0px; margin-left: 8px; margin-top: 8px; width: 584px; height: 30px;'> <div class='webix_el_box' style='width:584px; height:30px'> <label style='width: 100px;text-align: right;line-height:26px;' onclick='' for='file-title' class='webix_inp_label '>عنوان</label> <input id='file-title' name='title' value='' style='width: 480px; text-align: left;' type='text'/> </div> </div><div class='webix_view webix_control webix_el_select' view_id='type_new' style='border-width: 0px; margin-left: 8px; margin-top: 8px; width: 584px; height: 30px;'><div class='webix_el_box' style='width:584px; height:30px'><label style='width: 100px;text-align: right;line-height:26px;' onclick='' for='x1514360671134' class='webix_inp_label '>نوع </label><select id='x1514360671134' name='typeId' style='width:480px;'>" + active_file_types_options + "</select></div></div> <div style='margin: 20px 100px 20px 20px;'> <input type='file' name='file'/> </div> <div><div class='webix_view webix_control webix_el_button' style='border-width: 0px; margin-left: 8px; margin-top: 8px; width: 584px; height: 30px;'><div class='webix_el_box' style='width: 100px; height: 30px; float: left;'><input type='hidden' name='_csrf' value='" + csrf_token + "'/><button type='submit' class='webixtype_form'>ثبت</button></div></div> </div> </form> </div>"
                     },
                     {
                         id: "addType",
@@ -273,12 +216,6 @@
         ]
     };
     /*]]>*/
-
-    $("#editFileDialog").dialog({
-        autoOpen: false,
-        width: 500,
-        modal: true
-    });
 
 </script>
 <!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->

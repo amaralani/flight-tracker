@@ -6,7 +6,7 @@ import java.util.List;
 
 
 public interface MessageService extends BaseService<Message> {
-    void sendMessage(String[] userIds, Message message, String[] roleIds);
+    void sendMessage(String[] userIds, Message message, String[] groupIds);
 
     List<Message> getByExample(Message message);
 

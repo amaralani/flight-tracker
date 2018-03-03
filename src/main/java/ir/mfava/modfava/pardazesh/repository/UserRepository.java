@@ -18,6 +18,5 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsername(String username);
 
-    @Query(value = "select user_id from user_role where role_id = :roleId",nativeQuery = true)
-    List<BigInteger> findByRoleId(@Param("roleId") Long roleId);
+    List<User> findByUserGroupId(Long userGroupId);
 }

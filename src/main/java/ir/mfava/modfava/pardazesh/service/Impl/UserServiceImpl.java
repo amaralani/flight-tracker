@@ -12,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -71,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<BigInteger> getRoleUsers(Long roleId){
-        return userRepository.findByRoleId(roleId);
+    public List<User> getUsersByGroupId(Long userGroupId){
+        return userRepository.findByUserGroupId(userGroupId);
     }
 }

@@ -204,4 +204,11 @@ public class DateUtils {
     public static long differenceInDays(Date date1, Date date2) {
         return (clearTime(date2).getTime() - clearTime(date1).getTime()) / (24 * 60 * 60 * 1000);
     }
+
+    public static Date addDays(Date date,int daysToAdd){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH,daysToAdd);
+        return calendar.getTime();
+    }
 }

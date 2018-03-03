@@ -36,16 +36,16 @@
 
     /*<![CDATA[*/
     var users = [[${users}]];
-    var roles = [[${roles}]];
+    var userGroups = [[${userGroups}]];
     var comboUsers = [];
-    var comboRoles = [];
+    var comboUserGroups = [];
 
     $.each(users, function (index, user) {
         comboUsers.push({id: user.id, value: user.firstName + " " + user.lastName})
     });
 
-    $.each(roles, function (index, role) {
-        comboRoles.push({id: role.id, value: role.label})
+    $.each(userGroups, function (index, userGroup) {
+        comboUserGroups.push({id: userGroup.id, value: userGroup.name})
     });
 
     var gridBaseData = [[${userMessages}]];
@@ -209,7 +209,7 @@
                                     {
                                         id: 'receiverIds',
                                         view: "multicombo",
-                                        labelWidth : 150,
+                                        labelWidth : 170,
                                         label: "کاربران دریافت کننده",
                                         labelAlign: 'right',
                                         textAlign: 'right',
@@ -221,15 +221,15 @@
                                         }
                                     },
                                     {
-                                        id: 'roleIds',
+                                        id: 'userGroupIds',
                                         view: "multicombo",
-                                        labelWidth : 150,
-                                        label: "نقش های دریافت کننده",
+                                        labelWidth : 170,
+                                        label: "گروهی های کاربری دریافت کننده",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         suggest: {
                                             body: {
-                                                data: comboRoles,
+                                                data: comboUserGroups,
                                                 template: webix.template("#value#")
                                             }
                                         }
@@ -258,7 +258,7 @@
                                         align: "left",
                                         click: function () {
                                             var receiverIds = {name: "receiverIds", value: $$("receiverIds").getValue()};
-                                            var roleIds = {name: "roleIds", value: $$("roleIds").getValue()};
+                                            var userGroupIds = {name: "userGroupIds", value: $$("userGroupIds").getValue()};
                                             var subject = {
                                                 name: "subject",
                                                 value: $$("subject").getValue().trim()
@@ -267,7 +267,7 @@
                                                 name: "text",
                                                 value: $$("text").getValue().trim()
                                             };
-                                            webix.send("/message/save", [receiverIds, roleIds, subject, lastName], "POST", null);
+                                            webix.send("/message/save", [receiverIds, userGroupIds, subject, lastName], "POST", null);
                                         }
                                     }
                                 ]

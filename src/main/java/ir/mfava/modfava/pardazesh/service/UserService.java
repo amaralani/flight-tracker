@@ -17,5 +17,5 @@ public interface UserService extends BaseService<User> {
 
     User findByUsername(String username);
 
-    List<BigInteger> getRoleUsers(Long roleId);
+    List<User> getUsersByGroupId(Long userGroupId);
 }

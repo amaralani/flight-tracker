@@ -5,7 +5,7 @@ import ir.mfava.modfava.pardazesh.model.DTO.JSONMessage;
 import ir.mfava.modfava.pardazesh.model.DTO.MessageDTO;
 import ir.mfava.modfava.pardazesh.model.Message;
 import ir.mfava.modfava.pardazesh.service.MessageService;
-import ir.mfava.modfava.pardazesh.service.RoleService;
+import ir.mfava.modfava.pardazesh.service.UserGroupService;
 import ir.mfava.modfava.pardazesh.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -29,7 +29,7 @@ public class MessageController extends BaseController {
     @Autowired
     private UserService userService;
     @Autowired
-    private RoleService roleService;
+    private UserGroupService userGroupService;
 
     @RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
     public String viewMessagesPage(ModelMap map, HttpSession session, Authentication authentication) {
@@ -41,7 +41,7 @@ public class MessageController extends BaseController {
         }
         map.put("userMessages", messageDTOs);
         map.put("users", userService.getAll());
-        map.put("roles", roleService.getAll());
+        map.put("userGroups", userGroupService.getAll());
         map.put("successMessage", session.getAttribute("successMessage"));
         map.put("errorMessage", session.getAttribute("errorMessage"));
         session.removeAttribute("successMessage");
@@ -51,13 +51,13 @@ public class MessageController extends BaseController {
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public String saveMessage(@RequestParam(name = "receiverIds") String commaSeparatedReceiverIds,
-                              @RequestParam(name = "roleIds") String roleIds,
+                              @RequestParam(name = "userGroupIds") String userGroupIds,
                               @RequestParam(name = "subject") String subject,
                               @RequestParam(name = "text") String text,
                               Authentication authentication,
                               HttpSession session) {
         String[] stringReceiverIds =  commaSeparatedReceiverIds.split(",");
-        String[] stringRoleIds =  roleIds.split(",");
+        String[] stringUserGroupIds =  userGroupIds.split(",");
 
         Message message = new Message();
         message.setSender(getUser(authentication));
@@ -67,7 +67,7 @@ public class MessageController extends BaseController {
         message.setText(text);
         message.setSubject(subject);
         try {
-            messageService.sendMessage(stringReceiverIds,message, stringRoleIds);
+            messageService.sendMessage(stringReceiverIds,message, stringUserGroupIds);
             session.setAttribute("successMessage", "پیام با موفقیت ارسال شد.");
         } catch (Exception ex) {
             ex.printStackTrace();

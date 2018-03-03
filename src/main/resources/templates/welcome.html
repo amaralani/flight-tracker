@@ -3,15 +3,68 @@
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
     <title>سامانه هواشناسی</title>
+    <style>
+        .webix_cell {
+            direction: ltr;
+        }
+    </style>
 </head>
 <body>
 <div>
     <script th:inline="javascript">
         /*<![CDATA[*/
+        function getUsername(user) {
+            return user.username;
+        }
+
+        function getPersianDate(date) {
+            if (date) {
+                var newPersianDate = persianDate(new Date(date)).pDate;
+                return newPersianDate.year + "/" + newPersianDate.month + "/" + newPersianDate.date + "\t" + newPersianDate.hours + ":" + newPersianDate.minutes + ":" + newPersianDate.seconds;
+            }
+            return '';
+        }
 
         var main_content =
         {
-            body: {template: "<div class='welcome-main-content'></div>"}
+            rows: [
+                {
+                    cols: [
+                        {},
+                        {
+                            rows: [
+                                {
+                                    body: {template: "<div style='width: 100%'><span style='text-align: center'>اطلاعات ورود و خروج کاربر</span></div>"},
+                                    height: 25
+                                },
+                                {
+                                    id: "sessionGrid",
+                                    view: "datatable",
+                                    columns: [
+                                        {id: "ip", header: "آدرس", fillspace: true},
+                                        {id: "startDate", header: "ورود", fillspace: true, format: getPersianDate},
+                                        {id: "endDate", header: "خروج", fillspace: true, format: getPersianDate}
+                                    ],
+                                    select: "row",
+                                    tooltip: true,
+                                    height: 195,
+                                    width: 500,
+                                    navigation: true,
+                                    autowidth: false,
+                                    autoheight: false,
+                                    scroll: true,
+                                    data: [[${userLastSessions}]]
+                                }
+                            ]
+                        },
+                        {}
+                    ]
+                },
+                {
+                    body: {template: "<div class='welcome-main-content'></div>"}
+                }
+            ]
+
         };
         /*]]>*/
     </script>

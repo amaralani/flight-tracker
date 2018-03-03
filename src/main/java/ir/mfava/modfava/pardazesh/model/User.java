@@ -29,6 +29,8 @@ public class User extends BaseModel {
 
     private Set<Role> roles;
 
+    private Long userGroupId;
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long getId() {
@@ -145,6 +147,14 @@ public class User extends BaseModel {
         this.passwordUpdatedDate = passwordUpdatedDate;
     }
 
+    public Long getUserGroupId() {
+        return userGroupId;
+    }
+
+    public void setUserGroupId(Long userGroupId) {
+        this.userGroupId = userGroupId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -169,7 +179,13 @@ public class User extends BaseModel {
         if (getCreateDate() != null ? !getCreateDate().equals(user.getCreateDate()) : user.getCreateDate() != null)
             return false;
         if (getEnabled() != null ? !getEnabled().equals(user.getEnabled()) : user.getEnabled() != null) return false;
-        return getRoles() != null ? getRoles().equals(user.getRoles()) : user.getRoles() == null;
+        if (getPasswordExpired() != null ? !getPasswordExpired().equals(user.getPasswordExpired()) : user.getPasswordExpired() != null)
+            return false;
+        if (getLocked() != null ? !getLocked().equals(user.getLocked()) : user.getLocked() != null) return false;
+        if (getPasswordUpdatedDate() != null ? !getPasswordUpdatedDate().equals(user.getPasswordUpdatedDate()) : user.getPasswordUpdatedDate() != null)
+            return false;
+        if (getRoles() != null ? !getRoles().equals(user.getRoles()) : user.getRoles() != null) return false;
+        return getUserGroupId() != null ? getUserGroupId().equals(user.getUserGroupId()) : user.getUserGroupId() == null;
 
     }
 
@@ -185,7 +201,11 @@ public class User extends BaseModel {
         result = 31 * result + (getNationalCode() != null ? getNationalCode().hashCode() : 0);
         result = 31 * result + (getCreateDate() != null ? getCreateDate().hashCode() : 0);
         result = 31 * result + (getEnabled() != null ? getEnabled().hashCode() : 0);
+        result = 31 * result + (getPasswordExpired() != null ? getPasswordExpired().hashCode() : 0);
+        result = 31 * result + (getLocked() != null ? getLocked().hashCode() : 0);
+        result = 31 * result + (getPasswordUpdatedDate() != null ? getPasswordUpdatedDate().hashCode() : 0);
         result = 31 * result + (getRoles() != null ? getRoles().hashCode() : 0);
+        result = 31 * result + (getUserGroupId() != null ? getUserGroupId().hashCode() : 0);
         return result;
     }
 
@@ -199,10 +219,14 @@ public class User extends BaseModel {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", personNumber='" + personNumber + '\'' +
-                ", nationalCode=" + nationalCode + '\'' +
+                ", nationalCode='" + nationalCode + '\'' +
                 ", createDate=" + createDate +
                 ", enabled=" + enabled +
+                ", passwordExpired=" + passwordExpired +
+                ", locked=" + locked +
+                ", passwordUpdatedDate=" + passwordUpdatedDate +
                 ", roles=" + roles +
+                ", userGroupId=" + userGroupId +
                 '}';
     }
 }

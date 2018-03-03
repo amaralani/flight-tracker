@@ -5,6 +5,7 @@ import ir.mfava.modfava.pardazesh.model.UserSessionInformation;
 import ir.mfava.modfava.pardazesh.repository.UserSessionInformationRepository;
 import ir.mfava.modfava.pardazesh.service.UserService;
 import ir.mfava.modfava.pardazesh.service.UserSessionInformationService;
+import ir.mfava.modfava.pardazesh.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -76,5 +77,15 @@ public class UserSessionInformationServiceImpl implements UserSessionInformation
     @Override
     public List<UserSessionInformation> searchSessionInformations(Long userId, Date startDate, Date endDate){
         return userSessionInformationRepository.getAllByStartDateGreaterThanAndEndDateLessThanAndUser(startDate,endDate,userService.getById(userId));
+    }
+
+    @Override
+    public List<UserSessionInformation> getTop10LastUserSessions(User user){
+        return userSessionInformationRepository.getTop10ByUserOrderByStartDateDesc(user);
+    }
+
+    @Override
+    public List<UserSessionInformation> getOnlineUsers(){
+        return userSessionInformationRepository.getOnlineUsers(DateUtils.clearTime(new Date()));
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import javax.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping(value = "/update")
+@RequestMapping(value = "/base-info/update")
 public class UpdateController {
 
     @Autowired
@@ -33,7 +33,7 @@ public class UpdateController {
         }else {
             session.setAttribute("errorMessage","فرآیند به روزرسانی قبلی هنوز به اتمام نرسیده است.");
         }
-        return "redirect:/update/";
+        return "redirect:/base-info/update/";
     }
 
 }
