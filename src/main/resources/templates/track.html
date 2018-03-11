@@ -1,0 +1,252 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>نمایش اطلاعات پرواز</title>
+    <style>
+        #container {
+            height: 800px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="yechizi">
+
+</div>
+<div id="container" style="height:700px;"></div>
+<div id="speedChart" style="height:200px;margin:5px"></div>
+<div id="altitudeChart" style="height:200px;margin:5px"></div>
+
+<script th:inline="javascript">
+    var whichMarkers = 1;
+    /*<![CDATA[*/
+    var icons = [[${icons}]];
+
+    var map = L.map('container').setView([34.63321, 53.12988], 6);
+
+    L.tileLayer([[${host}]] + '/osm_tiles/{z}/{x}/{y}.png', {
+
+        maxZoom: 18,
+        attribution: 'معاونت فناوری اطلاعات و ارتباطات ق‌پ‌ه‌خ‌ (ص) | مدیریت فناوری اطلاعات ',
+        id: 'container'
+    }).addTo(map);
+    L.control.scale().addTo(map);
+
+    var popup = L.popup();
+
+
+    function onEachFeature(feature, layer) {
+        var popupContent = "" /*"<p>I started out as a GeoJSON " +
+         feature.geometry.type + ", but now I'm a Leaflet vector!</p>"*/;
+
+        if (feature.properties && feature.properties.popupContent) {
+            popupContent += feature.properties.popupContent;
+        }
+
+        layer.bindPopup(popupContent);
+
+    }
+
+    var currentMarkers;
+    function refreshTracks() {
+        var trackPoints = [];
+        var trackList = [];
+        ajaxCall('/map/tracks/renew',
+                {},
+                'GET',
+                function (data) {
+                    trackList = data.tracks;
+
+                    $.each(trackList, function (index, point) {
+                        trackPoints.push({
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    point.latitude, point.longitude
+                                ]
+                            },
+                            "type": "Feature",
+                            "properties": {
+                                "popupContent": "<div style='direction:rtl;text-align:right'><h1>اطلاعات تکمیلی</h1>" + point.content + "</div>",
+                                "code": point.code
+                            },
+                            "id": index
+                        })
+                    });
+
+
+                    var trackMarkers = {
+                        "type": "FeatureCollection",
+                        "features": trackPoints
+                    };
+                    if (currentMarkers) {
+                        map.removeLayer(currentMarkers);
+                    }
+                    currentMarkers = L.geoJSON(trackMarkers, {
+
+                        style: function (feature) {
+                            return feature.properties && feature.properties.style;
+                        },
+                        onEachFeature: onEachFeature,
+                        pointToLayer: function (feature, latlng) {
+                            return L.marker(latlng, {
+                                icon: L.icon({
+                                    iconUrl: '/icons/airplane.png',
+                                    iconSize: [45, 45],
+                                    iconAnchor: [16, 37],
+                                    popupAnchor: [0, -28]
+                                })
+                            });
+                        }
+                    });
+                    currentMarkers.addTo(map);
+
+                },
+                function (err) {
+                    console.log(err);
+                    trackList = [];
+                });
+
+    }
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                height : 700,
+                body: {content: 'container'}
+            },
+            {
+                cols : [
+                    {
+                        rows : [
+                            {
+                                template: "<div style='text-align: center; font-size: larger; font-weight: bold; '><span>نمودار سرعت</span></div>",
+                                height:40
+                            },
+                            {
+                                height:200,
+                                body: {content: 'speedChart'}
+                            }
+                        ]
+                    }
+                    ,
+                    {
+                        rows : [
+                            {
+                                template: "<div style='text-align: center; font-size: larger; font-weight: bold; '><span>نمودار ارتفاع</span></div>",
+                                height:40
+                            },
+                            {
+                                height:200,
+                                body: {content: 'altitudeChart'}
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+
+    $(document).ready(function () {
+        refreshTracks();
+        setInterval(function () {
+            refreshTracks()
+        }, 10000);
+    });
+
+
+    /*]]>*/
+
+    function showProfile(code) {
+        $("#altitudeChart").empty();
+        $("#altitudeChart2").empty();
+        $("#speedChart").empty();
+        ajaxCall(
+                "/map/tracks/profile",
+                {
+                    trackCode: code
+                },
+                "GET",
+                function (data) {
+
+                    webix.ui({
+                        view: "chart",
+                        container: "altitudeChart",
+                        type: "line",
+                        value: "#altitude#",
+                        item: {
+                            borderColor: "#1293f8",
+                            color: "#ffffff"
+                        },
+                        line: {
+                            color: "#1293f8",
+                            width: 3
+                        },
+                        tooltip:{
+                            template:"#altitude#"
+                        },
+                        xAxis: {
+                            template: "#detailedTime#"
+                        },
+                        offset: 0,
+                        yAxis: {
+                            start: 0,
+                            end: 100000,
+                            step: 10000,
+                            template: function (obj) {
+                                return (obj % 20 ? "" : obj)
+                            }
+                        },
+                        data: data.logs
+                    });
+
+                    webix.ui({
+                        view: "chart",
+                        container: "speedChart",
+                        type: "line",
+                        value: "#speed#",
+                        item: {
+                            borderColor: "#1293f8",
+                            color: "#ffffff"
+                        },
+                        line: {
+                            color: "#1293f8",
+                            width: 3
+                        },
+                        tooltip:{
+                            template:"#speed#"
+                        },
+                        xAxis: {
+                            template: "#detailedTime#"
+                        },
+                        offset: 0,
+                        yAxis: {
+                            start: 0,
+                            end: 500,
+                            step: 50,
+                            template: function (obj) {
+                                return (obj % 20 ? "" : obj)
+                            }
+                        },
+                        data: data.logs
+                    });
+
+                },
+                function (err) {
+                    console.log(err);
+                    webix.message({
+                        type: "error",
+                        text: "خطا در دریافت پروفایل پروازی"
+                    })
+                }
+        );
+
+    }
+
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

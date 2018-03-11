@@ -1,0 +1,228 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>گزارش مسیرها</title>
+</head>
+<style>
+    .webix_cell {
+        direction: ltr;
+    }
+</style>
+<body>
+
+<div id="tracks-grid-container"></div>
+
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString();
+        return a.indexOf(b) !== -1;
+    }
+
+    function oneForAllTrack(value, filter, obj) {
+        console.log(filter);
+        if (obj.code)
+            if (equals(obj.code, filter)) return true;
+        if (obj.latitude)
+            if (equals(obj.latitude, filter)) return true;
+        if (obj.longitude)
+            if (equals(obj.longitude, filter)) return true;
+        if (obj.altitude)
+            if (equals(obj.altitude, filter)) return true;
+        if (obj.speed)
+            if (equals(obj.speed, filter)) return true;
+        if (obj.radar)
+            if (equals(obj.radar, filter)) return true;
+        if (obj.source)
+            if (equals(obj.source, filter)) return true;
+        if (obj.destination)
+            console.log(obj.destination);
+        console.log(equals(obj.destination, filter))
+        if (equals(obj.destination, filter)) return true;
+        return false;
+    }
+
+
+    /*<![CDATA[*/
+
+    var gridBaseData = [[${gridData}]];
+
+    function refreshData() {
+        var trackCode = $$("trackCode").getValue();
+        var speed = $$("speed").getValue();
+        var radar = $$("radar").getValue();
+        var longitude = $$("longitude").getValue();
+        var latitude = $$("latitude").getValue();
+        var altitude = $$("altitude").getValue();
+        var source = $$("source").getValue();
+        var destination = $$("destination").getValue();
+        ajaxCall(
+                "/grid/tracks/get",
+                {
+                    code: trackCode,
+                    speed: speed,
+                    radar: radar,
+                    longitude: longitude,
+                    latitude: latitude,
+                    altitude: altitude,
+                    source: source,
+                    destination: destination
+                },
+                "GET",
+                function (data) {
+                    $$("tracksGrid").parse(data.tracks);
+                    $$("tracksGrid").refresh();
+                },
+                function (error) {
+                    console.log(error);
+                    webix.message({
+                        type: "error",
+                        text: "خطا در دریافت اطلاعات"
+                    })
+                }
+        );
+
+    }
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+
+        id: "online",
+        rows: [
+            {
+                cols: [
+                    {
+                        rows: [
+                            {
+                                cols: [
+                                    {
+                                        view: "text",
+                                        id: "trackCode",
+                                        label: 'کد مسیر',
+                                        labelWidth: 150,
+                                        labelAlign: 'right'
+                                    },
+                                    {
+                                        id: 'speed',
+                                        view: "text",
+                                        label: "سرعت",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 150
+                                    },
+                                    {
+                                        id: 'radar',
+                                        view: "text",
+                                        label: "رادار",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 150
+                                    }
+                                ]
+                            },
+                            {
+                                cols: [
+                                    {
+                                        view: "text",
+                                        id: 'longitude',
+                                        label: "طول جغرافیایی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 150
+                                    },
+                                    {
+                                        id: 'latitude',
+                                        view: "text",
+                                        label: "عرض جغرافیایی",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 150
+                                    },
+                                    {
+                                        id: 'altitude',
+                                        view: "text",
+                                        label: "ارتفاع",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 150
+                                    }
+                                ]
+                            },
+                            {
+                                cols: [
+                                    {
+                                        id: 'source',
+                                        view: "text",
+                                        label: "مبدا",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 150
+                                    },
+                                    {
+                                        id: 'destination',
+                                        view: "text",
+                                        label: "مقصد",
+                                        labelAlign: 'right',
+                                        textAlign: 'right',
+                                        labelWidth: 150
+                                    }
+                                ]
+                            },
+                            {
+                                inputWidth: 100,
+                                view: "button",
+                                type: "form",
+                                value: "جستجو",
+                                align: "left",
+                                click: function () {
+                                    refreshData();
+                                }
+                            }
+                        ]
+                    }
+                ]
+
+            },
+            {
+                id: "tracksGrid",
+                container: "tracks-grid-container",
+                view: "datatable",
+                columns: [
+                    {
+                        id: "code",
+                        header: ["کد مسیر", {
+                            content: "textFilter",
+                            compare: oneForAllTrack,
+                            placeholder: "جستجو",
+                            colspan: 2
+                        }]
+                    },
+                    {id: "latitude", header: ["عرض جغرافیایی", null], fillspace: true},
+                    {id: "longitude", header: ["طول جغرافیایی", null], fillspace: true},
+                    {id: "altitude", header: ["ارتفاع", null], fillspace: true},
+                    {id: "speed", header: ["سرعت", null], fillspace: true},
+                    {id: "radar", header: ["رادار", null], fillspace: true},
+                    {id: "source", header: ["مبدا", null], fillspace: true},
+                    {id: "destination", header: ["مقصد", null], fillspace: true}
+                ],
+                select: "row",
+                tooltip: true,
+                navigation: true,
+                autowidth: false,
+                autoheight: false,
+                scroll: true,
+                data: []
+            }
+
+        ]
+    };
+
+    /*]]>*/
+
+
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>

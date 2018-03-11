@@ -1,30 +1,29 @@
 package ir.mfava.modfava.pardazesh.controller;
 
 
-import ir.mfava.modfava.pardazesh.model.Bulletin;
+import ir.mfava.modfava.pardazesh.model.*;
+import ir.mfava.modfava.pardazesh.model.DTO.JSONMessage;
+import ir.mfava.modfava.pardazesh.model.DTO.TrackDTO;
 import ir.mfava.modfava.pardazesh.model.DTO.WeatherDTO;
-import ir.mfava.modfava.pardazesh.model.Phenomena;
-import ir.mfava.modfava.pardazesh.model.Weather;
 import ir.mfava.modfava.pardazesh.service.BulletinService;
+import ir.mfava.modfava.pardazesh.service.TrackLogService;
+import ir.mfava.modfava.pardazesh.service.TrackService;
 import ir.mfava.modfava.pardazesh.service.WeatherService;
 import ir.mfava.modfava.pardazesh.util.DateUtils;
 import ir.mfava.modfava.pardazesh.util.metar.MetarConstants;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "/map")
@@ -34,6 +33,10 @@ public class MapController extends BaseController {
     private WeatherService weatherService;
     @Autowired
     private BulletinService bulletinService;
+    @Autowired
+    private TrackService trackService;
+    @Autowired
+    private TrackLogService trackLogService;
 
     @RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
     public String showMap(ModelMap map, HttpServletRequest request) throws IOException {
@@ -193,5 +196,120 @@ public class MapController extends BaseController {
     private String printNoDataExists(String content) {
         return content + " اطلاعات موجود نیست " + "</td><tr>";
     }
+
+
+    @RequestMapping(value = {"/tracks"}, method = RequestMethod.GET)
+    public String showTracks(HttpServletRequest request,ModelMap map) {
+        StringBuffer url = request.getRequestURL();
+        String uri = request.getRequestURI();
+        String host = url.substring(0, url.indexOf(uri) - 5); //result
+        map.put("host", host);
+        return "track";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = {"/tracks/profile"}, method = RequestMethod.GET)
+    public JSONMessage getTrackProfile(@RequestParam(name = "trackCode") String trackCode) {
+        Map<String,Object> map = new HashMap<>();
+        List<TrackLog> trackLogs = trackLogService.getByCode(trackCode);
+        for(TrackLog trackLog : trackLogs){
+            trackLog.setDetailedTime(DateUtils.convertJulianToPersian(new Date(trackLog.getTime()),"HH:mm:ss"));
+        }
+        map.put("logs",trackLogs);
+        return JSONMessage.Success(map);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = {"/tracks/renew"}, method = RequestMethod.GET)
+    public JSONMessage getNewTracks() {
+        List<Track> tracks = trackService.getAll();
+        Collections.sort(tracks, new Comparator<Track>() {
+            @Override
+            public int compare(Track o1, Track o2) {
+                return o1.getReceiveTime().compareTo(o2.getReceiveTime());
+            }
+        });
+        List<TrackDTO> trackDTOs = new ArrayList<>();
+        for(Track track : tracks){
+            TrackDTO trackDTO = new TrackDTO(track);
+            String content = "<table class='weather-info-table' style='font-size: larger;font-weight:bold' border='1'>";
+            content += "<tr><td> کد </td><td> ";
+            if (StringUtils.trim(track.getCode())!= null) {
+                content = content + StringUtils.trim(track.getCode()) + "</td><tr>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content += "<tr><td> عرض جغرافیایی </td><td> ";
+            if (track.getLatitude() != null) {
+                content = content + track.getLatitude() + "</td><tr>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content += "<tr><td> طول جغرافیایی </td><td> ";
+            if (track.getLongitude() != null) {
+                content = content + track.getLongitude() + "</td><tr>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content += "<tr><td> ارتفاع</td><td> ";
+            if (track.getAltitude() != null) {
+                content = content + track.getAltitude() + "</td><tr>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content += "<tr><td> سرعت </td><td> ";
+            if (track.getSpeed() != null) {
+                content = content + track.getSpeed() + "</td><tr>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content += "<tr><td> رادار </td><td> ";
+            if (track.getRadar() != null) {
+                content = content + track.getRadar() + "</td><tr>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content += "<tr><td> مبدا </td><td> ";
+            if (track.getSource() != null) {
+                content = content + track.getSource() + "</td><tr>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content += "<tr><td> مقصد </td><td> ";
+            if (track.getDestination() != null) {
+                content = content + track.getDestination() + "</td><tr>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content = content + "<tr><td colspan=2><a href='#' onclick=\"showProfile('" + StringUtils.trim(track.getCode()) + "')\">نمایش پروفایل پرواز</a></td></tr>";
+            content = content + "</table>";
+            trackDTO.setContent(content);
+
+            trackDTOs.add(trackDTO);
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("tracks", trackDTOs);
+        return JSONMessage.Success(map);
+    }
+
+//    @ResponseBody
+//    @RequestMapping(value = {"/tracks/find"}, method = RequestMethod.GET)
+//    public JSONMessage findTrack(@RequestParam(name = "callsign",required = false) String callsign,
+//                                 @RequestParam(name = "airport",required = false) String airport,
+//                                 @RequestParam(name = "radar",required = false) String radar,
+//                                 @RequestParam(name = "aircraft",required = false) String aircraft
+//                                 ) {
+//        Map<String,Object> map = new HashMap<>();
+//        Track track = new Track();
+//
+//        List<TrackLog> trackLogs = trackService.findByExample();
+//        for(TrackLog trackLog : trackLogs){
+//            trackLog.setDetailedTime(DateUtils.convertJulianToPersian(new Date(trackLog.getTime()),"HH:mm:ss"));
+//        }
+//        map.put("logs",trackLogs);
+//        return JSONMessage.Success(map);
+//    }
 
 }
