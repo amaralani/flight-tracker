@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -20,6 +21,7 @@ import javax.servlet.ServletContextListener;
 @SpringBootApplication(scanBasePackages = "ir.mfava.modfava.pardazesh")
 @EnableAutoConfiguration
 @EnableTransactionManagement
+@EnableJpaAuditing
 @EnableJpaRepositories(
         basePackages = {"ir.mfava.modfava.pardazesh.repository"}
 )

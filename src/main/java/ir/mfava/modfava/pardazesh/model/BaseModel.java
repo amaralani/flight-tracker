@@ -1,10 +1,13 @@
 package ir.mfava.modfava.pardazesh.model;
 
+import javax.persistence.EntityListeners;
 import java.io.Serializable;
 
 /**
  * @author Drago
-‍ */
+ *         ‍
+ */
+@EntityListeners(AuditListener.class)
 public abstract class BaseModel implements Serializable {
 
     /**

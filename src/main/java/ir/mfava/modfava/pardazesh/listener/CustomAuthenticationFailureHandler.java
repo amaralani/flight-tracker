@@ -44,6 +44,8 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
                 request.getSession().setAttribute("loginError", "login-error");
         }
         String username = request.getParameter("username");
+        request.getSession().setAttribute("clientIP", request.getRemoteAddr());
+        request.getSession().setAttribute("clientHostName", request.getRemoteHost());
         loginFailureLogService.createLog(username, request.getRemoteAddr());
         Long countUserLoginFailure = loginFailureLogService.countUserLogsSinceLastLogin(username);
         List<Configuration> configurationList = configurationService.getAll();

@@ -15,8 +15,8 @@
 
 </div>
 <div id="container" style="height:700px;"></div>
-<div id="speedChart" style="height:200px;margin:5px"></div>
-<div id="altitudeChart" style="height:200px;margin:5px"></div>
+<div id="speedChart" style="height:200px;margin:5px;display: none"></div>
+<div id="altitudeChart" style="height:200px;margin:5px;display: none"></div>
 
 <script th:inline="javascript">
     var whichMarkers = 1;
@@ -115,37 +115,18 @@
         type: "clean",
         rows: [
             {
-                height : 700,
+                height: 700,
                 body: {content: 'container'}
             },
             {
-                cols : [
-                    {
-                        rows : [
-                            {
-                                template: "<div style='text-align: center; font-size: larger; font-weight: bold; '><span>نمودار سرعت</span></div>",
-                                height:40
-                            },
-                            {
-                                height:200,
-                                body: {content: 'speedChart'}
-                            }
-                        ]
-                    }
-                    ,
-                    {
-                        rows : [
-                            {
-                                template: "<div style='text-align: center; font-size: larger; font-weight: bold; '><span>نمودار ارتفاع</span></div>",
-                                height:40
-                            },
-                            {
-                                height:200,
-                                body: {content: 'altitudeChart'}
-                            }
-                        ]
-                    }
-                ]
+                id: "charts", cols: [
+                {
+                    template: " "
+                },
+                {
+                    template: ""
+                }
+            ]
             }
         ]
     };
@@ -162,8 +143,47 @@
 
     function showProfile(code) {
         $("#altitudeChart").empty();
-        $("#altitudeChart2").empty();
         $("#speedChart").empty();
+        $("#altitudeChart").css("display","block");
+        $("#speedChart").css("display","block");
+
+        webix.ui(
+                {
+                    id: "charts",
+                    rows : [
+                        {
+                            cols: [
+                                {
+                                    rows: [
+                                        {
+                                            template: '<div style="text-align: center; font-size: larger; font-weight: bold; "><span>نمودار سرعت</span></div>',
+                                            height: 40
+                                        },
+                                        {
+                                            height: 200,
+                                            body: {content: 'speedChart'}
+                                        }
+                                    ]
+                                },
+                                {
+                                    rows: [
+                                        {
+                                            template: '<div style="text-align: center; font-size: larger; font-weight: bold; "><span>نمودار ارتفاع</span></div>',
+                                            height: 40
+                                        },
+                                        {
+                                            height: 200,
+                                            body: {content: 'altitudeChart'}
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+
+                }
+                , $$('charts'));
+
         ajaxCall(
                 "/map/tracks/profile",
                 {
@@ -185,8 +205,8 @@
                             color: "#1293f8",
                             width: 3
                         },
-                        tooltip:{
-                            template:"#altitude#"
+                        tooltip: {
+                            template: "#altitude#"
                         },
                         xAxis: {
                             template: "#detailedTime#"
@@ -216,8 +236,8 @@
                             color: "#1293f8",
                             width: 3
                         },
-                        tooltip:{
-                            template:"#speed#"
+                        tooltip: {
+                            template: "#speed#"
                         },
                         xAxis: {
                             template: "#detailedTime#"

@@ -71,6 +71,7 @@
                 },
                 "GET",
                 function (data) {
+                    $$("tracksGrid").clearAll();
                     $$("tracksGrid").parse(data.tracks);
                     $$("tracksGrid").refresh();
                 },
