@@ -46,11 +46,15 @@ public class MessageServiceImpl implements MessageService {
     @Transactional
     public void sendMessage(String[] userIds, Message messageExample, String[] groupIds) {
         for (String stringUserId : userIds) {
-            saveNewMessage(messageExample, userService.getById(Long.valueOf(stringUserId)));
+            if(!stringUserId.isEmpty()) {
+                saveNewMessage(messageExample, userService.getById(Long.valueOf(stringUserId)));
+            }
         }
         for (String groupId : groupIds) {
-            for (User user: userService.getUsersByGroupId(Long.valueOf(groupId))) {
-                saveNewMessage(messageExample, user);
+            if(!groupId.isEmpty()) {
+                for (User user : userService.getUsersByGroupId(Long.valueOf(groupId))) {
+                    saveNewMessage(messageExample, user);
+                }
             }
         }
     }

@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت دسترسی</title>
+    <title>مديريت دسترسي</title>
 </head>
 <body>
 <div class="edit-user-dialog" id="editUserDialog" style="display: none">
@@ -33,7 +33,7 @@
         if (text === true)
             return 'فعال';
         if (text === false)
-            return 'غیرفعال';
+            return 'غيرفعال';
     }
 
     webix.ui({
@@ -46,11 +46,11 @@
                 borderless: true,
                 width: 400,
                 rows: [
-                    {template: "ویرایش مشخصات", type: "header"},
+                    {template: "ويرايش مشخصات", type: "header"},
                     {
                         id: 'username',
                         view: "text",
-                        label: "نام کاربری",
+                        label: "نام کاربري",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -66,7 +66,7 @@
                     {
                         id: 'lastName',
                         view: "text",
-                        label: "نام خانوادگی",
+                        label: "نام خانوادگي",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -74,7 +74,7 @@
                     {
                         id: 'nationalCode',
                         view: "text",
-                        label: "کد ملی",
+                        label: "کد ملي",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -82,7 +82,7 @@
                     {
                         id: 'personNumber',
                         view: "text",
-                        label: "کد پرسنلی",
+                        label: "کد پرسنلي",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -94,7 +94,7 @@
                         align: "left",
                         options: [
                             {id: "1", value: "فعال"},
-                            {id: "0", value: "غیرفعال"}
+                            {id: "0", value: "غيرفعال"}
                         ]
                     },
                     {
@@ -102,7 +102,7 @@
                         view: "text",
                         type: "password",
                         value: null,
-                        label: "رمز عبور جدید",
+                        label: "رمز عبور جديد",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -113,7 +113,7 @@
                         view: "text",
                         type: "password",
                         value: null,
-                        label: "تکرار رمز عبور جدید",
+                        label: "تکرار رمز عبور جديد",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100

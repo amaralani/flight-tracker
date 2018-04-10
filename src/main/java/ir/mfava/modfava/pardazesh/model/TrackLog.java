@@ -58,7 +58,7 @@ public class TrackLog extends BaseModel{
     private String col4;
 
     @Column(name = "tracklog_col5")
-    private String co5;
+    private String col5;
 
     @Column(name = "tracklog_col6")
     private String col6;
@@ -211,12 +211,12 @@ public class TrackLog extends BaseModel{
         this.col4 = col4;
     }
 
-    public String getCo5() {
-        return co5;
+    public String getCol5() {
+        return col5;
     }
 
-    public void setCo5(String co5) {
-        this.co5 = co5;
+    public void setCol5(String col5) {
+        this.col5 = col5;
     }
 
     public String getCol6() {
@@ -287,7 +287,7 @@ public class TrackLog extends BaseModel{
         if (getDestination() != null ? !getDestination().equals(track.getDestination()) : track.getDestination() != null)
             return false;
         if (getCol4() != null ? !getCol4().equals(track.getCol4()) : track.getCol4() != null) return false;
-        if (getCo5() != null ? !getCo5().equals(track.getCo5()) : track.getCo5() != null) return false;
+        if (getCol5() != null ? !getCol5().equals(track.getCo5()) : track.getCo5() != null) return false;
         if (getCol6() != null ? !getCol6().equals(track.getCol6()) : track.getCol6() != null) return false;
         if (getCol7() != null ? !getCol7().equals(track.getCol7()) : track.getCol7() != null) return false;
         if (getCol8() != null ? !getCol8().equals(track.getCol8()) : track.getCol8() != null) return false;
@@ -314,7 +314,7 @@ public class TrackLog extends BaseModel{
         result = 31 * result + (getSource() != null ? getSource().hashCode() : 0);
         result = 31 * result + (getDestination() != null ? getDestination().hashCode() : 0);
         result = 31 * result + (getCol4() != null ? getCol4().hashCode() : 0);
-        result = 31 * result + (getCo5() != null ? getCo5().hashCode() : 0);
+        result = 31 * result + (getCol5() != null ? getCol5().hashCode() : 0);
         result = 31 * result + (getCol6() != null ? getCol6().hashCode() : 0);
         result = 31 * result + (getCol7() != null ? getCol7().hashCode() : 0);
         result = 31 * result + (getCol8() != null ? getCol8().hashCode() : 0);
@@ -342,7 +342,7 @@ public class TrackLog extends BaseModel{
                 ", source='" + source + '\'' +
                 ", destination='" + destination + '\'' +
                 ", col4='" + col4 + '\'' +
-                ", co5='" + co5 + '\'' +
+                ", col5='" + col5 + '\'' +
                 ", col6='" + col6 + '\'' +
                 ", col7='" + col7 + '\'' +
                 ", col8='" + col8 + '\'' +

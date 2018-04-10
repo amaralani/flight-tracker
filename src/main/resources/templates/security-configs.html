@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت دسترسی</title>
+    <title>مديريت دسترسي</title>
 </head>
 <body>
 <div class="edit-user-dialog" id="editUserDialog" style="display: none">
@@ -27,8 +27,8 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
-                {id: "securityConfigs", value: "موارد امنیتی", width: 150},
-                {id: "bannerText", value: "پیام بنر", width: 150}
+                {id: "securityConfigs", value: "موارد امنيتي", width: 150},
+                {id: "bannerText", value: "پيام بنر", width: 150}
             ]
             },
             {
@@ -95,7 +95,7 @@
                                         labelAlign: "right",
                                         labelWidth: 170,
                                         bottomPadding: 35,
-                                        bottomLabel: "پس از این تعداد تلاش ناموفق جهت ورود، نام کاربری قفل شده و باید توسط مدیر باز شود."
+                                        bottomLabel: "پس از اين تعداد تلاش ناموفق جهت ورود، نام کاربري قفل شده و بايد توسط مدير باز شود."
                                     },
                                     {
                                         id: "passwordComplexity",
@@ -104,7 +104,7 @@
                                         labelWidth: 170,
                                         labelAlign: "right",
                                         align: "right",
-                                        label: "پیچیدگی رمز عبور ",
+                                        label: "پيچيدگي رمز عبور ",
                                         options: [
                                             {id: "0", value: "ساده"},
                                             {id: "1", value: "حرف و عدد"},
@@ -122,16 +122,16 @@
                                                         description = "";
                                                         break;
                                                     case "1":
-                                                        description = "هنگام انتخاب رمز عبور حداقل یک حرف و حداقل یک عدد لازم است.";
+                                                        description = "هنگام انتخاب رمز عبور حداقل يک حرف و حداقل يک عدد لازم است.";
                                                         break;
                                                     case "2":
-                                                        description = "هنگام انتخاب رمز عبور حداقل یک حرف  کوچک و حداقل یک حرف بزرگ انگلیسی لازم است.";
+                                                        description = "هنگام انتخاب رمز عبور حداقل يک حرف  کوچک و حداقل يک حرف بزرگ انگليسي لازم است.";
                                                         break;
                                                     case "3":
-                                                        description = "هنگام انتخاب رمز عبور حداقل یک حرف  کوچک و حداقل یک حرف بزرگ و حداقل یک عدد لازم است.";
+                                                        description = "هنگام انتخاب رمز عبور حداقل يک حرف  کوچک و حداقل يک حرف بزرگ و حداقل يک عدد لازم است.";
                                                         break;
                                                     case "4":
-                                                        description = "هنگام انتخاب رمز عبور حداقل یک حرف  کوچک، حداقل یک حرف بزرگ، حداقل یک عدد و حداقل یک علامت خاص لازم است.";
+                                                        description = "هنگام انتخاب رمز عبور حداقل يک حرف  کوچک، حداقل يک حرف بزرگ، حداقل يک عدد و حداقل يک علامت خاص لازم است.";
                                                         break;
                                                 }
                                                 this.define("bottomLabel", description);
@@ -157,17 +157,17 @@
                                         labelAlign: "right",
                                         labelWidth: 170,
                                         bottomPadding: 35,
-                                        bottomLabel: "تعداد روزهایی که پس از آن کاربر باید رمز عبور خود را تغییر دهد."
+                                        bottomLabel: "تعداد روزهايي که پس از آن کاربر بايد رمز عبور خود را تغيير دهد."
                                     },
                                     {
                                         id: "sessionTimeoutInSeconds",
                                         view: "counter",
                                         value: [[${configuration.sessionTimeoutInSeconds}]],
-                                        label: "مدت انقضای نشسست",
+                                        label: "مدت انقضاي نشسست",
                                         labelAlign: "right",
                                         labelWidth: 170,
                                         bottomPadding: 35,
-                                        bottomLabel: "مدت زمانی که کاربر در صورت عدم فعالیت از سیستم خارج خواهد شد. (به ثانیه)"
+                                        bottomLabel: "مدت زماني که کاربر در صورت عدم فعاليت از سيستم خارج خواهد شد. (به ثانيه)"
                                     },
 
                                     {

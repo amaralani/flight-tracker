@@ -9,7 +9,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -25,13 +24,13 @@ import javax.servlet.ServletContextListener;
 @EnableJpaRepositories(
         basePackages = {"ir.mfava.modfava.pardazesh.repository"}
 )
-public class GISBackendApplication extends SpringBootServletInitializer {
+public class GISBackendTrackApplication extends SpringBootServletInitializer {
 
-    private static Log logger = LogFactory.getLog(GISBackendApplication.class);
+    private static Log logger = LogFactory.getLog(GISBackendTrackApplication.class);
 
     private static int SESSION_TIMEOUT_IN_SECONDS =  5 * 60;
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(GISBackendApplication.class, args);
+        SpringApplication.run(GISBackendTrackApplication.class, args);
     }
 
     @Bean
@@ -61,7 +60,7 @@ public class GISBackendApplication extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(GISBackendApplication.class);
+        return application.sources(GISBackendTrackApplication.class);
     }
 
 }

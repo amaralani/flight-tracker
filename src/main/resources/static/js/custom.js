@@ -58,34 +58,11 @@ var ui = {
         rows: [
             {
                 view: "toolbar",
-                height: 55,
+                height: 40,
                 elements: [
-                    {view: "label", template: "<span class='main_title'>سامانه هواشناسی</span>"}, {},
-                    /*{view: "icon", width: 40, icon: "info-circle"},
-                     {view: "icon", width: 40, icon: "comments"},*/
+                    {view: "label", template: "<span class='main_title'>سامانه اطلاعات پرواز</span>"}, {},
                     {view: "icon", width: 40, icon: "cog", popup: "config"}
 
-                ]
-            },
-            {
-                css: "time-and-marquee-section",
-                rows: [
-                    {
-                        cols: [
-                            {
-                                view: "label",
-                                template: "<div class='time-container'><span class='time time-tehran'>" + n + " </span><span> تهران</span></div>"
-                            },
-                            {
-                                view: "label",
-                                template: "<div class='time-container time-gmt-container'><span class='time time-gmt'>" + n1 + "</span><span> GMT</span></div>"
-                            }
-                        ]
-                    },
-                    {
-                        view: "label",
-                        template: "<marquee class='marquee-text' behavior='scroll' direction='right'>" + bannerText + "</marquee>"
-                    }
                 ]
             },
             {
@@ -106,7 +83,7 @@ var ui = {
                                     {width: 50},
                                     {
                                         view: "label",
-                                        template: "<div style='text-align: center'><span id='footer_label' class='footer_title'> قرارگاه پدافند هوایی خاتم الانبیا(ص) - معاونت فاوا - مدیریت فناوری اطلاعات</span></div>"
+                                        template: "<div style='text-align: center'><span id='footer_label' class='footer_title'> </span></div>"
                                     },
                                     {width: 50}
                                 ]
@@ -128,7 +105,7 @@ webix.ui({
     body: {
         view: "list", scroll: false,
         yCount: 2, borderless: true,
-        template: "<a href='#src#'>#name#</a>",
+        template: "<a class='config-item' href='#src#'>#name#</a>",
         data: [
             {id: 1, name: "تغییر رمز عبور", src: "#"/*src: "/user/change-password"*/},
             {id: 2, name: "خروج از سیستم", src: "/logout"}

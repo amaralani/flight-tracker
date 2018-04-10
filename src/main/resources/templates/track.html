@@ -2,10 +2,22 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>نمایش اطلاعات پرواز</title>
+    <title>نمايش اطلاعات پرواز</title>
     <style>
         #container {
-            height: 800px;
+            height: 500px;
+        }
+
+        .ui-dialog.ui-widget.ui-widget-content.ui-corner-all.ui-front.ui-draggable.ui-resizable {
+            z-index: 500 !important;
+        }
+
+        .ui-widget-header {
+            background: #575757 !important;
+        }
+
+        .ui-dialog .ui-dialog-content {
+            padding: 0 !important;
         }
     </style>
 </head>
@@ -17,18 +29,31 @@
 <div id="container" style="height:700px;"></div>
 <div id="speedChart" style="height:200px;margin:5px;display: none"></div>
 <div id="altitudeChart" style="height:200px;margin:5px;display: none"></div>
+<div id="historyGrid" style="height:400px;display: none">
+    <div id="historyGridContainer" style="width:500px;height:400px;">
+
+    </div>
+
+</div>
 
 <script th:inline="javascript">
     var whichMarkers = 1;
+    var showTracks = false;
+    var showWeather = false;
     /*<![CDATA[*/
+    var g_source = null;
+    var g_destination = null;
+    var g_radar = null;
+    var g_callsign = null;
     var icons = [[${icons}]];
+    var weatherList = [[${weatherList}]];
 
-    var map = L.map('container').setView([34.63321, 53.12988], 6);
+    var map = L.map('container').setView([33.63321, 55.12988], 6);
 
     L.tileLayer([[${host}]] + '/osm_tiles/{z}/{x}/{y}.png', {
 
         maxZoom: 18,
-        attribution: 'معاونت فناوری اطلاعات و ارتباطات ق‌پ‌ه‌خ‌ (ص) | مدیریت فناوری اطلاعات ',
+        attribution: 'Something To Remember',
         id: 'container'
     }).addTo(map);
     L.control.scale().addTo(map);
@@ -45,7 +70,6 @@
         }
 
         layer.bindPopup(popupContent);
-
     }
 
     var currentMarkers;
@@ -53,7 +77,12 @@
         var trackPoints = [];
         var trackList = [];
         ajaxCall('/map/tracks/renew',
-                {},
+                {
+                    source: g_source,
+                    destination: g_destination,
+                    radar: g_radar,
+                    callsign: g_callsign
+                },
                 'GET',
                 function (data) {
                     trackList = data.tracks;
@@ -68,7 +97,7 @@
                             },
                             "type": "Feature",
                             "properties": {
-                                "popupContent": "<div style='direction:rtl;text-align:right'><h1>اطلاعات تکمیلی</h1>" + point.content + "</div>",
+                                "popupContent": "<div style='direction:rtl;text-align:right'><h1>اطلاعات تکميلي</h1>" + point.content + "</div>",
                                 "code": point.code
                             },
                             "id": index
@@ -110,31 +139,230 @@
 
     }
 
+    var weatherPoints = [];
+    $.each(weatherList, function (index, point) {
+        weatherPoints.push({
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    point.latitude, point.longitude
+                ]
+            },
+            "type": "Feature",
+            "properties": {
+                "popupContent": "<div style='direction:rtl;text-align:right'><h1>" + point.contentHeader + "</h1>" + point.content + "</div>",
+                "markerType": point.markerType,
+                "isCumulonimbus": point.isCumulonimbus,
+                "windSpeedInKnots": point.windSpeedInKnots,
+                "style": {
+                    bill: "good"
+                }
+            },
+            "id": index
+        })
+    });
+
+
+    var weatherMarkers = {
+        "type": "FeatureCollection",
+        "features": weatherPoints
+    };
+
+    var currentWeatherMarkers;
+    function showWeathers() {
+        if (weatherMarkers) {
+            map.removeLayer(weatherMarkers);
+        }
+        currentWeatherMarkers = L.geoJSON(weatherMarkers, {
+
+            style: function (feature) {
+                return feature.properties && feature.properties.style;
+            },
+            onEachFeature: onEachFeature,
+            /* filter: function (feature, layer) {
+             return feature.properties.zoomlevelMax <= zoomlevel && feature.properties.zoomlevelMin >= zoomlevel;
+             },*/
+            pointToLayer: function (feature, latlng) {
+                var iconIsAvailable = false;
+                $.each(icons, function (index, icon) {
+                    if (feature.properties.markerType + '.png' == icon) {
+                        iconIsAvailable = true;
+                    }
+                });
+
+                if (iconIsAvailable) {
+                    if (feature.properties.windSpeedInKnots && feature.properties.windSpeedInKnots > 20) {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: '/icons/' + feature.properties.markerType + '.png',
+                                shadowUrl: '/icons/24.png',
+                                shadowSize: [16, 16],
+                                iconSize: [45, 45],
+                                iconAnchor: [16, 37],
+                                shadowAnchor: [-30, 30],
+                                popupAnchor: [0, -28]
+                            })
+                        });
+                    } else if (feature.properties.isCumulonimbus) {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: '/icons/' + feature.properties.markerType + '.png',
+                                shadowUrl: '/icons/CB.png',
+                                shadowSize: [16, 16],
+                                iconSize: [45, 45],
+                                iconAnchor: [16, 37],
+                                shadowAnchor: [-30, 30],
+                                popupAnchor: [0, -28]
+                            })
+                        });
+                    } else {
+                        return L.marker(latlng, {
+                            icon: L.icon({
+                                iconUrl: '/icons/' + feature.properties.markerType + '.png',
+                                iconSize: [45, 45],
+                                iconAnchor: [16, 37],
+                                popupAnchor: [0, -28]
+                            })
+                        });
+                    }
+                }
+
+                console.log("unknown phenomena", feature.properties.markerType);
+                return L.circleMarker(latlng);
+            }
+        });
+        currentWeatherMarkers.addTo(map);
+    }
+
+
     var main_content = {
         gravity: 3,
         type: "clean",
         rows: [
             {
+                view: "toolbar", paddingY: 2,
+                cols: [
+                    {view: "search", placeholder: "مبدا", id: "filterSource", disabled: true, width: 200},
+                    {view: "search", placeholder: "مقصد", id: "filterDestination", disabled: true, width: 200},
+                    {view: "search", placeholder: "رادار", id: "filterRadar", disabled: true, width: 200},
+                    {view: "search", placeholder: "Callsign هواپيما", id: "filterCallsign", disabled: true, width: 200},
+                    {
+                        view: "button", label: "فيلتر", width: 100, id: "filterButton", disabled: true,
+                        click: function () {
+                            g_source = $$("filterSource").getValue();
+                            g_destination = $$("filterDestination").getValue();
+                            g_radar = $$("filterRadar").getValue();
+                            g_callsign = $$("filterCallsign").getValue();
+                            refreshTracks();
+                        }
+                    }
+                ]
+            },
+            {
+                view: "toolbar", paddingY: 2,
+                cols: [
+                    {view: "search", placeholder: "Callsign هواپيما", id: "search", disabled: true, width: 300},
+                    {
+                        view: "button", label: "جستجو", width: 100, id: "searchButton", disabled: true,
+                        click: function () {
+                            ajaxCall(
+                                    "/map/tracks/aircraft/find",
+                                    {
+                                        callsign: $$("search").getValue()
+                                    },
+                                    "GET",
+                                    function (data) {
+                                        var latitude = data.log.latitude;
+                                        var longitude = data.log.longitude;
+                                        map.setView([longitude, latitude], 9, {animate: true, duration: 2});
+                                    }, function (error) {
+
+                                    });
+                        }
+                    }
+                ]
+            },
+            {
+                view: "toolbar", paddingY: 2,
+                cols: [
+                    {
+                        view: "toggle", type: "image", image: "/icons/0cloud26.png", width: 50,
+                        on: {
+                            "onChange": function (newValue, oldValue) {
+                                showWeather = newValue;
+                                if (newValue) {
+                                    showWeathers();
+                                } else {
+                                    if (currentWeatherMarkers) {
+                                        map.removeLayer(currentWeatherMarkers);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        view: "toggle", type: "image", image: "/icons/airplane26.png", width: 50,
+                        on: {
+                            "onChange": function (newValue, oldValue) {
+                                showTracks = newValue;
+                                if (newValue) {
+                                    $$("searchButton").enable();
+                                    $$("search").enable();
+
+                                    $$("filterSource").enable();
+                                    $$("filterDestination").enable();
+                                    $$("filterRadar").enable();
+                                    $$("filterCallsign").enable();
+                                    $$("filterButton").enable();
+                                    refreshTracks();
+                                } else {
+                                    $$("searchButton").disable();
+                                    $$("search").disable();
+
+                                    $$("filterSource").disable();
+                                    $$("filterDestination").disable();
+                                    $$("filterRadar").disable();
+                                    $$("filterCallsign").disable();
+                                    $$("filterButton").disable();
+                                    // track markers
+                                    if (currentMarkers) {
+                                        map.removeLayer(currentMarkers);
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                ]
+            },
+            {
                 height: 700,
                 body: {content: 'container'}
             },
+            {view: "resizer"},
             {
-                id: "charts", cols: [
-                {
-                    template: " "
-                },
-                {
-                    template: ""
-                }
-            ]
+                cols: [
+                    {
+                        id: "charts", cols: [
+                        {
+                            template: " "
+                        },
+                        {
+                            template: ""
+                        }
+                    ]
+                    }
+                ]
             }
+
         ]
     };
 
     $(document).ready(function () {
-        refreshTracks();
         setInterval(function () {
-            refreshTracks()
+            if (showTracks) {
+                refreshTracks()
+            }
         }, 10000);
     });
 
@@ -144,13 +372,13 @@
     function showProfile(code) {
         $("#altitudeChart").empty();
         $("#speedChart").empty();
-        $("#altitudeChart").css("display","block");
-        $("#speedChart").css("display","block");
+        $("#altitudeChart").css("display", "block");
+        $("#speedChart").css("display", "block");
 
         webix.ui(
                 {
                     id: "charts",
-                    rows : [
+                    rows: [
                         {
                             cols: [
                                 {
@@ -259,13 +487,63 @@
                     console.log(err);
                     webix.message({
                         type: "error",
-                        text: "خطا در دریافت پروفایل پروازی"
+                        text: "خطا در دريافت پروفايل پروازي"
                     })
                 }
         );
 
     }
 
+    function showAircraftHistory(code) {
+        ajaxCall(
+                "/map/tracks/aircraft/history",
+                {
+                    trackCode: code
+                },
+                "GET",
+                function (data) {
+                    $("#historyGridContainer").empty();
+                    $("#historyGrid").dialog("open");
+
+                    webix.ui(
+                            {
+                                view: "datatable",
+                                container: "historyGridContainer",
+                                columns: [
+                                    {
+                                        id: "code",
+                                        header: ["کد مسير", null]
+                                    },
+                                    {id: "source", header: ["مبدا", null], fillspace: true},
+                                    {id: "destination", header: ["مقصد", null], fillspace: true}
+                                ],
+                                select: "row",
+                                tooltip: true,
+                                navigation: true,
+                                autowidth: false,
+                                autoheight: false,
+                                scroll: true,
+                                data: data.logs
+                            });
+
+                },
+                function (err) {
+                    console.log(err);
+                    webix.message({
+                        type: "error",
+                        text: "خطا در دريافت پروفايل پروازي"
+                    })
+                }
+        );
+
+    }
+
+    $("#historyGrid").dialog({
+        title: "مسيرهاي آخر هواپيما",
+        autoOpen: false,
+        width: 500,
+        modal: true
+    });
 </script>
 <!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
 </body>

@@ -1,5 +1,5 @@
 * {
-    /*font-family: B Nazanin;*/
+    font-family: GisFont, serif;
 }
 
 .ui-widget-header {
@@ -79,14 +79,14 @@ a.webix_list_item {
 .menu-list-item {
     text-decoration: none;
     color: inherit;
-    font-family: "B Nazanin";
+    font-family: Mitra, Tahoma, serif;
     font-size: 20px;
 }
 
 .menu-list-header {
     text-decoration: none;
     color: inherit;
-    font-family: Mitra;
+    font-family: Mitra, Tahoma, serif;
     font-size: 20px;
     font-weight: bold;
 }
@@ -102,7 +102,7 @@ a.webix_list_item {
 .main_title {
     margin-right: 20px;
     color: white;
-    font-family: Titr;
+    font-family: Titr, serif;
     font-size: 20px;
     font-weight: bold;
 }
@@ -110,20 +110,20 @@ a.webix_list_item {
 .time, .time-container {
     margin-right: 20px;
     color: black;
-    font-family: Titr;
+    font-family: Titr, Tahoma, serif;
     font-size: 20px;
     font-weight: bold;
 }
 
 .time-gmt-container {
-    margin-left : 20px;
-    float : left;
+    margin-left: 20px;
+    float: left;
 }
 
 .footer_title {
     margin-right: 20px;
     color: white;
-    font-family: "B Mitra";
+    font-family: Mitra, Tahoma, serif;
     font-size: 13px;
     font-weight: bold;
 }
@@ -169,19 +169,23 @@ a.webix_list_item {
 }
 
 .message-text {
-    font-family: B Nazanin;
+    font-family: B Nazanin,Tahoma,serif;
     font-size: 15px;
     font-weight: bold;
 }
 
 .message-subject {
-    font-family: Titr;
+    font-family: Titr, Tahoma, serif;
     font-size: 17px;
     font-weight: bold;
 }
 
 .has-cursor-pointer {
     cursor: pointer;
+}
+
+.config-item {
+    color: #e2e2a7;
 }
 
 .blinking {
@@ -202,19 +206,43 @@ a.webix_list_item {
 }
 
 @-moz-keyframes blinker {
-    0% { opacity: 1.0; }
-    50% { opacity: 0.0; }
-    100% { opacity: 1.0; }
+    0% {
+        opacity: 1.0;
+    }
+    50% {
+        opacity: 0.0;
+    }
+    100% {
+        opacity: 1.0;
+    }
 }
 
 @-webkit-keyframes blinker {
-    0% { opacity: 1.0; }
-    50% { opacity: 0.0; }
-    100% { opacity: 1.0; }
+    0% {
+        opacity: 1.0;
+    }
+    50% {
+        opacity: 0.0;
+    }
+    100% {
+        opacity: 1.0;
+    }
 }
 
 @keyframes blinker {
-    0% { opacity: 1.0; }
-    50% { opacity: 0.0; }
-    100% { opacity: 1.0; }
+    0% {
+        opacity: 1.0;
+    }
+    50% {
+        opacity: 0.0;
+    }
+    100% {
+        opacity: 1.0;
+    }
+}
+
+@font-face {
+    font-family: GisFont;
+    src: url(../fonts/Far_BadrBold.ttf) format("truetype");
+    font-style: normal
 }

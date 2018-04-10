@@ -3,10 +3,13 @@ package ir.mfava.modfava.pardazesh.controller;
 import ir.mfava.modfava.pardazesh.model.Bulletin;
 import ir.mfava.modfava.pardazesh.model.DTO.JSONMessage;
 import ir.mfava.modfava.pardazesh.model.Province;
+import ir.mfava.modfava.pardazesh.model.report.event.Event;
 import ir.mfava.modfava.pardazesh.service.BulletinService;
 import ir.mfava.modfava.pardazesh.service.ProvinceService;
+import ir.mfava.modfava.pardazesh.service.report.event.EventService;
 import ir.mfava.modfava.pardazesh.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,12 +26,14 @@ import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/bulletin")
-public class BulletinController {
+public class BulletinController extends BaseController {
 
     @Autowired
     private BulletinService bulletinService;
     @Autowired
     private ProvinceService provinceService;
+    @Autowired
+    private EventService eventService;
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     public String showForecastsPage(@RequestParam(name = "provinceId", required = false) Long provinceId,
@@ -72,7 +78,9 @@ public class BulletinController {
                                @RequestParam(name = "phenomena") String phenomena,
                                @RequestParam(name = "forecastDate") Long forecastDate,
                                @RequestParam(name = "icon") String icon,
-                               HttpSession session) {
+                               HttpSession session,
+                               HttpServletRequest request,
+                               Authentication authentication) {
         Bulletin bulletin = new Bulletin();
         Province province = provinceService.getById(provinceId);
         bulletin.setProvince(province);
@@ -83,26 +91,36 @@ public class BulletinController {
         Long currentDate = new Date().getTime();
         Long daysToAdd = forecastDate * 24 * 60 * 60 * 1000;
         bulletin.setForecastDate(new Date(currentDate + daysToAdd));
+        Event.Flag flag;
         try {
             bulletinService.save(bulletin);
             session.setAttribute("successMessage", "ثبت اطلاعات با موفقیت انجام شد.");
+            flag = Event.Flag.SUCCESS;
         } catch (Exception e) {
             session.setAttribute("errorMessage", "خطا در ثبت اطلاعات.");
+            flag = Event.Flag.FAILURE;
         }
+        eventService.addEvent(request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.ADD_EDIT, Event.SubType.NEW_DATA, flag, null, Event.Sensitivity.NOTIFICATION);
         return "redirect:/bulletin/view?provinceId=" + provinceId;
     }
 
     @RequestMapping(value = "/remove")
     public String saveBulletin(@RequestParam(name = "bulletinId") Long bulletinId,
-                               HttpSession session) {
+                               HttpSession session,
+                               HttpServletRequest request,
+                               Authentication authentication) {
         Bulletin bulletin = bulletinService.getById(bulletinId);
+        Event.Flag flag;
         try {
             bulletinService.remove(bulletin);
             session.setAttribute("successMessage", "حذف اطلاعات با موفقیت انجام شد.");
+            flag = Event.Flag.SUCCESS;
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "خطا در حذف اطلاعات.");
+            flag = Event.Flag.FAILURE;
         }
+        eventService.addEvent(request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.DELETE, Event.SubType.DELETE_FROM_DB, flag, null, Event.Sensitivity.NOTIFICATION);
         return "redirect:/bulletin/view?provinceId=" + bulletin.getProvince().getId();
     }
 }

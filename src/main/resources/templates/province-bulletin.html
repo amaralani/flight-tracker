@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>پیش بینی روزهای آینده</title>
+    <title>پيش بيني روزهاي آينده</title>
     <style>
         .checkbox {
             padding-left: 10px;
@@ -46,7 +46,7 @@
     $.each(provinces, function (index, province) {
         comboProvinces.push({id: province.id, value: province.name})
     });
-    comboProvinces.push({id: null, value: 'انتخاب کنید...'});
+    comboProvinces.push({id: null, value: 'انتخاب کنيد...'});
     var forecasts = [];
     if ([[${bulletins}]]) {
         forecasts = [[${bulletins}]];
@@ -66,7 +66,7 @@
     formItems.push({
         view: "button",
         type: "form",
-        value: "مشاهده پیش بینی ها",
+        value: "مشاهده پيش بيني ها",
         align: "left",
         width: 200,
         click: function () {
@@ -92,7 +92,7 @@
         formItems.push({
             view: "button",
             type: "form",
-            value: "افزودن پیش بینی",
+            value: "افزودن پيش بيني",
             align: "left",
             click: function () {
                 $$("new_province").setValue($$("province").getValue());
@@ -112,7 +112,7 @@
                 borderless: true,
                 width: 400,
                 rows: [
-                    {template: "افزودن پیش بینی", type: "header"},
+                    {template: "افزودن پيش بيني", type: "header"},
                     {
                         view: "richselect",
                         id: "new_province",
@@ -144,7 +144,7 @@
                     {
                         id: 'phenomena',
                         view: "text",
-                        label: "شرح وضعیت",
+                        label: "شرح وضعيت",
                         labelAlign: 'right',
                         textAlign: 'right',
                         name: "phenomena",
@@ -153,19 +153,19 @@
                     {
                         view: "richselect",
                         id: "forecastDate",
-                        label: 'تاریخ پیش بینی',
+                        label: 'تاريخ پيش بيني',
                         labelWidth: 100,
                         labelAlign: 'right',
                         name: "provinceId",
                         value: "0",
                         options: [
-                            {id: "0", value: "24  ساعت آینده "},
-                            {id: "1", value: "48 ساعت آینده"},
-                            {id: "2", value: "72 ساعت آینده"},
-                            {id: "3", value: "جهار روز آینده"},
-                            {id: "4", value: "پنج روز آینده"},
-                            {id: "5", value: "شش روز آینده"},
-                            {id: "6", value: "هقت روز آینده"}
+                            {id: "0", value: "24  ساعت آينده "},
+                            {id: "1", value: "48 ساعت آينده"},
+                            {id: "2", value: "72 ساعت آينده"},
+                            {id: "3", value: "جهار روز آينده"},
+                            {id: "4", value: "پنج روز آينده"},
+                            {id: "5", value: "شش روز آينده"},
+                            {id: "6", value: "هقت روز آينده"}
                         ]
                     },
                     {
@@ -261,7 +261,7 @@
                 width: 300,
                 rows: [
 
-                    {template: "<span class='webix_strong'>آیا از حذف این پیش بینی اطمینان دارید؟</span>", height: 25},
+                    {template: "<span class='webix_strong'>آيا از حذف اين پيش بيني اطمينان داريد؟</span>", height: 25},
                     {height: 30},
                     {
                         cols: [
@@ -280,7 +280,7 @@
                                 inputWidth: 100,
                                 view: "button",
                                 type: "form",
-                                value: "خیر",
+                                value: "خير",
                                 align: "left",
                                 click: function () {
                                     $("#removeBulletinConfirmDialog").dialog("close");

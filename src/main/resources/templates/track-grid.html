@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>گزارش مسیرها</title>
+    <title>گزارش مسيرها</title>
 </head>
 <style>
     .webix_cell {
@@ -79,7 +79,7 @@
                     console.log(error);
                     webix.message({
                         type: "error",
-                        text: "خطا در دریافت اطلاعات"
+                        text: "خطا در دريافت اطلاعات"
                     })
                 }
         );
@@ -101,7 +101,7 @@
                                     {
                                         view: "text",
                                         id: "trackCode",
-                                        label: 'کد مسیر',
+                                        label: 'کد مسير',
                                         labelWidth: 150,
                                         labelAlign: 'right'
                                     },
@@ -128,7 +128,7 @@
                                     {
                                         view: "text",
                                         id: 'longitude',
-                                        label: "طول جغرافیایی",
+                                        label: "طول جغرافيايي",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 150
@@ -136,7 +136,7 @@
                                     {
                                         id: 'latitude',
                                         view: "text",
-                                        label: "عرض جغرافیایی",
+                                        label: "عرض جغرافيايي",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 150
@@ -193,15 +193,15 @@
                 columns: [
                     {
                         id: "code",
-                        header: ["کد مسیر", {
+                        header: ["کد مسير", {
                             content: "textFilter",
                             compare: oneForAllTrack,
                             placeholder: "جستجو",
                             colspan: 2
                         }]
                     },
-                    {id: "latitude", header: ["عرض جغرافیایی", null], fillspace: true},
-                    {id: "longitude", header: ["طول جغرافیایی", null], fillspace: true},
+                    {id: "latitude", header: ["عرض جغرافيايي", null], fillspace: true},
+                    {id: "longitude", header: ["طول جغرافيايي", null], fillspace: true},
                     {id: "altitude", header: ["ارتفاع", null], fillspace: true},
                     {id: "speed", header: ["سرعت", null], fillspace: true},
                     {id: "radar", header: ["رادار", null], fillspace: true},

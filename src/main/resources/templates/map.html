@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>نمایش نقشه</title>
+    <title>نمايش نقشه</title>
     <style>
         #container {
             height: 620px;
@@ -26,7 +26,7 @@
     L.tileLayer([[${host}]] + '/osm_tiles/{z}/{x}/{y}.png', {
 
         maxZoom: 18,
-        attribution: 'معاونت فناوری اطلاعات و ارتباطات ق‌پ‌ه‌خ‌ (ص) | مدیریت فناوری اطلاعات ',
+        attribution: 'معاونت فناوري اطلاعات و ارتباطات ق‌پ‌ه‌خ‌ (ص) | مديريت فناوري اطلاعات ',
         id: 'container'
     }).addTo(map);
     L.control.scale().addTo(map);
@@ -224,7 +224,7 @@
                             {
                                 view: "button",
                                 type: "form",
-                                value: "نمایش اطلاعات هواشناسی",
+                                value: "نمايش اطلاعات هواشناسي",
                                 width: 200,
                                 click: function () {
                                     whichMarkers = 1;
@@ -237,7 +237,7 @@
                             {
                                 view: "button",
                                 type: "form",
-                                value: "نمایش پیش بینی هوا",
+                                value: "نمايش پيش بيني هوا",
                                 width: 200,
                                 click: function () {
                                     whichMarkers = 2;

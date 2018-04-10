@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت پدیده های هواشناسی</title>
+    <title>مديريت پديده هاي هواشناسي</title>
 </head>
 <body>
 <div class="edit-weatherEvent-dialog" id="editWeatherEventDialog" style="display: none">
@@ -16,7 +16,7 @@
         <br/>
         <br/>
         <button class="webix_el_button" type="submit">
-            ذخیره
+            ذخيره
         </button>
         <input type="hidden" name="id" id="current-id" value=""/>
     </form>
@@ -47,7 +47,7 @@
 
         width: 400,
         elements: [
-            {template: "ویرایش مشخصات", type: "header"},
+            {template: "ويرايش مشخصات", type: "header"},
             {
                 id: 'id', view: "text", disabled: true
             },
@@ -63,8 +63,8 @@
                 id: 'abbreviation',
                 name: 'abbreviation',
                 view: "text",
-                invalidMessage: "نام اختصاری الزامی است و باید بیشتر از یک حرف باشد.",
-                label: "نام اختصاری",
+                invalidMessage: "نام اختصاري الزامي است و بايد بيشتر از يک حرف باشد.",
+                label: "نام اختصاري",
                 labelAlign: 'right',
                 textAlign: 'right',
                 labelWidth: 100
@@ -72,9 +72,9 @@
             {
                 id: 'description',
                 name: 'description',
-                invalidMessage: "توضیح الزامی است.",
+                invalidMessage: "توضيح الزامي است.",
                 view: "text",
-                label: "توضیح",
+                label: "توضيح",
                 labelAlign: 'right',
                 textAlign: 'right',
                 labelWidth: 100
@@ -82,9 +82,9 @@
             {
                 id: 'priority',
                 name: 'priority',
-                invalidMessage: "درجه اولویت باید یک عدد باشد.",
+                invalidMessage: "درجه اولويت بايد يک عدد باشد.",
                 view: "text",
-                label: "درجه اهمیت",
+                label: "درجه اهميت",
                 labelAlign: 'right',
                 textAlign: 'right',
                 labelWidth: 100
@@ -107,7 +107,7 @@
                     } else {
                         webix.message({
                             type: "error",
-                            text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                            text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                         })
                     }
                 }
@@ -129,7 +129,7 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
-                {id: "view", value: "مشاهده پدیده", width: 150},
+                {id: "view", value: "مشاهده پديده", width: 150},
                 {id: "add", value: "افزودن", width: 150}
             ]
             },
@@ -150,23 +150,23 @@
                                 }]
                             },
                             {
-                                id: "abbreviation", header: ["نام اختصاری", null], width: 200
+                                id: "abbreviation", header: ["نام اختصاري", null], width: 200
                             },
                             {
-                                id: "description", header: ["توضیح", null], fillspace: true
+                                id: "description", header: ["توضيح", null], fillspace: true
                             },
                             {
-                                id: "priority", header: "درجه اهمیت", width: 200
+                                id: "priority", header: "درجه اهميت", width: 200
                             },
 //                            {
 //                                id: "icon",
-//                                header: "تصویر",
+//                                header: "تصوير",
 //                                template: "<a href='javascript:void(0)' class='remove_weatherEvent_icon'><img src='/base-info/phenomena/view-icon/#icon#'></a>",
 //                                width: 200
 //                            },
                             {
                                 id: "edit",
-                                header: "ویرایش",
+                                header: "ويرايش",
                                 css: "webix_el_button",
                                 template: "<span class='webix_icon fa-edit has-cursor-pointer green edit_weatherEvent'></span>"
                             },
@@ -211,7 +211,7 @@
                                 borderless: true,
                                 width: 600,
                                 elements: [
-                                    {template: "افزودن پدیده", type: "header"},
+                                    {template: "افزودن پديده", type: "header"},
                                     {
                                         id: 'title_new',
                                         view: "text",
@@ -224,8 +224,8 @@
                                         id: 'abbreviation_new',
                                         name: 'abbreviation_new',
                                         view: "text",
-                                        invalidMessage: "نام اختصاری الزامی است و باید بیشتر از یک حرف باشد.",
-                                        label: "نام اختصاری",
+                                        invalidMessage: "نام اختصاري الزامي است و بايد بيشتر از يک حرف باشد.",
+                                        label: "نام اختصاري",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -233,9 +233,9 @@
                                     {
                                         id: 'description_new',
                                         name: 'description_new',
-                                        invalidMessage: "توضیح الزامی است.",
+                                        invalidMessage: "توضيح الزامي است.",
                                         view: "text",
-                                        label: "توضیح",
+                                        label: "توضيح",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -243,9 +243,9 @@
                                     {
                                         id: 'priority_new',
                                         name: 'priority_new',
-                                        invalidMessage: "درجه اولویت باید یک عدد باشد.",
+                                        invalidMessage: "درجه اولويت بايد يک عدد باشد.",
                                         view: "text",
-                                        label: "درجه اهمیت",
+                                        label: "درجه اهميت",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -282,7 +282,7 @@
                                             } else {
                                                 webix.message({
                                                     type: "error",
-                                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                                    text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                                                 })
                                             }
                                         }

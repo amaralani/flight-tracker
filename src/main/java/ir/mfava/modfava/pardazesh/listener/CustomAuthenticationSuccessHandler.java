@@ -1,8 +1,10 @@
 package ir.mfava.modfava.pardazesh.listener;
 
 import ir.mfava.modfava.pardazesh.model.Configuration;
+import ir.mfava.modfava.pardazesh.model.report.event.Event;
 import ir.mfava.modfava.pardazesh.service.ConfigurationService;
 import ir.mfava.modfava.pardazesh.service.UserSessionInformationService;
+import ir.mfava.modfava.pardazesh.service.report.event.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
@@ -21,6 +23,8 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
     private UserSessionInformationService userSessionInformationService;
     @Autowired
     private ConfigurationService configurationService;
+    @Autowired
+    private EventService eventService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -34,6 +38,7 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
         }
 
         userSessionInformationService.createUserSessionInformation(request.getSession().getId(), authentication.getName(), request.getRemoteAddr());
+        eventService.addEvent(request.getRemoteAddr(),request.getRemoteHost(),request.getRequestURI(),authentication.getName(), Event.ActionType.LOGIN_LOGOUT, Event.SubType.USER_LOGIN_LOGOUT, Event.Flag.SUCCESS,null, Event.Sensitivity.NOTIFICATION);
         DefaultSavedRequest defaultSavedRequest = (DefaultSavedRequest) request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
         if (defaultSavedRequest != null) {
             String targetURL = defaultSavedRequest.getRedirectUrl();

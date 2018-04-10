@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت فایل ها</title>
+    <title>مديريت فايل ها</title>
     <style>
         .error-container {
             text-align: center;
@@ -14,16 +14,16 @@
 <body>
 <div id="error-page-container">
     <div>
-        خطا : درخواست قابل اجرا نیست.
+        خطا : درخواست قابل اجرا نيست.
     </div>
     <br>
     <br>
 <div class="error-container" th:switch='${#httpServletRequest.getAttribute("javax.servlet.error.status_code")}' >
     <div th:case="404">
-        صفحه مورد نظر یافت نشد.
+        صفحه مورد نظر يافت نشد.
     </div>
     <div th:case="403">
-        صفحه مورد نظر یافت نشد.
+        صفحه مورد نظر يافت نشد.
     </div>
 </div>
 

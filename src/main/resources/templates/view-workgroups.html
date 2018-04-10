@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت گروه های کاری</title>
+    <title>مديريت گروه هاي کاري</title>
 </head>
 <body>
 <div class="edit-workGroup-dialog" id="editWorkGroupDialog" style="display: none">
@@ -35,7 +35,7 @@
                 borderless: true,
                 width: 400,
                 rows: [
-                    {template: "ویرایش مشخصات", type: "header"},
+                    {template: "ويرايش مشخصات", type: "header"},
                     {
                         id: 'code',
                         view: "text",
@@ -76,7 +76,7 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
-                {id: "view", value: "مشاهده گروه کاری ها", width: 150},
+                {id: "view", value: "مشاهده گروه کاري ها", width: 150},
                 {id: "add", value: "افزودن", width: 150}
             ]
             },
@@ -101,10 +101,10 @@
                             {id: "name", header: ["نام", null], fillspace: true},
                             {
                                 id: "edit",
-                                header: "ویرایش",
+                                header: "ويرايش",
                                 css: "webix_el_button",
                                 width: 150,
-                                template: "<a href='javascript:void(0)' class='edit_workGroup'>ویرایش</a>"
+                                template: "<a href='javascript:void(0)' class='edit_workGroup'>ويرايش</a>"
                             },
                             {
                                 id: "remove",
@@ -140,7 +140,7 @@
                                 borderless: true,
                                 width: 400,
                                 rows: [
-                                    {template: "افزودن گروه کاری", type: "header"},
+                                    {template: "افزودن گروه کاري", type: "header"},
                                     {
                                         id: 'code_new',
                                         view: "text",

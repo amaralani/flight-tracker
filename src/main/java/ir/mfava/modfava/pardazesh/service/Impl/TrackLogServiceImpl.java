@@ -1,6 +1,5 @@
 package ir.mfava.modfava.pardazesh.service.Impl;
 
-import ir.mfava.modfava.pardazesh.model.Track;
 import ir.mfava.modfava.pardazesh.model.TrackLog;
 import ir.mfava.modfava.pardazesh.repository.TrackLogRepository;
 import ir.mfava.modfava.pardazesh.service.TrackLogService;
@@ -45,5 +44,16 @@ public class TrackLogServiceImpl implements TrackLogService {
         TrackLog track = new TrackLog();
         track.setCode(code);
         return trackLogRepository.findAll(Example.of(track));
+    }
+
+    @Override
+    public List<TrackLog> getAircraftHistoryByCode(String code){
+        TrackLog trackLog = trackLogRepository.getTop1ByCode(code);
+        return trackLogRepository.getTrackHistoryByAircraft(trackLog.getCol3());
+    }
+
+    @Override
+    public TrackLog getAircraftLastPosition(String callsign){
+        return trackLogRepository.getTop1ByCol3OrderByTimeDesc(callsign);
     }
 }

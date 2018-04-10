@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت پرسنل</title>
+    <title>مديريت پرسنل</title>
 </head>
 <body>
 <div class="edit-person-dialog" id="editPersonDialog" style="display: none">
@@ -35,11 +35,11 @@
                 borderless: true,
                 width: 400,
                 rows: [
-                    {template: "ویرایش مشخصات", type: "header"},
+                    {template: "ويرايش مشخصات", type: "header"},
                     {
                         id: 'code',
                         view: "text",
-                        label: "کد پرسنلی",
+                        label: "کد پرسنلي",
                         labelAlign: 'right',
                         textAlign: 'right',
                         disabled: true
@@ -48,7 +48,7 @@
                         id: "firstName", view: "text", label: "نام", labelAlign: 'right', textAlign: 'right'
                     },
                     {
-                        id: "lastName", view: "text", label: "نام خانوادگی", labelAlign: 'right', textAlign: 'right'
+                        id: "lastName", view: "text", label: "نام خانوادگي", labelAlign: 'right', textAlign: 'right'
                     },
                     {
                         inputWidth: 100,
@@ -93,7 +93,7 @@
                         columns: [
                             {
                                 id: "perno",
-                                header: ["کد پرسنلی", {
+                                header: ["کد پرسنلي", {
                                     content: "textFilter",
                                     compare: oneForAll,
                                     placeholder: "جستجو",
@@ -103,13 +103,13 @@
                                 width: 200
                             },
                             {id: "firstName", header: ["نام", null], fillspace: true},
-                            {id: "lastName", header: ["نام خانوادگی", null], width: 300},
+                            {id: "lastName", header: ["نام خانوادگي", null], width: 300},
                             {
                                 id: "edit",
-                                header: "ویرایش",
+                                header: "ويرايش",
                                 css: "webix_el_button",
                                 width: 150,
-                                template: "<a href='javascript:void(0)' class='edit_person'>ویرایش</a>"
+                                template: "<a href='javascript:void(0)' class='edit_person'>ويرايش</a>"
                             },
                             {
                                 id: "remove",
@@ -150,7 +150,7 @@
                                     {
                                         id: 'code_new',
                                         view: "text",
-                                        label: "کد پرسنلی",
+                                        label: "کد پرسنلي",
                                         labelAlign: 'right',
                                         textAlign: 'right'
                                     },
@@ -164,7 +164,7 @@
                                     {
                                         id: "lastName_new",
                                         view: "text",
-                                        label: "نام خانوادگی",
+                                        label: "نام خانوادگي",
                                         labelAlign: 'right',
                                         textAlign: 'right'
                                     },

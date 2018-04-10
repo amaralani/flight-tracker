@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>ویرایش فروشگاه ها</title>
+    <title>ويرايش فروشگاه ها</title>
 </head>
 <body>
 <!--/*/ <th:block th:include="partials/menu :: menu"></th:block> /*/-->
@@ -12,7 +12,7 @@
         <tr>
             <th th:name="name" data-notnull="true">نام</th>
             <th th:name="address">آدرس</th>
-            <th th:name="category">دسته بندی</th>
+            <th th:name="category">دسته بندي</th>
             <th th:name="${_csrf.parameterName}" style="display: none"></th>
 
         </tr>
@@ -34,11 +34,11 @@
     </table>
     <button class="ui new labeled icon positive button">
         <i class="plus icon"></i>
-        جدید
+        جديد
     </button>
 </div>
 <div class="ui modal">
-    <div class="header right-text">فروشگاه جدید</div>
+    <div class="header right-text">فروشگاه جديد</div>
     <div class="content">
         <p>
         <form class="ui form">
@@ -54,7 +54,7 @@
                     </div>
                 </div>
                 <div class="field">
-                    <label>دسته بندی</label>
+                    <label>دسته بندي</label>
                     <select class="form-control" name="category" id="new-category">
                         <th:block th:each="category : ${categories}">
                             <option th:value="${category.id}" th:text="${category.title}">category title</option>

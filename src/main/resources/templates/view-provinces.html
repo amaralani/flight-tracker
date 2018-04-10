@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت شهرستان ها</title>
+    <title>مديريت شهرستان ها</title>
 </head>
 <body>
 <div class="edit-province-dialog" id="editProvinceDialog" style="display: none">
@@ -34,14 +34,14 @@
                 borderless: true,
                 width: 400,
                 elements: [
-                    {template: "ویرایش مشخصات", type: "header"},
+                    {template: "ويرايش مشخصات", type: "header"},
                     {
                         id: 'id', view: "text", disabled: true
                     },
                     {
                         id: 'name',
                         name: 'name',
-                        invalidMessage: "این فیلد الزامی است.",
+                        invalidMessage: "اين فيلد الزامي است.",
                         view: "text",
                         label: "نام",
                         labelAlign: 'right',
@@ -51,9 +51,9 @@
                     {
                         id: 'latitude',
                         name: 'latitude',
-                        invalidMessage: "این فیلد الزامی است. فقط مقادیر عددی وارد کنید.",
+                        invalidMessage: "اين فيلد الزامي است. فقط مقادير عددي وارد کنيد.",
                         view: "text",
-                        label: "عرض جغرافیایی",
+                        label: "عرض جغرافيايي",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -61,9 +61,9 @@
                     {
                         id: 'longitude',
                         name: 'longitude',
-                        invalidMessage: "این فیلد الزامی است. فقط مقادیر عددی وارد کنید.",
+                        invalidMessage: "اين فيلد الزامي است. فقط مقادير عددي وارد کنيد.",
                         view: "text",
-                        label: "طول جغرافیایی",
+                        label: "طول جغرافيايي",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -85,7 +85,7 @@
                             } else {
                                 webix.message({
                                     type: "error",
-                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                    text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                                 })
                             }
                         }
@@ -143,14 +143,14 @@
                                 fillspace: true
                             },
                             {
-                                id: "latitude", header: ["عرض جغرافیایی", null], fillspace: true
+                                id: "latitude", header: ["عرض جغرافيايي", null], fillspace: true
                             },
                             {
-                                id: "longitude", header: ["طول جغرافیای", null], fillspace: true
+                                id: "longitude", header: ["طول جغرافياي", null], fillspace: true
                             },
                             {
                                 id: "edit",
-                                header: "ویرایش",
+                                header: "ويرايش",
                                 css: "webix_el_button",
                                 width: 150,
                                 template: "<span class='webix_icon fa-edit has-cursor-pointer green edit_province'></span>"
@@ -196,7 +196,7 @@
                                     {
                                         id: 'name_new',
                                         name: 'name_new',
-                                        invalidMessage: "این فیلد الزامی است.",
+                                        invalidMessage: "اين فيلد الزامي است.",
                                         view: "text",
                                         label: "نام",
                                         labelAlign: 'right',
@@ -206,9 +206,9 @@
                                     {
                                         id: 'latitude_new',
                                         name: 'latitude_new',
-                                        invalidMessage: "این فیلد الزامی است. فقط مقادیر عددی وارد کنید.",
+                                        invalidMessage: "اين فيلد الزامي است. فقط مقادير عددي وارد کنيد.",
                                         view: "text",
-                                        label: "عرض جغرافیایی",
+                                        label: "عرض جغرافيايي",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -216,9 +216,9 @@
                                     {
                                         id: 'longitude_new',
                                         name: 'longitude_new',
-                                        invalidMessage: "این فیلد الزامی است. فقط مقادیر عددی وارد کنید.",
+                                        invalidMessage: "اين فيلد الزامي است. فقط مقادير عددي وارد کنيد.",
                                         view: "text",
-                                        label: "طول جغرافیایی",
+                                        label: "طول جغرافيايي",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -248,7 +248,7 @@
                                             } else {
                                                 webix.message({
                                                     type: "error",
-                                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                                    text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                                                 })
                                             }
                                         }

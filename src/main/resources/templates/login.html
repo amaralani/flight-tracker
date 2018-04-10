@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="X-Content-Type-Options" content=""/>
-    <link rel="stylesheet" th:href="@{/webix/skins/metro.css}" type="text/css" media="screen" charset="utf-8"/>
+    <link rel="stylesheet" th:href="@{/webix/skins/contrast.css}" type="text/css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/custom.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/jquery-ui.min.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/css/leaflet.css}"/>
@@ -16,12 +16,8 @@
     <script th:src="@{/js/jquery.sha1.js}" type="text/javascript" charset="utf-8"></script>
     <script th:src="@{/js/leaflet.js}" type="text/javascript" charset="utf-8"></script>
     <script th:src="@{/js/moment.min.js}" type="text/javascript" charset="utf-8"></script>
-    <title>ورود به سیستم</title>
+    <title>ورود به سيستم</title>
     <style>
-        .webix_layout_space {
-            background: url("/images/sky-clouds.jpg") no-repeat;
-            background-size: cover;
-        }
 
         .webix_layout_wide {
             background: transparent;
@@ -38,11 +34,11 @@
 <div id="message">
     <span th:if="${message != null}" th:text="${message}" th:class="success-message"></span>
     <div th:if="${session.loginError != null}">
-        <span th:if="${session.loginError eq 'account-disabled'}" th:class="error-message">حساب کاربری شما غیر فعال شده است. با مدیر سیستم تماس بگیرید.</span>
-        <span th:if="${session.loginError eq 'password-expired'}" th:class="error-message">رمز عبور شما منقضی شده است. با مدیر سیستم تماس بگیرید.</span>
-        <span th:if="${session.loginError eq 'account-locked'}" th:class="error-message">حساب کاربری شما قفل شده است. با مدیر سیستم تماس بگیرید.</span>
+        <span th:if="${session.loginError eq 'account-disabled'}" th:class="error-message">حساب کاربري شما غير فعال شده است. با مدير سيستم تماس بگيريد.</span>
+        <span th:if="${session.loginError eq 'password-expired'}" th:class="error-message">رمز عبور شما منقضي شده است. با مدير سيستم تماس بگيريد.</span>
+        <span th:if="${session.loginError eq 'account-locked'}" th:class="error-message">حساب کاربري شما قفل شده است. با مدير سيستم تماس بگيريد.</span>
         <span th:if="${session.loginError eq 'login-error'}"
-              th:class="error-message">نام کاربری یا رمز عبور صحیح نیست.</span>
+              th:class="error-message">نام کاربري يا رمز عبور صحيح نيست.</span>
     </div>
 
 </div>
@@ -57,6 +53,7 @@
         type: "clean",
         css: "transparent-background",
         rows: [
+            {},
             {
                 cols: [
                     {},
@@ -65,14 +62,14 @@
                         type: "form",
                         borderless: true,
                         rows: [
-                            {template: "ورود به سیستم", type: "header"},
+                            {template: "ورود به سيستم", type: "header"},
                             {
                                 body: {content: "message"}, height: 36
                             },
                             {
                                 id: 'username',
                                 view: "text",
-                                label: "نام کاربری",
+                                label: "نام کاربري",
                                 labelAlign: 'right',
                                 textAlign: 'right',
                                 labelWidth: 100
@@ -93,6 +90,7 @@
                                 type: "form",
                                 value: "ورود",
                                 align: "left",
+                                hotkey: "enter",
                                 click: function () {
                                     var username = {name: "username", value: $$("username").getValue().trim()};
                                     var password = {name: "password", value: $$("password").getValue().trim()};
@@ -103,10 +101,14 @@
                         ]
                     }, {}
                 ]
-            }
+            },
+            {}
         ]
     };
 
+    $(document).ready(function(){
+
+    });
     /*]]>*/
 </script>
 

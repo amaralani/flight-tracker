@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>نمایش جدول</title>
+    <title>نمايش جدول</title>
 </head>
 <body>
 
@@ -66,7 +66,7 @@
                     $$("grid").refresh();
                 },
                 function (response) {
-                    webix.message("خطا در دریافت اطلاعات.")
+                    webix.message("خطا در دريافت اطلاعات.")
                 }
         );
     }
@@ -80,8 +80,8 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
-                {id: "view", value: "مشاهده پیام ها", width: 150},
-                {id: "add", value: "ارسال پیام", width: 150}
+                {id: "view", value: "مشاهده پيام ها", width: 150},
+                {id: "add", value: "ارسال پيام", width: 150}
             ]
             },
             {
@@ -115,7 +115,7 @@
 //                                    {
 //                                        view: "button",
 //                                        type: "form",
-//                                        value: "ارسال پیام",
+//                                        value: "ارسال پيام",
 //                                        align: "left",
 //                                        click: function () {
 //                                            $$("new_province").setValue($$("province").getValue());
@@ -141,7 +141,7 @@
                                         , fillspace: true
                                     },
                                     {id: "subject", header: ["موضوع", null], fillspace: true},
-                                    {id: "createDate", header: ["تاریخ ارسال", null], fillspace: true},
+                                    {id: "createDate", header: ["تاريخ ارسال", null], fillspace: true},
                                     {
                                         id: "view",
                                         header: "مشاهده",
@@ -181,7 +181,7 @@
                                                     $("#view-message-dialog").dialog("open");
                                                 },
                                                 function(error){
-                                                    webix.message("خطا در بازیابی اطلاعات.");
+                                                    webix.message("خطا در بازيابي اطلاعات.");
                                                 }
                                         );
                                     },
@@ -205,12 +205,12 @@
                                 borderless: true,
                                 width: 600,
                                 rows: [
-                                    {template: "ارسال پیام", type: "header"},
+                                    {template: "ارسال پيام", type: "header"},
                                     {
                                         id: 'receiverIds',
                                         view: "multicombo",
                                         labelWidth : 170,
-                                        label: "کاربران دریافت کننده",
+                                        label: "کاربران دريافت کننده",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         suggest: {
@@ -224,7 +224,7 @@
                                         id: 'userGroupIds',
                                         view: "multicombo",
                                         labelWidth : 170,
-                                        label: "گروهی های کاربری دریافت کننده",
+                                        label: "گروهي هاي کاربري دريافت کننده",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         suggest: {
@@ -246,7 +246,7 @@
                                         id: "text",
                                         labelWidth : 150,
                                         view: "textarea",
-                                        label: "متن پیام",
+                                        label: "متن پيام",
                                         labelAlign: 'right',
                                         textAlign: 'right'
                                     },

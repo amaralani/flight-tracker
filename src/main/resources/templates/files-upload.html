@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت فایل ها</title>
+    <title>مديريت فايل ها</title>
 </head>
 <body>
 <div id="message">
@@ -32,7 +32,7 @@
         if (text === true)
             return 'فعال';
         if (text === false)
-            return 'غیرفعال';
+            return 'غيرفعال';
     }
     /*<![CDATA[*/
     var allUploadFileTypes = [[${allUploadFileTypes}]];
@@ -67,9 +67,9 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "adr", options: [
-                {id: "view", value: "مشاهده فایل ها", width: 150},
-                {id: "adr", value: "افزودن فایل ", width: 150},
-                {id: "addType", value: "افزودن نوع فایل", width: 150}
+                {id: "view", value: "مشاهده فايل ها", width: 150},
+                {id: "adr", value: "افزودن فايل ", width: 150},
+                {id: "addType", value: "افزودن نوع فايل", width: 150}
             ]
             },
             {
@@ -92,7 +92,7 @@
                             },
                             {
                                 id: "fileName",
-                                header: ["نام فایل ", null],
+                                header: ["نام فايل ", null],
                                 fillspace: true
                             },
                             {
@@ -174,20 +174,20 @@
                                     },
                                     {
                                         id: "active",
-                                        header: "وضعیت",
+                                        header: "وضعيت",
                                         fillspace: true,
                                         format: activeFormat
                                     },
                                     {
                                         id: "setActive",
-                                        header: "فعالسازی",
+                                        header: "فعالسازي",
                                         css: "webix_el_button",
                                         width: 150,
                                         template: "<span class='webix_icon fa-check has-cursor-pointer green setActive'></span>"
                                     },
                                     {
                                         id: "setInActive",
-                                        header: "غیرفعال سازی",
+                                        header: "غيرفعال سازي",
                                         css: "webix_el_button",
                                         width: 150,
                                         template: "<span class='webix_icon fa-close has-cursor-pointer red setInActive'></span>"

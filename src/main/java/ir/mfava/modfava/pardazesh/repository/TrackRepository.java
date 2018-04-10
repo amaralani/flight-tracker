@@ -19,6 +19,7 @@ public interface TrackRepository extends JpaRepository<Track,Long> {
             " and (altitude = :altitude or :altitude is null) " +
             " and (source = :source or :source is null) " +
             " and (destination = :destination or :destination is null) " +
+            " and (col3 = :aircraft or :aircraft is null) " +
             "  ")
     List<Track> findTracks(@Param("code") String code,
                            @Param("speed") Integer speed,
@@ -27,5 +28,6 @@ public interface TrackRepository extends JpaRepository<Track,Long> {
                            @Param("latitude") Float latitude,
                            @Param("altitude") Float altitude,
                            @Param("source") String source,
-                           @Param("destination") String destination);
+                           @Param("destination") String destination,
+                           @Param("aircraft") String aircraft);
 }

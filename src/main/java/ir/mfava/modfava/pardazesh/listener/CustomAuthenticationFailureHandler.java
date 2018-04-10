@@ -2,9 +2,11 @@ package ir.mfava.modfava.pardazesh.listener;
 
 import ir.mfava.modfava.pardazesh.model.Configuration;
 import ir.mfava.modfava.pardazesh.model.User;
+import ir.mfava.modfava.pardazesh.model.report.event.Event;
 import ir.mfava.modfava.pardazesh.service.ConfigurationService;
 import ir.mfava.modfava.pardazesh.service.LoginFailureLogService;
 import ir.mfava.modfava.pardazesh.service.UserService;
+import ir.mfava.modfava.pardazesh.service.report.event.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -25,6 +27,8 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
     private ConfigurationService configurationService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private EventService eventService;
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,
@@ -47,6 +51,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         request.getSession().setAttribute("clientIP", request.getRemoteAddr());
         request.getSession().setAttribute("clientHostName", request.getRemoteHost());
         loginFailureLogService.createLog(username, request.getRemoteAddr());
+        eventService.addEvent(request.getRemoteAddr(),request.getRemoteHost(),request.getRequestURI(),request.getParameter("username"), Event.ActionType.LOGIN_LOGOUT, Event.SubType.UNSUCCESS_LOGIN, Event.Flag.FAILURE,null, Event.Sensitivity.NOTIFICATION);
         Long countUserLoginFailure = loginFailureLogService.countUserLogsSinceLastLogin(username);
         List<Configuration> configurationList = configurationService.getAll();
         if (!configurationList.isEmpty()) {
@@ -56,6 +61,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
                 if (user != null) {
                     user.setLocked(true);
                     userService.save(user);
+                    eventService.addEvent(request.getRemoteAddr(),request.getRemoteHost(),request.getRequestURI(),request.getParameter("username"), Event.ActionType.USER_MANAGEMENT, Event.SubType.BLOCK_USER, Event.Flag.FAILURE,null, Event.Sensitivity.ALARM);
                 }
             }
         }

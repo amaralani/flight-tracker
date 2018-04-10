@@ -41,6 +41,6 @@ public class TrackServiceImpl implements TrackService {
 
     @Override
     public List<Track> findByExample(Track track) {
-        return trackRepository.findTracks(track.getCode(), track.getSpeed(), track.getRadar(), track.getLongitude(), track.getLatitude(), track.getAltitude(), track.getSource(), track.getDestination());
+        return trackRepository.findTracks(track.getCode(), track.getSpeed(), track.getRadar(), track.getLongitude(), track.getLatitude(), track.getAltitude(), track.getSource(), track.getDestination(), track.getCol3());
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -41,21 +42,30 @@ public class EventServiceImpl implements EventService {
     }
 
     private Event.Importance getEventImportanceByAction(Event.ActionType actionType) {
-        return eventRepository.getActionImportanceByActionType(actionType).getImportance();
+        if (eventRepository.getActionImportanceByActionType(actionType) != null) {
+            return eventRepository.getActionImportanceByActionType(actionType).getImportance();
+        }
+        return null;
     }
 
     @Override
-    public void addEvent(String clientIp, String clientName, String url, String username, Event.ActionType actionType, Event.SubType subType, Event.Flag flag, String description, Event.Sensitivity sensitivity) {
-        Event event = new Event();
-        event.setClientIp(clientIp);
-        event.setClientName(clientName);
-        event.setUrl(url);
-        event.setUsername(username);
-        event.setActionType(actionType);
-        event.setSubType(subType);
-        event.setFlag(flag);
-        event.setDescription(description);
-        event.setImportance(getEventImportanceByAction(actionType));
-        event.setSensitivity(sensitivity);
+    public void addEvent(String clientIp, String clientName, String url, String username, Event.ActionType actionType, Event.SubType subType, Event.Flag flag, Map<String, String> descriptionElements, Event.Sensitivity sensitivity) {
+        try {
+            Event event = new Event();
+            event.setClientIp(clientIp);
+            event.setClientName(clientName);
+            event.setUrl(url);
+            event.setUsername(username);
+            event.setActionType(actionType);
+            event.setSubType(subType);
+            event.setFlag(flag);
+            // TODO‌: convert descriptionElements to JSON
+            event.setDescription("");
+            event.setImportance(getEventImportanceByAction(actionType));
+            event.setSensitivity(sensitivity);
+            save(event);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت ایستگاه های هواشناسی</title>
+    <title>مديريت ايستگاه هاي هواشناسي</title>
 </head>
 <body>
 <div class="edit-weatherStation-dialog" id="editWeatherStationDialog" style="display: none">
@@ -37,14 +37,14 @@
         view: "form",
         width: 400,
         elements: [
-            {template: "ویرایش مشخصات", type: "header"},
+            {template: "ويرايش مشخصات", type: "header"},
             {
                 id: 'id', view: "text", disabled: true
             },
             {
                 id: 'provinceCode',
                 name: 'provinceCode',
-                invalidMessage: 'کد شهرستان باید دقیقا ۴ حرف باشد.',
+                invalidMessage: 'کد شهرستان بايد دقيقا ۴ حرف باشد.',
                 view: "text",
                 label: "کد شهرستان",
                 labelAlign: 'right',
@@ -55,7 +55,7 @@
                 id: 'farsiName',
                 name: 'farsiName',
                 view: "text",
-                label: "نام فارسی",
+                label: "نام فارسي",
                 labelAlign: 'right',
                 textAlign: 'right',
                 labelWidth: 100
@@ -63,7 +63,7 @@
             {
                 id: 'name',
                 name: 'name',
-                invalidMessage: 'درج نام الزامی است.',
+                invalidMessage: 'درج نام الزامي است.',
                 view: "text",
                 label: "نام",
                 labelAlign: 'right',
@@ -73,7 +73,7 @@
             {
                 id: 'stationId',
                 name: 'stationId',
-                invalidMessage: ' مقدار Station Id باید دقیقا ۴ حرف باشد.',
+                invalidMessage: ' مقدار Station Id بايد دقيقا ۴ حرف باشد.',
                 view: "text",
                 label: "Station ID",
                 labelAlign: 'right',
@@ -83,9 +83,9 @@
             {
                 id: 'stationNo',
                 name: 'stationNo',
-                invalidMessage: ' شماره ایستگاه باید عدد باشد.',
+                invalidMessage: ' شماره ايستگاه بايد عدد باشد.',
                 view: "text",
-                label: "شماره ایستگاه",
+                label: "شماره ايستگاه",
                 labelAlign: 'right',
                 textAlign: 'right',
                 labelWidth: 100
@@ -93,9 +93,9 @@
             {
                 id: 'latitude',
                 name: 'latitude',
-                invalidMessage: ' عرض جغرافیایی باید عدد باشد.',
+                invalidMessage: ' عرض جغرافيايي بايد عدد باشد.',
                 view: "text",
-                label: "عرض جغرافیایی",
+                label: "عرض جغرافيايي",
                 labelAlign: 'right',
                 textAlign: 'right',
                 labelWidth: 100
@@ -103,9 +103,9 @@
             {
                 id: 'longitude',
                 name: 'longitude',
-                invalidMessage: ' طول جغرافیایی باید عدد باشد.',
+                invalidMessage: ' طول جغرافيايي بايد عدد باشد.',
                 view: "text",
-                label: "طول جغرافیایی",
+                label: "طول جغرافيايي",
                 labelAlign: 'right',
                 textAlign: 'right',
                 labelWidth: 100
@@ -113,7 +113,7 @@
             {
                 id: 'altitude',
                 name: 'altitude',
-                invalidMessage: ' ارتفاع باید عدد باشد.',
+                invalidMessage: ' ارتفاع بايد عدد باشد.',
                 view: "text",
                 label: "ارتفاع",
                 labelAlign: 'right',
@@ -123,7 +123,7 @@
             {
                 id: 'level',
                 name: 'level',
-                invalidMessage: ' سطح باید عدد باشد.',
+                invalidMessage: ' سطح بايد عدد باشد.',
                 view: "text",
                 label: "سطح",
                 labelAlign: 'right',
@@ -153,7 +153,7 @@
                     } else {
                         webix.message({
                             type: "error",
-                            text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                            text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                         })
                     }
                 }
@@ -193,7 +193,7 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
-                {id: "view", value: "مشاهده ایستگاه ها", width: 150},
+                {id: "view", value: "مشاهده ايستگاه ها", width: 150},
                 {id: "add", value: "افزودن", width: 150}
             ]
             },
@@ -214,7 +214,7 @@
                                 }]
                             },
                             {
-                                id: "farsiName", header: ["نام فارسی", null]
+                                id: "farsiName", header: ["نام فارسي", null]
                             },
                             {
                                 id: "name", header: ["نام ", null]
@@ -223,13 +223,13 @@
                                 id: "stationId", header: ["Station ID", null]
                             },
                             {
-                                id: "stationNo", header: ["شماره ایستگاه", null]
+                                id: "stationNo", header: ["شماره ايستگاه", null]
                             },
                             {
-                                id: "latitude", header: ["عرض جغرافیایی", null]
+                                id: "latitude", header: ["عرض جغرافيايي", null]
                             },
                             {
-                                id: "longitude", header: ["طول جغرافیای", null]
+                                id: "longitude", header: ["طول جغرافياي", null]
                             },
                             {
                                 id: "altitude", header: ["ارتفاع", null]
@@ -239,7 +239,7 @@
                             },
                             {
                                 id: "edit",
-                                header: "ویرایش",
+                                header: "ويرايش",
                                 css: "webix_el_button",
                                 width: 150,
                                 template: "<span class='webix_icon fa-edit has-cursor-pointer green edit_weatherStation'></span>"
@@ -285,11 +285,11 @@
                             {
                                 view: "form",
                                 elements: [
-                                    {template: "افزودن ایستگاه", type: "header"},
+                                    {template: "افزودن ايستگاه", type: "header"},
                                     {
                                         id: 'provinceCode_new',
                                         name: 'provinceCode_new',
-                                        invalidMessage: 'کد شهرستان باید دقیقا ۴ حرف باشد.',
+                                        invalidMessage: 'کد شهرستان بايد دقيقا ۴ حرف باشد.',
                                         view: "text",
                                         label: "کد شهرستان",
                                         labelAlign: 'right',
@@ -300,7 +300,7 @@
                                         id: 'farsiName_new',
                                         name: 'farsiName_new',
                                         view: "text",
-                                        label: "نام فارسی",
+                                        label: "نام فارسي",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -308,7 +308,7 @@
                                     {
                                         id: 'name_new',
                                         name: 'name_new',
-                                        invalidMessage: 'درج نام الزامی است.',
+                                        invalidMessage: 'درج نام الزامي است.',
                                         view: "text",
                                         label: "نام",
                                         labelAlign: 'right',
@@ -318,7 +318,7 @@
                                     {
                                         id: 'stationId_new',
                                         name: 'stationId_new',
-                                        invalidMessage: ' مقدار Station Id باید دقیقا ۴ حرف باشد.',
+                                        invalidMessage: ' مقدار Station Id بايد دقيقا ۴ حرف باشد.',
                                         view: "text",
                                         label: "Station ID",
                                         labelAlign: 'right',
@@ -328,9 +328,9 @@
                                     {
                                         id: 'stationNo_new',
                                         name: 'stationNo_new',
-                                        invalidMessage: ' شماره ایستگاه باید عدد باشد.',
+                                        invalidMessage: ' شماره ايستگاه بايد عدد باشد.',
                                         view: "text",
-                                        label: "شماره ایستگاه",
+                                        label: "شماره ايستگاه",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -338,9 +338,9 @@
                                     {
                                         id: 'latitude_new',
                                         name: 'latitude_new',
-                                        invalidMessage: ' عرض جغرافیایی باید عدد باشد.',
+                                        invalidMessage: ' عرض جغرافيايي بايد عدد باشد.',
                                         view: "text",
-                                        label: "عرض جغرافیایی",
+                                        label: "عرض جغرافيايي",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -348,9 +348,9 @@
                                     {
                                         id: 'longitude_new',
                                         name: 'longitude_new',
-                                        invalidMessage: ' طول جغرافیایی باید عدد باشد.',
+                                        invalidMessage: ' طول جغرافيايي بايد عدد باشد.',
                                         view: "text",
-                                        label: "طول جغرافیایی",
+                                        label: "طول جغرافيايي",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -358,7 +358,7 @@
                                     {
                                         id: 'altitude_new',
                                         name: 'altitude_new',
-                                        invalidMessage: ' ارتفاع باید عدد باشد.',
+                                        invalidMessage: ' ارتفاع بايد عدد باشد.',
                                         view: "text",
                                         label: "ارتفاع",
                                         labelAlign: 'right',
@@ -368,7 +368,7 @@
                                     {
                                         id: 'level_new',
                                         name: 'level_new',
-                                        invalidMessage: ' سطح باید عدد باشد.',
+                                        invalidMessage: ' سطح بايد عدد باشد.',
                                         view: "text",
                                         label: "سطح",
                                         labelAlign: 'right',
@@ -421,7 +421,7 @@
                                             } else {
                                                 webix.message({
                                                     type: "error",
-                                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                                    text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                                                 })
                                             }
                                         }

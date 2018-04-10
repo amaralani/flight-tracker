@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت یگان ها</title>
+    <title>مديريت يگان ها</title>
 </head>
 <body>
 <div class="edit-unit-dialog" id="editUnitDialog" style="display: none">
@@ -44,14 +44,14 @@
                 borderless: true,
                 width: 400,
                 elements: [
-                    {template: "ویرایش مشخصات", type: "header"},
+                    {template: "ويرايش مشخصات", type: "header"},
                     {
                         id: 'id', view: "text", disabled: true
                     },
                     {
                         id: 'title',
                         name: 'title',
-                        invalidMessage:"این فیلد الزامی است.",
+                        invalidMessage:"اين فيلد الزامي است.",
                         view: "text",
                         label: "عنوان",
                         labelAlign: 'right',
@@ -61,7 +61,7 @@
                     {
                         id: 'code',
                         name: 'code',
-                        invalidMessage:"این فیلد الزامی است. فقط عدد وارد کنید.",
+                        invalidMessage:"اين فيلد الزامي است. فقط عدد وارد کنيد.",
                         view: "text",
                         label: "کد",
                         labelAlign: 'right',
@@ -72,7 +72,7 @@
                         id: 'type',
                         view: "select",
                         options: unit_types,
-                        label: "نوع یگان",
+                        label: "نوع يگان",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -94,7 +94,7 @@
                             } else {
                                 webix.message({
                                     type: "error",
-                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                    text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                                 })
                             }
                         }
@@ -124,9 +124,9 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
-                {id: "view", value: "مشاهده یگان ها", width: 150},
-                {id: "add", value: "افزودن یگان", width: 150},
-                {id: "addType", value: "افزودن نوع یگان", width: 150}
+                {id: "view", value: "مشاهده يگان ها", width: 150},
+                {id: "add", value: "افزودن يگان", width: 150},
+                {id: "addType", value: "افزودن نوع يگان", width: 150}
             ]
             },
             {
@@ -154,7 +154,7 @@
                             },
                             {
                                 id: "edit",
-                                header: "ویرایش",
+                                header: "ويرايش",
                                 css: "webix_el_button",
                                 width: 150,
                                 template: "<span class='webix_icon fa-edit has-cursor-pointer green edit_unit'></span>"
@@ -195,11 +195,11 @@
                                 borderless: true,
                                 width: 600,
                                 elements: [
-                                    {template: "افزودن یگان", type: "header"},
+                                    {template: "افزودن يگان", type: "header"},
                                     {
                                         id: 'title_new',
                                         name: 'title_new',
-                                        invalidMessage:"این فیلد الزامی است.",
+                                        invalidMessage:"اين فيلد الزامي است.",
                                         view: "text",
                                         label: "عنوان",
                                         labelAlign: 'right',
@@ -209,7 +209,7 @@
                                     {
                                         id: 'code_new',
                                         name: 'code_new',
-                                        invalidMessage:"این فیلد الزامی است. فقط عدد وارد کنید.",
+                                        invalidMessage:"اين فيلد الزامي است. فقط عدد وارد کنيد.",
                                         view: "text",
                                         label: "کد",
                                         labelAlign: 'right',
@@ -220,7 +220,7 @@
                                         id: 'type_new',
                                         view: "select",
                                         options: unit_types,
-                                        label: "نوع یگان",
+                                        label: "نوع يگان",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -254,7 +254,7 @@
                                             } else {
                                                 webix.message({
                                                     type: "error",
-                                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                                    text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                                                 })
                                             }
                                         }
@@ -287,7 +287,7 @@
                                     {
                                         id: 'name_new',
                                         name: 'name_new',
-                                        invalidMessage: 'این فیلد الزامی است.',
+                                        invalidMessage: 'اين فيلد الزامي است.',
                                         view: "text",
                                         label: "نام",
                                         labelAlign: 'right',
@@ -311,7 +311,7 @@
                                             } else {
                                                 webix.message({
                                                     type: "error",
-                                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                                    text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                                                 })
                                             }
                                         }

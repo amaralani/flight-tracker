@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت قوانین</title>
+    <title>مديريت قوانين</title>
 </head>
 <body>
 <div class="edit-rule-dialog" id="editRuleDialog" style="display: none">
@@ -132,7 +132,7 @@
                         columns: [
                             {
                                 id: "perno",
-                                header: ["کد پرسنلی ", {
+                                header: ["کد پرسنلي ", {
                                     content: "textFilter",
                                     compare: oneForAll,
                                     placeholder: "جستجو",
@@ -142,21 +142,21 @@
                                 width: 200
                             },
                             {id: "perno", header: ["نام پرسنل", null], format: getPersonNameByPerno, fillspace: true},
-                            {id: "beginDate", header: ["تاریخ شروع", null], fillspace: true},
-                            {id: "endDate", header: ["تاریخ پایان", null], fillspace: true},
+                            {id: "beginDate", header: ["تاريخ شروع", null], fillspace: true},
+                            {id: "endDate", header: ["تاريخ پايان", null], fillspace: true},
                             {id: "kartNo", header: ["شماره کارت", null], fillspace: true},
                             {id: "section", header: ["نام قسمت", null], format: getSectionNameByCode, fillspace: true},
                             {
                                 id: "workGroup",
-                                header: ["نام گروه کاری", null],
+                                header: ["نام گروه کاري", null],
                                 format: getWorkGroupNameByCode,
                                 fillspace: true
                             }, {
                                 id: "edit",
-                                header: "ویرایش",
+                                header: "ويرايش",
                                 css: "webix_el_button",
                                 width: 150,
-                                template: "<a href='javascript:void(0)' class='edit_rule'>ویرایش</a>"
+                                template: "<a href='javascript:void(0)' class='edit_rule'>ويرايش</a>"
                             },
                             {
                                 id: "remove",
@@ -195,13 +195,13 @@
                                 borderless: true,
                                 width: 600,
                                 rows: [
-                                    {template: "ثبت پرسنل در احکام کاری", type: "header"},
+                                    {template: "ثبت پرسنل در احکام کاري", type: "header"},
                                     {
                                         cols: [
                                             {
                                                 id: 'beginDate',
                                                 view: "text",
-                                                label: "تاریخ شروع",
+                                                label: "تاريخ شروع",
                                                 value: '01/01',
                                                 labelAlign: 'right',
                                                 textAlign: 'right'
@@ -209,7 +209,7 @@
                                             {
                                                 id: "endDate",
                                                 view: "text",
-                                                label: "تاریخ پایان",
+                                                label: "تاريخ پايان",
                                                 value: '12/29  ',
                                                 labelAlign: 'right',
                                                 textAlign: 'right'
@@ -232,7 +232,7 @@
                                             {
                                                 id: "workGroup",
                                                 view: "text",
-                                                label: "گروه کاری",
+                                                label: "گروه کاري",
                                                 labelAlign: 'right',
                                                 textAlign: 'right',
                                                 suggest: {
@@ -300,14 +300,14 @@
                 borderless: true,
                 width: 425,
                 rows: [
-                    {template: "ثبت پرسنل در احکام کاری", type: "header"},
+                    {template: "ثبت پرسنل در احکام کاري", type: "header"},
                     {
                         cols: [
                             {
                                 id: 'beginDate_edit',
                                 name: 'beginDate_edit',
                                 view: "text",
-                                label: "تاریخ شروع",
+                                label: "تاريخ شروع",
                                 value: '01/01',
                                 labelAlign: 'right',
                                 textAlign: 'right'
@@ -315,7 +315,7 @@
                             {
                                 id: "endDate_edit",name:"endDate_edit",
                                 view: "text",
-                                label: "تاریخ پایان",
+                                label: "تاريخ پايان",
                                 value: '12/29  ',
                                 labelAlign: 'right',
                                 textAlign: 'right'
@@ -338,7 +338,7 @@
                             {
                                 id: "workGroup_edit",name: "workGroup_edit",
                                 view: "text",
-                                label: "گروه کاری",
+                                label: "گروه کاري",
                                 labelAlign: 'right',
                                 textAlign: 'right',
                                 suggest: {

@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>نمایش جدول</title>
+    <title>نمايش جدول</title>
 </head>
 <style>
     .webix_cell {
@@ -84,14 +84,14 @@
     function refreshSessionGridData() {
         var userId = $$("user").getValue();
         if (!userId) {
-            webix.message("لطفا کاربر را انتخاب کنید.");
+            webix.message("لطفا کاربر را انتخاب کنيد.");
             return;
         }
         var startDate = $$("sessionFromDate").getValue().trim();
         var endDate = $$("sessionToDate").getValue().trim();
 
         if (!startDate || !endDate) {
-            webix.message("لطفا بازه زمانی گزارش را انتخاب کنید.");
+            webix.message("لطفا بازه زماني گزارش را انتخاب کنيد.");
             return;
         }
 
@@ -141,7 +141,7 @@
         var ip = $$("failureIP").getValue().trim();
 
         if (!startDate || !endDate) {
-            webix.message("لطفا بازه زمانی گزارش را انتخاب کنید.");
+            webix.message("لطفا بازه زماني گزارش را انتخاب کنيد.");
             return;
         }
 
@@ -175,9 +175,9 @@
             },
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
-                {id: "online", value: "مشاهده کاربران آنلاین", width: 250},
+                {id: "online", value: "مشاهده کاربران آنلاين", width: 250},
                 {id: "sessions", value: "مشاهده ورود و خروج کاربران", width: 250},
-                {id: "loginFailures", value: "مشاهده لاگین های ناموفق", width: 250}
+                {id: "loginFailures", value: "مشاهده لاگين هاي ناموفق", width: 250}
             ]
             },
             {
@@ -215,7 +215,7 @@
                                 columns: [
                                     {
                                         id: "user",
-                                        header: ["نام کاربری", {
+                                        header: ["نام کاربري", {
                                             content: "textFilter",
                                             compare: oneForAllOnline,
                                             placeholder: "جستجو",
@@ -223,7 +223,7 @@
                                         }],
                                         format: getUsername
                                     },
-                                    {id: "user", header: ["نام و نام خانوادگی", null], fillspace: true, format: getFullName},
+                                    {id: "user", header: ["نام و نام خانوادگي", null], fillspace: true, format: getFullName},
                                     {id: "ip", header: ["آدرس", null], fillspace: true},
                                     {id: "startDate", header: ["شروع", null], fillspace: true, format: getPersianDate},
                                     {id: "user", header: ["نقش ها", null], fillspace: true,template: "<span class='webix_icon fa-sticky-note has-cursor-pointer green view_roles'></span>"}
@@ -281,7 +281,7 @@
                                             {
                                                 id: 'sessionFromDate',
                                                 view: "text",
-                                                label: " از تاریخ (روز/ماه/سال)",
+                                                label: " از تاريخ (روز/ماه/سال)",
                                                 labelAlign: 'right',
                                                 textAlign: 'right',
                                                 value: [[${currentDate}]],
@@ -290,7 +290,7 @@
                                             {
                                                 id: 'sessionToDate',
                                                 view: "text",
-                                                label: "تا تاریخ (روز/ماه/سال)",
+                                                label: "تا تاريخ (روز/ماه/سال)",
                                                 labelAlign: 'right',
                                                 textAlign: 'right',
                                                 value: [[${currentDate}]],
@@ -317,18 +317,18 @@
                                 inputWidth: 100,
                                 view: "button",
                                 type: "form",
-                                value: "خروجی CSV",
+                                value: "خروجي CSV",
                                 align: "right",
                                 click: function () {
                                     webix.toCSV($$("sessionGrid"), {
                                         filename: "اطلاعات ورود و خروج کاربران",
                                         name: "اطلاعات ورود و خروج کاربران",
                                         columns: {
-                                            "user": {header: "نام کاربری", width: 150},
+                                            "user": {header: "نام کاربري", width: 150},
                                             "ip": {header: "IP", width: 300},
                                             "sessionId": {header: "شناسه Session", width: 300},
-                                            "startDate": {header: "تاریخ شروع\t", width: 200},
-                                            "endDate": {header: "تاریخ پایان", width: 200}
+                                            "startDate": {header: "تاريخ شروع\t", width: 200},
+                                            "endDate": {header: "تاريخ پايان", width: 200}
                                         }
                                     });
                                 }
@@ -340,7 +340,7 @@
                                 columns: [
                                     {
                                         id: "user",
-                                        header: ["نام کاربری", {
+                                        header: ["نام کاربري", {
                                             content: "textFilter",
                                             compare: oneForAllSession,
                                             placeholder: "جستجو",
@@ -351,7 +351,7 @@
                                     {id: "ip", header: ["آدرس", null], fillspace: true},
                                     {id: "sessionId", header: ["شناسه Session", null], fillspace: true},
                                     {id: "startDate", header: ["شروع", null], fillspace: true, format: getPersianDate},
-                                    {id: "endDate", header: ["پایان", null], fillspace: true, format: getPersianDate}
+                                    {id: "endDate", header: ["پايان", null], fillspace: true, format: getPersianDate}
                                 ],
                                 select: "row",
                                 tooltip: true,
@@ -375,14 +375,14 @@
                                             {
                                                 view: "text",
                                                 id: "failureUsername",
-                                                label: 'نام کاربری ',
+                                                label: 'نام کاربري ',
                                                 labelWidth: 150,
                                                 labelAlign: 'right'
                                             },
                                             {
                                                 id: 'failureFromDate',
                                                 view: "text",
-                                                label: "از تاریخ (روز/ماه/سال)",
+                                                label: "از تاريخ (روز/ماه/سال)",
                                                 labelAlign: 'right',
                                                 textAlign: 'right',
                                                 value: [[${currentDate}]],
@@ -391,7 +391,7 @@
                                             {
                                                 id: 'failureToDate',
                                                 view: "text",
-                                                label: "تا تاریخ (روز/ماه/سال)",
+                                                label: "تا تاريخ (روز/ماه/سال)",
                                                 labelAlign: 'right',
                                                 textAlign: 'right',
                                                 value: [[${currentDate}]],
@@ -426,16 +426,16 @@
                                 inputWidth: 100,
                                 view: "button",
                                 type: "form",
-                                value: "خروجی CSV",
+                                value: "خروجي CSV",
                                 align: "right",
                                 click: function () {
                                     webix.toCSV($$("failureGrid"), {
                                         filename: "اطلاعات ورود ناموفق کاربران",
                                         name: "اطلاعات ورود ناموفق کاربران",
                                         columns: {
-                                            "username": {header: "نام کاربری", width: 150},
+                                            "username": {header: "نام کاربري", width: 150},
                                             "ip": {header: "IP", width: 300},
-                                            "dateTime": {header: "تاریخ \t ساعت", width: 200}
+                                            "dateTime": {header: "تاريخ \t ساعت", width: 200}
                                         }
                                     });
                                 }
@@ -451,7 +451,7 @@
                                             columns: [
                                                 {
                                                     id: "username",
-                                                    header: ["نام کاربری", {
+                                                    header: ["نام کاربري", {
                                                         content: "textFilter",
                                                         compare: oneForAllFailure,
                                                         placeholder: "جستجو",
@@ -462,7 +462,7 @@
                                                 {id: "ip", header: ["آدرس", null], fillspace: true},
                                                 {
                                                     id: "dateTime",
-                                                    header: ["ساعت و تاریخ", null],
+                                                    header: ["ساعت و تاريخ", null],
                                                     fillspace: true,
                                                     format: getPersianDate
                                                 }

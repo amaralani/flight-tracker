@@ -6,4 +6,8 @@ import java.util.List;
 
 public interface TrackLogService extends BaseService<TrackLog> {
     List<TrackLog> getByCode(String code);
+
+    List<TrackLog> getAircraftHistoryByCode(String code);
+
+    TrackLog getAircraftLastPosition(String callsign);
 }

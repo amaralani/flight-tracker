@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مدیریت کاربران</title>
+    <title>مديريت کاربران</title>
     <style>
         .checkbox {
             padding-left: 10px;
@@ -51,7 +51,7 @@
         if (text === true)
             return 'فعال';
         if (text === false)
-            return 'غیرفعال';
+            return 'غيرفعال';
     }
     function lockFormat(text) {
         if (text === true)
@@ -75,13 +75,13 @@
                 borderless: true,
                 width: 400,
                 elements: [
-                    {template: "ویرایش مشخصات", type: "header"},
+                    {template: "ويرايش مشخصات", type: "header"},
                     {
                         id: 'username',
                         name: 'username',
-                        invalidMessage: "این فیلد الزامی است.",
+                        invalidMessage: "اين فيلد الزامي است.",
                         view: "text",
-                        label: "نام کاربری",
+                        label: "نام کاربري",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -89,7 +89,7 @@
                     {
                         id: 'firstName',
                         name: 'firstName',
-                        invalidMessage: "این فیلد الزامی است.",
+                        invalidMessage: "اين فيلد الزامي است.",
                         view: "text",
                         label: "نام",
                         labelAlign: 'right',
@@ -99,9 +99,9 @@
                     {
                         id: 'lastName',
                         name: 'lastName',
-                        invalidMessage: "این فیلد الزامی است.",
+                        invalidMessage: "اين فيلد الزامي است.",
                         view: "text",
-                        label: "نام خانوادگی",
+                        label: "نام خانوادگي",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -109,9 +109,9 @@
                     {
                         id: 'nationalCode',
                         name: 'nationalCode',
-                        invalidMessage: "این فیلد الزامی است، تنها مقادیر عددی میپذیرد و  باید حداکثر 10 رقم باشد.",
+                        invalidMessage: "اين فيلد الزامي است، تنها مقادير عددي ميپذيرد و  بايد حداکثر 10 رقم باشد.",
                         view: "text",
-                        label: "کد ملی",
+                        label: "کد ملي",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -119,9 +119,9 @@
                     {
                         id: 'personNumber',
                         name: 'personNumber',
-                        invalidMessage: "لطفا فقط عدد وارد کنید.",
+                        invalidMessage: "لطفا فقط عدد وارد کنيد.",
                         view: "text",
-                        label: "کد پرسنلی",
+                        label: "کد پرسنلي",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -130,7 +130,7 @@
                         id: 'userGroup',
                         view: "select",
                         options: comboUserGroups,
-                        label: "گروه کاربری",
+                        label: "گروه کاربري",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -142,7 +142,7 @@
                         align: "left",
                         options: [
                             {id: "1", value: "فعال"},
-                            {id: "0", value: "غیرفعال"}
+                            {id: "0", value: "غيرفعال"}
                         ]
                     },
                     {
@@ -161,7 +161,7 @@
                         view: "text",
                         type: 'password',
                         value: null,
-                        label: "رمز عبور جدید",
+                        label: "رمز عبور جديد",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -173,7 +173,7 @@
                         view: "text",
                         type: 'password',
                         value: null,
-                        label: "تکرار رمز عبور جدید",
+                        label: "تکرار رمز عبور جديد",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 100
@@ -201,22 +201,22 @@
 
                                 if (password.value.length > 0) {
                                     if (password.value !== rePassword.value) {
-                                        webix.alert("رمز عبور وارد شده با تکرار آن برابر نیست.");
+                                        webix.alert("رمز عبور وارد شده با تکرار آن برابر نيست.");
                                         return;
                                     }
                                     if (!isGreaterThanOrEquals(password.value.length, sessionPasswordLength)) {
-                                        webix.alert("رمز عبور باید حداقل شامل " + sessionPasswordLength + " کاراکتر باشد.");
+                                        webix.alert("رمز عبور بايد حداقل شامل " + sessionPasswordLength + " کاراکتر باشد.");
                                         return;
                                     }
                                     if (!passwordHasAcceptableComplexity(password.value)) {
                                         if (sessionPasswordComplexity === 1) {
-                                            webix.alert("رمز عبور باید حداقل شامل یک عدد باشد.");
+                                            webix.alert("رمز عبور بايد حداقل شامل يک عدد باشد.");
                                         } else if (sessionPasswordComplexity === 2) {
-                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ و یک حرف کوچک باشد.");
+                                            webix.alert("رمز عبور بايد حداقل شامل يک حرف بزرگ و يک حرف کوچک باشد.");
                                         } else if (sessionPasswordComplexity === 3) {
-                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک و یک عدد باشد.");
+                                            webix.alert("رمز عبور بايد حداقل شامل يک حرف بزرگ، يک حرف کوچک و يک عدد باشد.");
                                         } else if (sessionPasswordComplexity === 4) {
-                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک علامت خاص باشد.");
+                                            webix.alert("رمز عبور بايد حداقل شامل يک حرف بزرگ، يک حرف کوچک، يک عدد و يک علامت خاص باشد.");
                                         }
                                         return;
                                     }
@@ -225,7 +225,7 @@
                             } else {
                                 webix.message({
                                     type: "error",
-                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                    text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                                 })
                             }
                         }
@@ -257,7 +257,7 @@ webix.ui({
                 borderless: true,
                 width: 400,
                 elements: [
-                    {template: "ویرایش گروه کاربری", type: "header"},
+                    {template: "ويرايش گروه کاربري", type: "header"},
                     {
                         id:"userGroupId",
                         view: "text",
@@ -267,9 +267,9 @@ webix.ui({
                     {
                         id: 'name',
                         name: 'name',
-                        invalidMessage: "این فیلد الزامی است.",
+                        invalidMessage: "اين فيلد الزامي است.",
                         view: "text",
-                        label: "نام گروه کاربری",
+                        label: "نام گروه کاربري",
                         labelAlign: 'right',
                         textAlign: 'right',
                         labelWidth: 170
@@ -291,7 +291,7 @@ webix.ui({
                             } else {
                                 webix.message({
                                     type: "error",
-                                    text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                    text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                                 })
                             }
                         }
@@ -317,7 +317,7 @@ webix.ui({
                 view: "tabbar", multiview: true, selected: "view", options: [
                 {id: "view", value: "مشاهده کاربران", width: 150},
                 {id: "add", value: "افزودن کاربر", width: 150},
-                {id: "addUserGroup", value: "افزودن گروه کاربری", width: 150},
+                {id: "addUserGroup", value: "افزودن گروه کاربري", width: 150},
             ]
             },
             {
@@ -329,7 +329,7 @@ webix.ui({
                         columns: [
                             {
                                 id: "username",
-                                header: ["نام کاربری", {
+                                header: ["نام کاربري", {
                                     content: "textFilter",
                                     compare: oneForAll,
                                     placeholder: "جستجو",
@@ -349,7 +349,7 @@ webix.ui({
                             {
                                 id: "lastName",
                                 view: "text",
-                                header: ["نام خانوادگی", null],
+                                header: ["نام خانوادگي", null],
                                 labelAlign: 'right',
                                 textAlign: 'right',
                                 width: 150
@@ -357,7 +357,7 @@ webix.ui({
                             {
                                 id: "nationalCode",
                                 view: "number",
-                                header: ["کد ملی", null],
+                                header: ["کد ملي", null],
                                 labelAlign: 'right',
                                 textAlign: 'right',
                                 fillspace: true
@@ -365,7 +365,7 @@ webix.ui({
                             {
                                 id: "personNumber",
                                 view: "number",
-                                header: ["شماره پرسنلی", null],
+                                header: ["شماره پرسنلي", null],
                                 labelAlign: 'right',
                                 textAlign: 'right',
                                 width: 200
@@ -378,14 +378,14 @@ webix.ui({
                             },
                             {
                                 id: "view_roles",
-                                header: "نمایش دسترسی ها",
+                                header: "نمايش دسترسي ها",
                                 css: "webix_el_button",
                                 width: 150,
                                 template: "<span class='webix_icon fa-sticky-note has-cursor-pointer custom-blue view_roles'></span>"
                             },
                             {
                                 id: "edit_user",
-                                header: "ویرایش",
+                                header: "ويرايش",
                                 css: "webix_el_button",
                                 width: 150,
                                 template: "<span class='webix_icon fa-edit has-cursor-pointer green edit_user'></span>"
@@ -479,10 +479,10 @@ webix.ui({
                                                                         },
                                                                         "POST",
                                                                         function (data) {
-                                                                            webix.message("تغییرات با موفقیت ثبت شد.");
+                                                                            webix.message("تغييرات با موفقيت ثبت شد.");
                                                                         },
                                                                         function (response) {
-                                                                            webix.message("خطا در عملیات. لطفا صفحه را بازیابی و مجددا تلاش کنید.")
+                                                                            webix.message("خطا در عمليات. لطفا صفحه را بازيابي و مجددا تلاش کنيد.")
                                                                         }
                                                                 );
                                                             }
@@ -501,7 +501,7 @@ webix.ui({
                                             $("#viewRolesDialog").dialog("open");
                                         },
                                         function (response) {
-                                            webix.message("خطا در دریافت نقش های کاربر");
+                                            webix.message("خطا در دريافت نقش هاي کاربر");
                                         }
                                 );
 
@@ -522,9 +522,9 @@ webix.ui({
                                     {
                                         id: 'username_new',
                                         name: 'username_new',
-                                        invalidMessage: "این فیلد الزامی است.",
+                                        invalidMessage: "اين فيلد الزامي است.",
                                         view: "text",
-                                        label: "نام کاربری",
+                                        label: "نام کاربري",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -532,7 +532,7 @@ webix.ui({
                                     {
                                         id: 'firstName_new',
                                         name: 'firstName_new',
-                                        invalidMessage: "این فیلد الزامی است.",
+                                        invalidMessage: "اين فيلد الزامي است.",
                                         view: "text",
                                         label: "نام",
                                         labelAlign: 'right',
@@ -542,9 +542,9 @@ webix.ui({
                                     {
                                         id: 'lastName_new',
                                         name: 'lastName_new',
-                                        invalidMessage: "این فیلد الزامی است.",
+                                        invalidMessage: "اين فيلد الزامي است.",
                                         view: "text",
-                                        label: "نام خانوادگی",
+                                        label: "نام خانوادگي",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -552,9 +552,9 @@ webix.ui({
                                     {
                                         id: 'nationalCode_new',
                                         name: 'nationalCode_new',
-                                        invalidMessage: "این فیلد الزامی است، تنها مقادیر عددی میپذیرد و  باید حداکثر 10 رقم باشد.",
+                                        invalidMessage: "اين فيلد الزامي است، تنها مقادير عددي ميپذيرد و  بايد حداکثر 10 رقم باشد.",
                                         view: "text",
-                                        label: "کد ملی",
+                                        label: "کد ملي",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -562,9 +562,9 @@ webix.ui({
                                     {
                                         id: 'personNumber_new',
                                         name: 'personNumber_new',
-                                        invalidMessage: "لطفا فقط عدد وارد کنید.",
+                                        invalidMessage: "لطفا فقط عدد وارد کنيد.",
                                         view: "text",
-                                        label: "کد پرسنلی",
+                                        label: "کد پرسنلي",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -573,7 +573,7 @@ webix.ui({
                                         id: 'userGroup_new',
                                         view: "select",
                                         options: comboUserGroups,
-                                        label: "گروه کاربری",
+                                        label: "گروه کاربري",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -585,7 +585,7 @@ webix.ui({
                                         align: "left",
                                         options: [
                                             {id: "1", value: "فعال"},
-                                            {id: "0", value: "غیرفعال"}
+                                            {id: "0", value: "غيرفعال"}
                                         ]
                                     },
                                     {
@@ -604,7 +604,7 @@ webix.ui({
                                         view: "text",
                                         type: 'password',
                                         value: null,
-                                        label: "رمز عبور جدید",
+                                        label: "رمز عبور جديد",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -616,7 +616,7 @@ webix.ui({
                                         view: "text",
                                         type: 'password',
                                         value: null,
-                                        label: "تکرار رمز عبور جدید",
+                                        label: "تکرار رمز عبور جديد",
                                         labelAlign: 'right',
                                         textAlign: 'right',
                                         labelWidth: 100
@@ -674,29 +674,29 @@ webix.ui({
 
                                                 if (password.value.length > 0) {
                                                     if (password.value !== rePassword.value) {
-                                                        webix.alert("رمز عبور وارد شده با تکرار آن برابر نیست.");
+                                                        webix.alert("رمز عبور وارد شده با تکرار آن برابر نيست.");
                                                         return;
                                                     }
                                                     if (!isGreaterThanOrEquals(password.value.length, sessionPasswordLength)) {
-                                                        webix.alert("رمز عبور باید حداقل شامل " + sessionPasswordLength + " کاراکتر باشد.");
+                                                        webix.alert("رمز عبور بايد حداقل شامل " + sessionPasswordLength + " کاراکتر باشد.");
                                                         return;
                                                     }
                                                     if (!passwordHasAcceptableComplexity(password.value)) {
                                                         if (sessionPasswordComplexity === 1) {
-                                                            webix.alert("رمز عبور باید حداقل شامل یک عدد باشد.");
+                                                            webix.alert("رمز عبور بايد حداقل شامل يک عدد باشد.");
                                                         } else if (sessionPasswordComplexity === 2) {
-                                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ و یک حرف کوچک باشد.");
+                                                            webix.alert("رمز عبور بايد حداقل شامل يک حرف بزرگ و يک حرف کوچک باشد.");
                                                         } else if (sessionPasswordComplexity === 3) {
-                                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک و یک عدد باشد.");
+                                                            webix.alert("رمز عبور بايد حداقل شامل يک حرف بزرگ، يک حرف کوچک و يک عدد باشد.");
                                                         } else if (sessionPasswordComplexity === 4) {
-                                                            webix.alert("رمز عبور باید حداقل شامل یک حرف بزرگ، یک حرف کوچک، یک عدد و یک علامت خاص باشد.");
+                                                            webix.alert("رمز عبور بايد حداقل شامل يک حرف بزرگ، يک حرف کوچک، يک عدد و يک علامت خاص باشد.");
                                                         }
                                                         return;
                                                     }
                                                 } else {
                                                     webix.message({
                                                         type: "error",
-                                                        text: "لطفا خطاهای فرم را بررسی و مجددا اقدام فرمایید."
+                                                        text: "لطفا خطاهاي فرم را بررسي و مجددا اقدام فرماييد."
                                                     })
                                                 }
                                             }
@@ -732,7 +732,7 @@ webix.ui({
                                         borderless: true,
                                         width: 600,
                                         rows: [
-                                            {template: "افزودن گروه کاربری", type: "header"},
+                                            {template: "افزودن گروه کاربري", type: "header"},
                                             {
                                                 id: 'name_new',
                                                 view: "text",
@@ -772,7 +772,7 @@ webix.ui({
                                     },
                                     {
                                         id: "edit",
-                                        header: "ویرایش",
+                                        header: "ويرايش",
                                         css: "webix_el_button",
                                         width: 150,
                                         template: "<span class='webix_icon fa-edit has-cursor-pointer green editUserGroup'></span>"

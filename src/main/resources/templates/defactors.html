@@ -34,7 +34,7 @@
     $.each(provinces, function (index, province) {
         comboProvinces.push({id: province.id, value: province.name})
     });
-    comboProvinces.push({id: null, value: 'انتخاب کنید...'});
+    comboProvinces.push({id: null, value: 'انتخاب کنيد...'});
 
     webix.ui({
         id: "edit-defactor",
@@ -61,7 +61,7 @@
                                 id: 'date',
                                 view: "text",
 
-                                label: "تاریخ",
+                                label: "تاريخ",
                                 labelAlign: 'right',
                                 textAlign: 'right',
                                 labelWidth: 100
@@ -317,7 +317,7 @@
                 width: 300,
                 rows: [
 
-                    {template: "<span class='webix_strong'>آیا از حذف اطلاعات اطمینان دارید؟</span>", height: 25},
+                    {template: "<span class='webix_strong'>آيا از حذف اطلاعات اطمينان داريد؟</span>", height: 25},
                     {height: 30},
                     {
                         cols: [
@@ -336,7 +336,7 @@
                                 inputWidth: 100,
                                 view: "button",
                                 type: "form",
-                                value: "خیر",
+                                value: "خير",
                                 align: "left",
                                 click: function () {
                                     $("#removeDefactorConfirmDialog").dialog("close");
@@ -388,7 +388,7 @@
                             "<td>#temperature700#</td>" +
                             "<td>#height700#</td>" +
                             "</tr>" +
-                            "<div><button class='webixtype_form' type='button' onclick='openEditDefactorDialog(\"#id#\")'>ویرایش</button> " +
+                            "<div><button class='webixtype_form' type='button' onclick='openEditDefactorDialog(\"#id#\")'>ويرايش</button> " +
                             "<button class='webixtype_form' type='button' onclick='openConfirmRemoveDefactorDialog(\"#id#\")'>حذف</button></div>" +
                             "</tr>" +
                             "</tbody>" +
@@ -422,7 +422,7 @@
                                             {
                                                 id: 'date_new',
                                                 view: "text",
-                                                label: "تاریخ (روز/ماه/سال)",
+                                                label: "تاريخ (روز/ماه/سال)",
                                                 labelAlign: 'right',
                                                 textAlign: 'right',
                                                 value: [[${currentDate}]],
@@ -703,7 +703,7 @@
 
                 },
                 function (response) {
-                    webix.message("خطا در بازیابی اطلاعات");
+                    webix.message("خطا در بازيابي اطلاعات");
                 }
         )
 
