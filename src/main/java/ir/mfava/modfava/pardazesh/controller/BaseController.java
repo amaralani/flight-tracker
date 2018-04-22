@@ -11,6 +11,7 @@ import java.io.File;
 /**
  * @author Drago
  */
+@SuppressWarnings({"ResultOfMethodCallIgnored", "WeakerAccess"})
 public class BaseController {
     @Autowired
     private UserService userService;
@@ -24,7 +25,7 @@ public class BaseController {
     }
 
     public File getIconsDirectory(){
-        File file = new File("/d/gis_backend_repository/icons_directory");
+        File file = new File("d:/gis_backend_repository/icons_directory");
         if(!file.exists()){
             file.mkdirs();
         }
@@ -32,7 +33,7 @@ public class BaseController {
     }
 
     public File getSatImageProcessedDirectory(){
-        File file = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/");
+        File file = new File("d:/gis_backend_repository/weather_base_directory/processed/sat/");
         if(!file.exists()){
             file.mkdirs();
         }
@@ -40,7 +41,7 @@ public class BaseController {
     }
 
     public File getDustImageProcessedDirectory(){
-        File file = new File("/d/gis_backend_repository/weather_base_directory/processed/dust/");
+        File file = new File("d:/gis_backend_repository/weather_base_directory/processed/dust/");
         if(!file.exists()){
             file.mkdirs();
         }
@@ -48,7 +49,7 @@ public class BaseController {
     }
 
     public File getFileUploadBaseDirectory(){
-        File file = new File("/d/gis_backend_repository/file_upload_base/");
+        File file = new File("d:/gis_backend_repository/file_upload_base/");
         if(!file.exists()){
             file.mkdirs();
         }

@@ -29,14 +29,19 @@
         {
             rows: [
                 {
-                    cols: [
-                        {},
+                    body: {template: "<div style='text-align: center'><p>شما وارد سامانه اطلاعات پرواز شده اید.</p><p>کلیه فعالیت های شما ثبت و رهگیری میشود و مسئولیت کلیه فعالیت ها با شما است.</p></div>" , height : 100}
+                },
+                {
+                    body: {template: "<div class='welcome-main-content'></div>" , height : 300}
+                },
+                {
+                    rows: [
                         {
-                            rows: [
-                                {
-                                    body: {template: "<div style='width: 100%'><span style='text-align: center'>اطلاعات ورود و خروج کاربر</span></div>"},
-                                    height: 25
-                                },
+                            body: {template: "<div style='width: 100%'><span style='text-align: center'>اطلاعات ورود و خروج کاربر</span></div>"},
+                            height: 25
+                        },
+                        {
+                            cols: [
                                 {
                                     id: "sessionGrid",
                                     view: "datatable",
@@ -47,8 +52,6 @@
                                     ],
                                     select: "row",
                                     tooltip: true,
-                                    height: 195,
-                                    width: 500,
                                     navigation: true,
                                     autowidth: false,
                                     autoheight: false,
@@ -56,15 +59,10 @@
                                     data: [[${userLastSessions}]]
                                 }
                             ]
-                        },
-                        {}
+                        }
                     ]
-                },
-                {
-                    body: {template: "<div class='welcome-main-content'></div>"}
                 }
             ]
-
         };
         /*]]>*/
     </script>

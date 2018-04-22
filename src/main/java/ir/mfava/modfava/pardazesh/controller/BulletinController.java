@@ -40,15 +40,15 @@ public class BulletinController extends BaseController {
                                     ModelMap map, HttpSession session) {
         map.put("provinces", provinceService.getAll());
         map.put("provinceId", provinceId);
-        if (provinceId != null) {
-            List<Bulletin> bulletins = bulletinService.getListByProvinceAndForecastDate(provinceId, new Date());
-            for (int i = 0; i < bulletins.size(); i++) {
-                Bulletin currentBulletin = bulletins.get(i);
-                currentBulletin.setForecastDateString(DateUtils.convertJulianToPersianForUi(currentBulletin.getForecastDate()));
-                currentBulletin.setTitle(((i + 1) * 24) + " ساعت آینده");
-            }
-            map.put("bulletins", bulletins);
+
+        List<Bulletin> bulletins = bulletinService.getListByProvinceAndForecastDate(provinceId, new Date());
+        for (Bulletin currentBulletin : bulletins) {
+            currentBulletin.setForecastDateString(DateUtils.convertJulianToPersianForUi(currentBulletin.getForecastDate()));
+            long hoursDifference = (DateUtils.differenceInDays(new Date(), currentBulletin.getForecastDate()) + 1) * 24; // we do not want 0 hours
+            currentBulletin.setTitle(hoursDifference + " ساعت آینده");
         }
+        map.put("bulletins", bulletins);
+
         map.put("successMessage", session.getAttribute("successMessage"));
         map.put("errorMessage", session.getAttribute("errorMessage"));
         session.removeAttribute("successMessage");
@@ -60,8 +60,7 @@ public class BulletinController extends BaseController {
     @RequestMapping(value = "/get/", method = RequestMethod.GET)
     public JSONMessage getProvinceForecasts(@RequestParam(name = "provinceId") Long provinceId) {
         List<Bulletin> bulletins = bulletinService.getListByProvinceAndForecastDate(provinceId, new Date());
-        for (int i = 0; i < bulletins.size(); i++) {
-            Bulletin currentBulletin = bulletins.get(i);
+        for (Bulletin currentBulletin : bulletins) {
             currentBulletin.setForecastDateString(DateUtils.convertJulianToPersianForUi(currentBulletin.getForecastDate()));
             long hoursDifference = (DateUtils.differenceInDays(new Date(), currentBulletin.getForecastDate()) + 1) * 24; // we do not want 0 hours
             currentBulletin.setTitle(hoursDifference + " ساعت آینده");

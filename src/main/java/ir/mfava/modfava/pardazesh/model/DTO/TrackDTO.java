@@ -1,11 +1,14 @@
 package ir.mfava.modfava.pardazesh.model.DTO;
 
 import ir.mfava.modfava.pardazesh.model.Track;
+import ir.mfava.modfava.pardazesh.model.TrackLog;
 
 public class TrackDTO extends WeatherDTO {
 
     private String altitude;
     private String code;
+    private String heading;
+    private Boolean isLast;
 
     public TrackDTO(){
 
@@ -15,6 +18,14 @@ public class TrackDTO extends WeatherDTO {
         this.setLongitude(String.valueOf(track.getLongitude()));
         this.setAltitude(String.valueOf(track.getAltitude()));
         this.setCode(String.valueOf(track.getCode()));
+        this.setHeading(String.valueOf(track.getHeading()));
+    }
+    public TrackDTO(TrackLog trackLog){
+        this.setLatitude(String.valueOf(trackLog.getLatitude()));
+        this.setLongitude(String.valueOf(trackLog.getLongitude()));
+        this.setAltitude(String.valueOf(trackLog.getAltitude()));
+        this.setCode(String.valueOf(trackLog.getCode()));
+        this.setHeading(String.valueOf(trackLog.getHeading()));
     }
 
     public String getAltitude() {
@@ -31,5 +42,21 @@ public class TrackDTO extends WeatherDTO {
 
     public void setCode(String code) {
         this.code = code;
+    }
+
+    public String getHeading() {
+        return heading;
+    }
+
+    public void setHeading(String heading) {
+        this.heading = heading;
+    }
+
+    public Boolean isLast() {
+        return isLast;
+    }
+
+    public void setIsLast(Boolean last) {
+        isLast = last;
     }
 }

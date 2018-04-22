@@ -10,9 +10,9 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public interface BulletinRepository extends JpaRepository<Bulletin,Long> {
+public interface BulletinRepository extends JpaRepository<Bulletin, Long> {
 
-    @Query("from Bulletin where province.id = :provinceId and forecastDate >=:today order by forecastDate asc")
+    @Query("from Bulletin where (province.id = :provinceId or :provinceId is null) and forecastDate >=:today order by forecastDate asc")
     List<Bulletin> getBulletinsByProvinceAndForecastDate(@Param(value = "provinceId") Long provinceId,
                                                          @Param(value = "today") Date today);
 

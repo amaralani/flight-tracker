@@ -38,6 +38,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/images/**").permitAll()
                 .antMatchers("/js/**").permitAll()
                 .antMatchers("/css/**").permitAll()
+                .antMatchers("/fonts/**").permitAll()
+                .antMatchers("/icons/**").permitAll()
                 .antMatchers("/webix/**").permitAll()
                 .antMatchers("/persian-datepicker/**").permitAll()
                 .antMatchers("/registration").permitAll()

@@ -22,6 +22,8 @@ public class Configuration extends BaseModel {
     @Enumerated(EnumType.ORDINAL)
     private PasswordComplexity passwordComplexity;
 
+    private String tileServerAddress;
+
 
     public Long getId() {
         return id;
@@ -79,6 +81,14 @@ public class Configuration extends BaseModel {
         this.passwordComplexity = passwordComplexity;
     }
 
+    public String getTileServerAddress() {
+        return tileServerAddress;
+    }
+
+    public void setTileServerAddress(String tileServerAddress) {
+        this.tileServerAddress = tileServerAddress;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -86,18 +96,7 @@ public class Configuration extends BaseModel {
 
         Configuration that = (Configuration) o;
 
-        if (getId() != null ? !getId().equals(that.getId()) : that.getId() != null) return false;
-        if (getSessionTimeoutInSeconds() != null ? !getSessionTimeoutInSeconds().equals(that.getSessionTimeoutInSeconds()) : that.getSessionTimeoutInSeconds() != null)
-            return false;
-        if (getPasswordLength() != null ? !getPasswordLength().equals(that.getPasswordLength()) : that.getPasswordLength() != null)
-            return false;
-        if (getPasswordResetPeriod() != null ? !getPasswordResetPeriod().equals(that.getPasswordResetPeriod()) : that.getPasswordResetPeriod() != null)
-            return false;
-        if (getLoginFailureAccountLockCount() != null ? !getLoginFailureAccountLockCount().equals(that.getLoginFailureAccountLockCount()) : that.getLoginFailureAccountLockCount() != null)
-            return false;
-        if (getLoginFailureDelayTimeInSeconds() != null ? !getLoginFailureDelayTimeInSeconds().equals(that.getLoginFailureDelayTimeInSeconds()) : that.getLoginFailureDelayTimeInSeconds() != null)
-            return false;
-        return getPasswordComplexity() == that.getPasswordComplexity();
+        return getId() != null ? getId().equals(that.getId()) : that.getId() == null && (getSessionTimeoutInSeconds() != null ? getSessionTimeoutInSeconds().equals(that.getSessionTimeoutInSeconds()) : that.getSessionTimeoutInSeconds() == null && (getPasswordLength() != null ? getPasswordLength().equals(that.getPasswordLength()) : that.getPasswordLength() == null && (getPasswordResetPeriod() != null ? getPasswordResetPeriod().equals(that.getPasswordResetPeriod()) : that.getPasswordResetPeriod() == null && (getLoginFailureAccountLockCount() != null ? getLoginFailureAccountLockCount().equals(that.getLoginFailureAccountLockCount()) : that.getLoginFailureAccountLockCount() == null && (getLoginFailureDelayTimeInSeconds() != null ? getLoginFailureDelayTimeInSeconds().equals(that.getLoginFailureDelayTimeInSeconds()) : that.getLoginFailureDelayTimeInSeconds() == null && getPasswordComplexity() == that.getPasswordComplexity() && (getTileServerAddress() != null ? getTileServerAddress().equals(that.getTileServerAddress()) : that.getTileServerAddress() == null))))));
 
     }
 
@@ -110,6 +109,7 @@ public class Configuration extends BaseModel {
         result = 31 * result + (getLoginFailureAccountLockCount() != null ? getLoginFailureAccountLockCount().hashCode() : 0);
         result = 31 * result + (getLoginFailureDelayTimeInSeconds() != null ? getLoginFailureDelayTimeInSeconds().hashCode() : 0);
         result = 31 * result + (getPasswordComplexity() != null ? getPasswordComplexity().hashCode() : 0);
+        result = 31 * result + (getTileServerAddress() != null ? getTileServerAddress().hashCode() : 0);
         return result;
     }
 
@@ -123,6 +123,7 @@ public class Configuration extends BaseModel {
                 ", loginFailureAccountLockCount=" + loginFailureAccountLockCount +
                 ", loginFailureDelayTimeInSeconds=" + loginFailureDelayTimeInSeconds +
                 ", passwordComplexity=" + passwordComplexity +
+                ", tileServerAddress='" + tileServerAddress + '\'' +
                 '}';
     }
 

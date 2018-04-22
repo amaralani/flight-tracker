@@ -18,6 +18,7 @@
             charset="utf-8"></script>
     <script src="/js/jquery.sha1.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/leaflet.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/js/leaflet.rotatedMarker.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/moment.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="/js/constants.js" type="text/javascript" charset="utf-8"></script>
     <script th:inline="javascript">
@@ -75,18 +76,19 @@
         }
 
         var right_menu_usage = [
-            {id: 2, "name": "نمايش ", href: "/map/tracks", icon: "id-badge"},
-            {id: 3, "name": "نمايش جدول", href: "/grid/track", icon: "id-badge"},
+            {id: 2, "name": "نمايش ", href: "/tracks", icon: "id-badge"},
+            {id: 3, "name": "نمايش جدول (مسیر)", href: "/grid/track", icon: "id-badge"},
+            {id: 4, "name": "نمايش جدول (هواشناسی)", href: "/grid/view", icon: "id-badge"},
             {id: 5, "name": "بولتن", href: "/bulletin/view", icon: "id-badge"},
             {id: 6, "name": "D-Factor", href: "/defactor/view", icon: "id-badge"},
             {id: 7, "name": "نمايش تصاوير هواشناسي", href: "/satellite/", icon: "id-badge"}
         ];
         if(hasUnreadMessage){
-            right_menu_usage.push({id: 7, "name": " ارسال پيام" + "<span style='color: red;' class='blinking'>(پيام جديد)</span>", href: "/message", icon: "id-badge"});
+            right_menu_usage.push({id: 8, "name": " ارسال پيام" + "<span style='color: red;' class='blinking'>(پيام جديد)</span>", href: "/message", icon: "id-badge"});
         }else {
-            right_menu_usage.push({id: 7, "name": "ارسال پيام", href: "/message", icon: "id-badge"});
+            right_menu_usage.push({id: 8, "name": "ارسال پيام", href: "/message", icon: "id-badge"});
         }
-        right_menu_usage.push({id: 8, "name": "فايل هاي کاربردي", href: "/files", icon: "id-badge"});
+        right_menu_usage.push({id: 9, "name": "فايل هاي کاربردي", href: "/files", icon: "id-badge"});
 
         var right_menu_report = [];
         if ([[${#httpServletRequest.isUserInRole("ROLE_LOGIN_REPORT")}]]) {
@@ -105,6 +107,29 @@
                 width: 300,
 
                 multi: false, rows: [
+                    {
+                        body: {
+                        rows: [
+                            {
+                                view: "list",
+                                template: "<a href='#href#' class='menu-list-item'>#name#</a>",
+                                yCount: 1,
+                                data: {id: 0, "name": "صفحه اصلی", href: "/", icon: "id-badge"},
+                                onClick: {
+                                    link: function (e, id) {
+                                        if (this.getItem(id).href !== undefined) {
+                                            window.location.href = this.getItem(id).href;
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                        ,
+                        elementsConfig: {
+                            labelWidth: 100, labelAlign: "right"
+                        }
+                    }
+                    },
                     {
                         header: "<span class='menu-list-header'>اطلاعات پايه</span>", body: {
                         rows: [

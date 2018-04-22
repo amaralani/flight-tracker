@@ -49,14 +49,19 @@ public class UploadFileController extends BaseController{
     }
 
     @RequestMapping(value = {"/files/view", "/files/", "/files"}, method = RequestMethod.GET)
-    public String showFiles(ModelMap map) {
+    public String showFiles(ModelMap map, HttpSession session) {
         map.put("uploadFiles", uploadFileService.getAllAvailable());
         map.put("allUploadFileTypes", uploadFileTypeService.getAll());
+        map.put("successMessage", session.getAttribute("successMessage"));
+        map.put("errorMessage", session.getAttribute("errorMessage"));
+        session.removeAttribute("successMessage");
+        session.removeAttribute("errorMessage");
         return "files-view";
     }
 
     @RequestMapping(value = "/files/get/{uploadFileId}", method = RequestMethod.GET)
     public void downloadFile(@PathVariable(name = "uploadFileId") Long uploadFileId,
+                             HttpSession session,
                              HttpServletResponse response) throws IOException {
         UploadFile uploadFile = uploadFileService.getById(uploadFileId);
         File file = new File(getFileUploadBaseDirectory().getAbsolutePath() + uploadFile.getFileType().getId() + "/" + uploadFile.getId() + "/" + uploadFile.getFileName());
@@ -65,7 +70,11 @@ public class UploadFileController extends BaseController{
             response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+ uploadFile.getFileName());
             FileCopyUtils.copy(new FileInputStream(file), response.getOutputStream());
             response.getOutputStream().flush();
+        }else {
+            session.setAttribute("errorMessage","فایل مورد نظر موجود نیست.");
+            response.sendRedirect("/files");
         }
+
     }
 
     @RequestMapping(value = "/base-info/files/type/save")

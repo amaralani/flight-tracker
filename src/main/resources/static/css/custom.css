@@ -79,14 +79,14 @@ a.webix_list_item {
 .menu-list-item {
     text-decoration: none;
     color: inherit;
-    font-family: Mitra, Tahoma, serif;
+    font-family: GISBMitra, Tahoma, serif;
     font-size: 20px;
 }
 
 .menu-list-header {
     text-decoration: none;
     color: inherit;
-    font-family: Mitra, Tahoma, serif;
+    font-family: GISBMitra, Tahoma, serif;
     font-size: 20px;
     font-weight: bold;
 }
@@ -123,7 +123,7 @@ a.webix_list_item {
 .footer_title {
     margin-right: 20px;
     color: white;
-    font-family: Mitra, Tahoma, serif;
+    font-family: GISBMitra, Tahoma, serif;
     font-size: 13px;
     font-weight: bold;
 }
@@ -165,7 +165,8 @@ a.webix_list_item {
 }
 
 .time-and-marquee-section {
-    background: #66a6ff;
+    background: #393939;
+    margin-top: 0 !important;
 }
 
 .message-text {
@@ -244,5 +245,11 @@ a.webix_list_item {
 @font-face {
     font-family: GisFont;
     src: url(../fonts/Far_BadrBold.ttf) format("truetype");
+    font-style: normal
+}
+
+@font-face {
+    font-family: GISBMitra;
+    src: url(../fonts/BMITRA.TTF) format("truetype");
     font-style: normal
 }

@@ -66,6 +66,15 @@ var ui = {
                 ]
             },
             {
+                css: "time-and-marquee-section",
+                rows: [
+                    {
+                        view: "label",
+                        template: "<marquee class='marquee-text' behavior='scroll' direction='right'>" + bannerText + "</marquee>"
+                    }
+                ]
+            },
+            {
                 autoheight: true, type: "wide", cols: cols
             },
             {

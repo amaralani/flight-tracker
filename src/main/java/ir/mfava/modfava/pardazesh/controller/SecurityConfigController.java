@@ -26,6 +26,7 @@ public class SecurityConfigController {
     @RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
     public String showSecurityConfigPage(ModelMap map, HttpSession session) {
         ContentText contentText = contentTextService.getByTextContext(ContentText.TextContext.BANNER);
+        if (contentText == null) contentText = new ContentText();
         map.put("contentText", contentText);
         List<Configuration> configurations = configurationService.getAll();
         Configuration configuration;
@@ -53,6 +54,7 @@ public class SecurityConfigController {
                                      @RequestParam(name = "passwordResetPeriod") Integer passwordResetPeriod,
                                      @RequestParam(name = "id", required = false) Long id,
                                      @RequestParam(name = "sessionTimeoutInSeconds") Integer sessionTimeoutInSeconds,
+                                     @RequestParam(name = "tileServerAddress") String tileServerAddress,
                                      HttpSession session) {
         Configuration configuration;
         if (id != null) {
@@ -70,6 +72,7 @@ public class SecurityConfigController {
         configuration.setPasswordLength(passwordLength);
         configuration.setPasswordResetPeriod(passwordResetPeriod);
         configuration.setSessionTimeoutInSeconds(sessionTimeoutInSeconds);
+        configuration.setTileServerAddress(tileServerAddress);
         try {
             configurationService.save(configuration);
             session.setAttribute("successMessage", "ثبت اطلاعات با موفقیت انجام شد.");

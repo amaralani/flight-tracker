@@ -2,7 +2,7 @@
 <html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
-    <title>مديريت دسترسي</title>
+    <title>مديريت تنظيمات امنيتی</title>
 </head>
 <body>
 <div class="edit-user-dialog" id="editUserDialog" style="display: none">
@@ -61,7 +61,7 @@
                                         value: "ثبت",
                                         align: "left",
                                         click: function () {
-                                            var id = {name: "id", value: $$("contentText-id").getValue()};
+                                            var id = {name: "id", value: $$("contentText-id").getValue() == null ? '' : $$("contentText-id").getValue() };
                                             var text = {
                                                 name: "text",
                                                 value: $$("text").getValue().trim()
@@ -169,6 +169,16 @@
                                         bottomPadding: 35,
                                         bottomLabel: "مدت زماني که کاربر در صورت عدم فعاليت از سيستم خارج خواهد شد. (به ثانيه)"
                                     },
+                                    {
+                                        id: "tileServerAddress",
+                                        view: "text",
+                                        value: [[${configuration.tileServerAddress}]],
+                                        label: "آدرس سرور نقشه",
+                                        labelAlign: "right",
+                                        labelWidth: 170,
+                                        bottomPadding: 35,
+                                        bottomLabel: "آدرس سرور جهت نمایش نقشه (برای نمونه : http://localhost/osm_tiles/{z}/{x}/{y}.png)"
+                                    },
 
                                     {
                                         inputWidth: 100,
@@ -188,7 +198,8 @@
                                             var passwordLength = {name: "passwordLength", value: $$("passwordLength").getValue()};
                                             var passwordResetPeriod = {name: "passwordResetPeriod", value: $$("passwordResetPeriod").getValue()};
                                             var sessionTimeoutInSeconds = {name: "sessionTimeoutInSeconds", value: $$("sessionTimeoutInSeconds").getValue()};
-                                            var dataList = [loginFailureAccountLockCount,passwordComplexity,passwordLength,passwordResetPeriod,sessionTimeoutInSeconds];
+                                            var tileServerAddress = {name: "tileServerAddress", value: $$("tileServerAddress").getValue()};
+                                            var dataList = [loginFailureAccountLockCount,passwordComplexity,passwordLength,passwordResetPeriod,sessionTimeoutInSeconds,tileServerAddress];
                                             if(id){
                                                 dataList.push(id);
                                             }
