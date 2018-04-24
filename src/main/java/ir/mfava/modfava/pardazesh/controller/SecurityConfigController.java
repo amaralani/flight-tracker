@@ -10,13 +10,19 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Controller
 @RequestMapping(value = "/base-info/security/config")
-public class SecurityConfigController {
+public class SecurityConfigController extends BaseController {
 
     @Autowired
     private ContentTextService contentTextService;
@@ -106,4 +112,38 @@ public class SecurityConfigController {
         return "redirect:/base-info/security/config/";
     }
 
+    @RequestMapping(value = "/track/save/plane", method = RequestMethod.POST)
+    public String saveFile(@RequestParam(name = "file") MultipartFile file,
+                           HttpSession session) {
+
+        if (file != null && file.getSize() > 0) {
+            if (!file.getOriginalFilename().endsWith(".png")) {
+                session.setAttribute("errorMessage", "فایل باید حتما png باشد.");
+                return "redirect:/base-info/security/config/";
+            }
+            try {
+                session.setAttribute("successMessage", "ثبت اطلاعات با موفقیت انجام شد.");
+
+                File planeImage = getTrackPlaneImage();
+                if (planeImage.exists()) {
+                    planeImage.delete();
+                }
+                Path path = Paths.get(planeImage.getPath());
+                try {
+                    Files.write(path, file.getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    session.setAttribute("errorMessage", "خطا در ثبت اطلاعات.");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                session.setAttribute("errorMessage", "خطا در ثبت اطلاعات.");
+            }
+        } else {
+            System.out.println("Bad file");
+            session.setAttribute("errorMessage", "خطا در بارگذاری فایل.");
+            return "redirect:/base-info/security/config/";
+        }
+        return "redirect:/base-info/security/config/";
+    }
 }

@@ -28,7 +28,8 @@
             {
                 view: "tabbar", multiview: true, selected: "view", options: [
                 {id: "securityConfigs", value: "موارد امنيتي", width: 150},
-                {id: "bannerText", value: "پيام بنر", width: 150}
+                {id: "bannerText", value: "پيام بنر", width: 150},
+                {id: "trackPlane", value: "تصویر", width: 150}
             ]
             },
             {
@@ -209,6 +210,15 @@
                                 ]
                             }
                         ]
+                    },
+                    {
+                        id: "trackPlane",
+                        rows : [
+                            {
+                                template: "<div class='myform'> <form action='/base-info/security/config/track/save/plane' method='post' enctype='multipart/form-data'> <div class='block'> <div class='webix_view webix_control webix_el_text' view_id='title_new' style='border-width: 0px; margin-left: 8px; margin-top: 8px;'> <div class='webix_el_box'> <img src='/tracks/image/plane'/></div> </div><div class='webix_view webix_control webix_el_select' view_id='type_new' style='border-width: 0px; margin-left: 8px; margin-top: 8px; width: 584px; height: 30px;'><div class='webix_el_box' style='width:584px; height:30px'></div></div> <div style='margin: 20px 100px 20px 20px;'> <input type='file' name='file'/> </div> <div><div class='webix_view webix_control webix_el_button' style='border-width: 0px; margin-left: 8px; margin-top: 8px; width: 584px; height: 30px;'><div class='webix_el_box' style='width: 100px; height: 30px; float: left;'><input type='hidden' name='_csrf' value='" + csrf_token + "'/><button type='submit' class='webixtype_form'>ثبت</button></div></div> </div> </form> </div>"
+                            }
+                        ]
+
                     }
                 ]
             }

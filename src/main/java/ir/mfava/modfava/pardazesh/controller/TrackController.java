@@ -8,9 +8,9 @@ import ir.mfava.modfava.pardazesh.model.DTO.WeatherDTO;
 import ir.mfava.modfava.pardazesh.service.*;
 import ir.mfava.modfava.pardazesh.util.DTOUtils;
 import ir.mfava.modfava.pardazesh.util.DateUtils;
-import ir.mfava.modfava.pardazesh.util.metar.MetarConstants;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -65,7 +67,7 @@ public class TrackController extends BaseController {
 
         Configuration configuration = configurationService.getAll().get(0);
         String host = "";
-        if(configuration != null){
+        if (configuration != null) {
             host = configuration.getTileServerAddress();
         }
         map.put("host", host);
@@ -155,9 +157,21 @@ public class TrackController extends BaseController {
             } else {
                 content = printNoDataExists(content);
             }
+            content += "<tr><td> جهت </td><td> ";
+            if (track.getHeading() != null) {
+                content = content + track.getHeading() + "</td><tr>";
+            } else {
+                content = printNoDataExists(content);
+            }
+            content += "<tr><td> نوع </td><td> ";
+            if (track.getType() != null) {
+                content = content + track.getType() + "</td><tr>";
+            } else {
+                content = printNoDataExists(content);
+            }
             content = content + "<tr><td colspan=2><a href='#' onclick=\"showProfile('" + StringUtils.trim(track.getCode()) + "')\">نمایش پروفایل پرواز</a></td></tr>";
             content = content + "<tr><td colspan=2><a href='#' onclick=\"showAircraftHistory('" + StringUtils.trim(track.getCode()) + "')\">نمایش چند مسیر آخر هواپیما</a></td></tr>";
-            content = content + "<tr><td colspan=2><a href='#' onclick=\"showTrackHistory('" + StringUtils.trim(track.getCode()) + "')\">نمایش مسیر طی شده</a></td></tr>";
+            content = content + "<tr><td colspan=2><a href='#' onclick=\"showTrackHistory('" + StringUtils.trim(track.getCode()) + "', '" + StringUtils.trim(track.getSource()) + "', '" + StringUtils.trim(track.getDestination()) + "', '" + StringUtils.trim(track.getRadar()) + "', '" + StringUtils.trim(track.getCol3()) + "')\">نمایش مسیر طی شده</a></td></tr>";
             content = content + "</table>";
             trackDTO.setContent(content);
 
@@ -194,7 +208,7 @@ public class TrackController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = {"/track/history"}, method = RequestMethod.GET)
-    public JSONMessage getTrackHistory(@RequestParam(name = "trackCode") String trackCode){
+    public JSONMessage getTrackHistory(@RequestParam(name = "trackCode") String trackCode) {
         List<TrackLog> tracks = trackLogService.getByCode(trackCode);
         Collections.sort(tracks, new Comparator<TrackLog>() {
             @Override
@@ -204,19 +218,21 @@ public class TrackController extends BaseController {
         });
 
         List<TrackDTO> trackDTOs = new ArrayList<>();
-        for (Iterator<TrackLog> iterator = tracks.iterator(); iterator.hasNext(); ) {
-            TrackLog track = iterator.next();
+        for (TrackLog track : tracks) {
             TrackDTO trackDTO = new TrackDTO(track);
-            if(!iterator.hasNext()){
-                trackDTO.setIsLast(true);
-            }else {
-                trackDTO.setIsLast(false);
-            }
             trackDTOs.add(trackDTO);
         }
         Map<String, Object> map = new HashMap<>();
         map.put("tracks", trackDTOs);
         return JSONMessage.Success(map);
+    }
+
+    @RequestMapping(value = "/image/plane")
+    public void getImage(HttpServletResponse httpResponse) throws IOException {
+        File trackPlaneImage = getTrackPlaneImage();
+        if (trackPlaneImage != null) {
+            IOUtils.copy(new FileInputStream(trackPlaneImage), httpResponse.getOutputStream());
+        }
     }
 
     private String printNoDataExists(String content) {

@@ -8,7 +8,6 @@ public class TrackDTO extends WeatherDTO {
     private String altitude;
     private String code;
     private String heading;
-    private Boolean isLast;
 
     public TrackDTO(){
 
@@ -52,11 +51,4 @@ public class TrackDTO extends WeatherDTO {
         this.heading = heading;
     }
 
-    public Boolean isLast() {
-        return isLast;
-    }
-
-    public void setIsLast(Boolean last) {
-        isLast = last;
-    }
 }

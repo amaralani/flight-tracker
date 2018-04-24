@@ -51,14 +51,25 @@
 
     var map = L.map('container').setView([33.63321, 55.12988], 6);
 
-    L.tileLayer([[${host}]] , {
+    L.tileLayer([[${host}]], {
 
         maxZoom: 18,
         attribution: 'Something To Remember',
         id: 'container'
     }).addTo(map);
     L.control.scale().addTo(map);
-
+    var iconSize = 25 + ((map.getZoom() - 3) * 7);
+    map.on("zoomend", function (e) {
+        if (showTracks) {
+            var zoom = map.getZoom();
+            console.log("zoom", zoom);
+            if (zoom < 12 && zoom >= 3) {
+                iconSize = 25 + ((zoom - 3) * 7);
+                console.log("iconSize", iconSize);
+                refreshTracks();
+            }
+        }
+    });
     var popup = L.popup();
 
 
@@ -100,7 +111,7 @@
                             "properties": {
                                 "popupContent": "<div style='direction:rtl;text-align:right'><h1>اطلاعات تکميلي</h1>" + point.content + "</div>",
                                 "code": point.code,
-                                "heading" : point.heading
+                                "heading": point.heading
                             },
                             "id": index
                         })
@@ -117,16 +128,16 @@
                     currentMarkers = L.geoJSON(trackMarkers, {
 
                         style: function (feature) {
-                            return {"color" : "red"};
+                            return {"color": "red"};
                         },
                         onEachFeature: onEachFeature,
                         pointToLayer: function (feature, latlng) {
                             return L.marker(latlng, {
                                 icon: L.icon({
-                                    iconUrl: '/icons/airplane.png',
-                                    iconSize: [45, 45]
+                                    iconUrl: '/tracks/image/plane',
+                                    iconSize: [iconSize, iconSize]
                                 }),
-                                rotationAngle : -45 - feature.properties.heading
+                                rotationAngle: - feature.properties.heading
                             });
                         }
                     });
@@ -249,7 +260,7 @@
             "properties": {
                 "popupContent": "<div style='direction:rtl;text-align:right'><h1>" + forecast.contentHeader + "</h1>" + forecast.content + "</div>",
                 "markerType": forecast.markerType,
-                "isCumulonimbus" : forecast.isCumulonimbus
+                "isCumulonimbus": forecast.isCumulonimbus
             },
             "id": index
         })
@@ -371,6 +382,11 @@
                                     $$("filterRadar").enable();
                                     $$("filterCallsign").enable();
                                     $$("filterButton").enable();
+                                    g_source = $$("filterSource").getValue();
+                                    g_destination = $$("filterDestination").getValue();
+                                    g_radar = $$("filterRadar").getValue();
+                                    g_callsign = $$("filterCallsign").getValue();
+
                                     showTracks = true;
                                     if (currentTrailMarkers) {
                                         map.removeLayer(currentTrailMarkers);
@@ -617,9 +633,8 @@
     }
 
 
-
     var currentTrailMarkers;
-    function showTrackHistory(code) {
+    function showTrackHistory(code, source, destination, radar, callsign) {
         ajaxCall(
                 "/tracks/track/history",
                 {
@@ -636,45 +651,30 @@
                     if (currentTrailMarkers) {
                         map.removeLayer(currentTrailMarkers);
                     }
-                    currentTrailMarkers = [];
+                    var trailLineStringCoordinates = [];
                     $.each(trails, function (index, trail) {
-                        trailPoints.push({
-                            "geometry": {
-                                "type": "Point",
-                                "coordinates": [
-                                    trail.latitude, trail.longitude
-                                ]
-                            },
-                            "type": "Feature",
-                            "properties": {
-                                "isLast": trail.last,
-                                "heading" : trail.heading
-                            },
-                            "id": index
-                        })
+                        trailLineStringCoordinates.push([trail.latitude, trail.longitude]);
+                    });
+                    trailPoints.push({
+                        "geometry": {
+                            "type": "LineString",
+                            "coordinates": trailLineStringCoordinates
+                        },
+                        "type": "Feature",
+                        "id": 1
                     });
                     var trailMarkers = {
                         "type": "FeatureCollection",
                         "features": trailPoints
                     };
 
-                    currentTrailMarkers = L.geoJSON(trailMarkers, {
-                        pointToLayer: function (feature, latlng) {
-                            console.log(feature.properties.isLast);
-                            if(feature.properties.isLast){
-                                return L.marker(latlng, {
-                                    icon: L.icon({
-                                        iconUrl: '/icons/airplane.png',
-                                        iconSize: [45, 45]
-                                    }),
-                                    rotationAngle : -45 - feature.properties.heading
-                                });
-                            }else {
-                                return L.circleMarker(latlng);
-                            }
-                        }
-                    });
+                    currentTrailMarkers = L.geoJSON(trailMarkers);
                     currentTrailMarkers.addTo(map);
+                    g_source = source;
+                    g_destination = destination;
+                    g_radar = radar;
+                    g_callsign = callsign;
+                    refreshTracks();
                 },
                 function (err) {
                     console.log(err);

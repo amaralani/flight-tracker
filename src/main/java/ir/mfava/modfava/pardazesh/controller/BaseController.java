@@ -40,6 +40,14 @@ public class BaseController {
         return file;
     }
 
+    public File getTrackPlaneImage(){
+        File file = new File("d:/gis_backend_repository/icons_directory/plane/plane.png");
+        if(!file.exists()){
+            file.mkdirs();
+        }
+        return file;
+    }
+
     public File getDustImageProcessedDirectory(){
         File file = new File("d:/gis_backend_repository/weather_base_directory/processed/dust/");
         if(!file.exists()){
