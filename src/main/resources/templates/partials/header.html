@@ -95,7 +95,7 @@
             right_menu_report.push({id: 1, "name": "مشاهده ورود و خروج کاربران", href: "/report/login-report/view", icon: "id-badge"});
         }
         if ([[${#httpServletRequest.isUserInRole("ROLE_REPORT")}]]) {
-            right_menu_report.push({id: 2, "name": "گزارشات", href: "#", icon: "id-badge"});
+            right_menu_report.push({id: 2, "name": "گزارشات", href: "/report/", icon: "id-badge"});
         }
 
         var right_menu =

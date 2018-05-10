@@ -1,5 +1,6 @@
 package ir.mfava.modfava.pardazesh.service.Impl;
 
+import ir.mfava.modfava.pardazesh.model.DTO.AnalyticDTO;
 import ir.mfava.modfava.pardazesh.model.DataFile;
 import ir.mfava.modfava.pardazesh.model.Phenomena;
 import ir.mfava.modfava.pardazesh.model.Weather;
@@ -19,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 @Service
@@ -60,12 +62,78 @@ public class WeatherServiceImpl implements WeatherService {
         weatherRepository.delete(entity);
     }
 
-
     @Override
     public List<Weather> getCurrentWeather() {
         return weatherRepository.getCurrentWeather();
     }
 
+    @Override
+    public List<Weather> searchWeather(Weather.ReportType reportType, Date startDate, Date endDate, List<Long> phenomenaIds, Long stationId) {
+        List<Weather> weathers;
+        if (phenomenaIds == null || phenomenaIds.isEmpty()) {
+            weathers = weatherRepository.searchWeather(reportType, startDate, endDate, stationId);
+        } else {
+            weathers = weatherRepository.searchWeather(reportType, startDate, endDate, phenomenaIds, stationId);
+        }
+
+        return weathers;
+    }
+
+    @Override
+    public List<AnalyticDTO> getAnalyticReport(Long stationId, Date startDate, Date endDate) {
+        List<Object> objectList = weatherRepository.getAnalyticData(stationId, startDate, endDate);
+        Integer total = weatherRepository.getTotalDataCount(stationId, startDate, endDate);
+        List<AnalyticDTO> analyticDTOs = new ArrayList<>();
+        for (Object object : objectList) {
+            AnalyticDTO analyticDTO = new AnalyticDTO();
+            analyticDTO.setName(String.valueOf(((Object[]) object)[0]));
+            Float percent = Float.valueOf(String.valueOf(((Object[]) object)[1])) / total * 100;
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            analyticDTO.setPercent(Float.valueOf(decimalFormat.format(percent)));
+            analyticDTOs.add(analyticDTO);
+        }
+        return analyticDTOs;
+    }
+
+    @Override
+    public List<AnalyticDTO> getTypeCountReport(Long stationId, Date startDate, Date endDate) {
+        List<Object> objectList = weatherRepository.getTypeCountData(stationId, startDate, endDate);
+        Integer total = weatherRepository.getTotalDataCount(stationId, startDate, endDate);
+        List<AnalyticDTO> analyticDTOs = new ArrayList<>();
+        for (Object object : objectList) {
+            AnalyticDTO analyticDTO = new AnalyticDTO();
+            analyticDTO.setName(String.valueOf(((Object[]) object)[0]));
+            Float percent = Float.valueOf(String.valueOf(((Object[]) object)[1])) / total * 100;
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            analyticDTO.setPercent(Float.valueOf(decimalFormat.format(percent)));
+            analyticDTOs.add(analyticDTO);
+        }
+        return analyticDTOs;
+    }
+
+    @Override
+    public List<AnalyticDTO> getSendCountReport(List<Long> stationIds, Date startDate, Date endDate) {
+        List<Object> objectList;
+        Integer total;
+        if(stationIds == null || stationIds.isEmpty()){
+            objectList= weatherRepository.getSendCountData(startDate, endDate);
+            total = weatherRepository.getCountSendCountData(startDate, endDate);
+        }else {
+            objectList= weatherRepository.getSendCountData(stationIds, startDate, endDate);
+            total = weatherRepository.getCountSendCountData(stationIds, startDate, endDate);
+        }
+
+        List<AnalyticDTO> analyticDTOs = new ArrayList<>();
+        for (Object object : objectList) {
+            AnalyticDTO analyticDTO = new AnalyticDTO();
+            analyticDTO.setName(String.valueOf(((Object[]) object)[0]));
+            Float percent = Float.valueOf(String.valueOf(((Object[]) object)[1])) / total * 100;
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
+            analyticDTO.setPercent(Float.valueOf(decimalFormat.format(percent)));
+            analyticDTOs.add(analyticDTO);
+        }
+        return analyticDTOs;
+    }
 
     @Override
     public synchronized Boolean process() {
@@ -92,7 +160,7 @@ public class WeatherServiceImpl implements WeatherService {
                         File metarProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/metar/");
                         if (!metarProcessedDirectory.exists()) metarProcessedDirectory.mkdirs();
                         File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/metar/" + metarFile.getName());
-                        FileCopyUtils.copy(metarFile,newFile);
+                        FileCopyUtils.copy(metarFile, newFile);
                         metarFile.delete();
                         dataFileService.save(dataFile);
                     }
@@ -106,13 +174,13 @@ public class WeatherServiceImpl implements WeatherService {
                         dataFile.setFileName(taforFile.getName());
                         dataFile.setFileType("TAFOR");
                         dataFile.setProcessStartDate(new Date());
-                        processFile("/d/gis_backend_repository/weather_base_directory/tafor/"+ taforFile.getName());
+                        processFile("/d/gis_backend_repository/weather_base_directory/tafor/" + taforFile.getName());
                         dataFile.setProcessEndDate(new Date());
 
                         File taforProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/tafor/");
                         if (!taforProcessedDirectory.exists()) taforProcessedDirectory.mkdirs();
                         File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/tafor/" + taforFile.getName());
-                        FileCopyUtils.copy(taforFile,newFile);
+                        FileCopyUtils.copy(taforFile, newFile);
                         taforFile.delete();
 
                         dataFileService.save(dataFile);
@@ -127,13 +195,13 @@ public class WeatherServiceImpl implements WeatherService {
                         dataFile.setFileName(speciFile.getName());
                         dataFile.setFileType("SPECI");
                         dataFile.setProcessStartDate(new Date());
-                        processFile("/d/gis_backend_repository/weather_base_directory/speci/"+ speciFile.getName());
+                        processFile("/d/gis_backend_repository/weather_base_directory/speci/" + speciFile.getName());
                         dataFile.setProcessEndDate(new Date());
 
                         File speciProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/speci/");
                         if (!speciProcessedDirectory.exists()) speciProcessedDirectory.mkdirs();
                         File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/speci/" + speciFile.getName());
-                        FileCopyUtils.copy(speciFile,newFile);
+                        FileCopyUtils.copy(speciFile, newFile);
                         speciFile.delete();
 
                         dataFileService.save(dataFile);
@@ -147,9 +215,9 @@ public class WeatherServiceImpl implements WeatherService {
                     File oldSatImageProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/old/");
                     if (!oldSatImageProcessedDirectory.exists()) oldSatImageProcessedDirectory.mkdirs();
                     for (File oldSatImage : oldSatImages) {
-                        if(oldSatImage.isFile()){
-                        File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/old/" + oldSatImage.getName());
-                        FileCopyUtils.copy(oldSatImage, newFile);
+                        if (oldSatImage.isFile()) {
+                            File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/old/" + oldSatImage.getName());
+                            FileCopyUtils.copy(oldSatImage, newFile);
                         }
                     }
                 }
@@ -159,7 +227,7 @@ public class WeatherServiceImpl implements WeatherService {
                 if (satImagesDirectory.listFiles() != null) {
                     List<File> satImages = Arrays.asList(satImagesDirectory.listFiles());
                     for (File satImage : satImages) {
-                        if(satImage.isFile()) {
+                        if (satImage.isFile()) {
                             File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/" + satImage.getName());
                             FileCopyUtils.copy(satImage, newFile);
                             satImage.delete();
@@ -174,9 +242,9 @@ public class WeatherServiceImpl implements WeatherService {
                     File oldSatImageProcessedDirectory = new File("/d/gis_backend_repository/weather_base_directory/processed/sat/old/");
                     if (!oldSatImageProcessedDirectory.exists()) oldSatImageProcessedDirectory.mkdirs();
                     for (File oldDustImage : oldDustImages) {
-                        if(oldDustImage.isFile()){
-                        File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/dust/old/" + oldDustImage.getName());
-                        FileCopyUtils.copy(oldDustImage, newFile);
+                        if (oldDustImage.isFile()) {
+                            File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/dust/old/" + oldDustImage.getName());
+                            FileCopyUtils.copy(oldDustImage, newFile);
                         }
                     }
                 }
@@ -186,7 +254,7 @@ public class WeatherServiceImpl implements WeatherService {
                 if (dustImagesDirectory.listFiles() != null) {
                     List<File> dusttImages = Arrays.asList(dustImagesDirectory.listFiles());
                     for (File dusttImage : dusttImages) {
-                        if(dusttImage.isFile()) {
+                        if (dusttImage.isFile()) {
                             File newFile = new File("/d/gis_backend_repository/weather_base_directory/processed/dust/" + dusttImage.getName());
                             FileCopyUtils.copy(dusttImage, newFile);
                             dusttImage.delete();
@@ -252,11 +320,11 @@ public class WeatherServiceImpl implements WeatherService {
                         weather.setWindSpeed(metar.getWindSpeedInKnots());
                         weather.setWindDirection(metar.getWindDirection());
                         weather.setVisibility(String.valueOf(metar.getVisibilityInMeters()));
-                        if(!metar.getRunwayVisualRanges().isEmpty()){
+                        if (!metar.getRunwayVisualRanges().isEmpty()) {
                             weather.setRvr(metar.getRunwayVisualRange(0).getNaturalLanguageString());
                         }
                         SkyCondition skyCondition = getHighestPriority(metar.getSkyConditions());
-                        if(skyCondition != null) {
+                        if (skyCondition != null) {
                             weather.setCloud(skyCondition.getContraction());
                             weather.setCumulonimbus(skyCondition.isCumulonimbus());
                         }
@@ -322,7 +390,7 @@ public class WeatherServiceImpl implements WeatherService {
         for (WeatherCondition weatherCondition : weatherConditions) {
             phenomenas.add(phenomenaService.getByAbbreviation(weatherCondition.getPhenomena()));
         }
-        if(phenomenas.isEmpty()){
+        if (phenomenas.isEmpty()) {
             return null;
         }
         Comparator<Phenomena> phenomenaComparator = new Comparator<Phenomena>() {

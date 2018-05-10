@@ -1,0 +1,695 @@
+<!DOCTYPE html  >
+<html th:dir="rtl" th:lang="fa" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!--/*/ <th:block th:include="partials/header :: head"></th:block> /*/-->
+    <title>گزارشات</title>
+</head>
+<style>
+    .webix_cell {
+        direction: ltr;
+    }
+</style>
+<body>
+
+<div id="message">
+    <span th:if="${successMessage != null}" th:text="${successMessage}" th:class="success-message"></span>
+    <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
+</div>
+
+<div id="weather-grid-container"></div>
+<div id="analytic-pie-container"></div>
+<div id="type-count-pie-container"></div>
+<div id="send-count-pie-container"></div>
+
+<script th:inline="javascript">
+    function equals(a, b) {
+        a = a.toString().toLowerCase();
+        return a.indexOf(b) !== -1;
+    }
+
+    function oneForAllOnline(value, filter, obj) {
+        if (equals(obj.user.username, filter)) return true;
+        if (equals(obj.user.firstName, filter)) return true;
+        if (equals(obj.user.lastName, filter)) return true;
+        if (equals(obj.ip, filter)) return true;
+        return !!equals(getPersianDate(new Date(obj.startDate), filter));
+    }
+
+    function oneForAllSession(value, filter, obj) {
+        if (equals(obj.user.username, filter)) return true;
+        if (equals(obj.ip, filter)) return true;
+        if (equals(obj.sessionId, filter)) return true;
+        if (equals(getPersianDate(obj.startDate), filter)) return true;
+        return !!equals(getPersianDate(obj.endDate), filter);
+    }
+
+    function oneForAllFailure(value, filter, obj) {
+        if (equals(obj.username, filter)) return true;
+        if (equals(obj.ip, filter)) return true;
+        return !!equals(getPersianDate(obj.dateTime), filter);
+    }
+
+    function getUsername(user) {
+        return user.username;
+    }
+
+    function getFullName(user) {
+        return (user.firstName || ' ') + " " + (user.lastName || ' ');
+    }
+
+    function getRoles(user) {
+        var rolesString = '<div style="direction: rtl;text-align: right"><ul> ';
+        $.each(user.roles, function (index, role) {
+            rolesString = rolesString + ' <li>' + role.label + '</li>';
+        });
+        rolesString = rolesString + "</ul></div>";
+        return rolesString;
+    }
+
+    function getPersianDate(date) {
+        var newPersianDate = persianDate(date).pDate;
+        return newPersianDate.year + "/" + newPersianDate.month + "/" + newPersianDate.date + "\t" + newPersianDate.hours + ":" + newPersianDate.minutes + ":" + newPersianDate.seconds;
+    }
+
+    function getRandomColor() {
+        return '#' + Math.floor(Math.random() * 16777215).toString(16);
+    }
+    /*<![CDATA[*/
+    var weatherStations = [[${weatherStations}]];
+    var phenomenas = [[${phenomenas}]];
+    var comboStations = [];
+    $.each(weatherStations, function (index, station) {
+        comboStations.push({
+            id: station.id,
+            name: station.name,
+            farsiName: station.farsiName === null ? ' ' : station.farsiName
+        });
+    });
+
+    var gridBaseData = [];
+
+    function refreshWeatherGridData() {
+        var phenomenas = $$("weather-phenomena").getValue();
+        var station = $$("weather-station").getValue();
+        var type = $$("weather-type").getValue();
+
+        var startDate = $$("weather-from-date").getValue().trim();
+        var endDate = $$("weather-to-date").getValue().trim();
+
+        if (!startDate || !endDate) {
+            webix.message("لطفا بازه زماني گزارش را انتخاب کنيد.");
+            return;
+        }
+
+        ajaxCall(
+                "/report/weather-report/",
+                {
+                    phenomenas: phenomenas,
+                    station: station,
+                    type: type,
+                    startDate: startDate,
+                    endDate: endDate
+                },
+                "GET",
+                function (response) {
+                    $$("weatherGrid").clearAll();
+                    $$("weatherGrid").parse(response.weathers);
+                    $$("weatherGrid").refresh();
+                },
+                function (error) {
+                    webix.message(error.message);
+                }
+        );
+
+    }
+
+    function refreshAnalyticPieData() {
+
+        var station = $$("analytic-station").getValue();
+
+        var startDate = $$("analytic-from-date").getValue().trim();
+        var endDate = $$("analytic-to-date").getValue().trim();
+
+        if (!startDate || !endDate) {
+            webix.message("لطفا بازه زماني گزارش را انتخاب کنيد.");
+            return;
+        }
+
+        ajaxCall(
+                "/report/analytic-report/",
+                {
+                    station: station,
+                    startDate: startDate,
+                    endDate: endDate
+                },
+                "GET",
+                function (response) {
+                    var analyticData = [];
+                    if (response.analyticDTOs.length !== 0) {
+                        $.each(response.analyticDTOs, function (index, dto) {
+                            analyticData.push({name: dto.name, percent: dto.percent, color: getRandomColor()});
+                        });
+                    } else {
+                        webix.message("داده ای یافت نشد");
+                    }
+
+                    $$("analytic-pie").clearAll();
+                    $$("analytic-pie").parse(analyticData);
+                    $$("analytic-pie").refresh();
+                },
+                function (error) {
+                    webix.message(error.message);
+                }
+        );
+
+    }
+
+    function refreshTypeCountPieData() {
+
+        var station = $$("type-count-station").getValue();
+
+        var startDate = $$("type-count-from-date").getValue().trim();
+        var endDate = $$("type-count-to-date").getValue().trim();
+
+        if (!startDate || !endDate) {
+            webix.message("لطفا بازه زماني گزارش را انتخاب کنيد.");
+            return;
+        }
+
+        ajaxCall(
+                "/report/type-count-report/",
+                {
+                    station: station,
+                    startDate: startDate,
+                    endDate: endDate
+                },
+                "GET",
+                function (response) {
+                    var analyticData = [];
+                    if (response.analyticDTOs.length !== 0) {
+                        $.each(response.analyticDTOs, function (index, dto) {
+                            analyticData.push({name: dto.name, percent: dto.percent, color: getRandomColor()});
+                        });
+                    } else {
+                        webix.message("داده ای یافت نشد");
+                    }
+
+                    $$("type-count-pie").clearAll();
+                    $$("type-count-pie").parse(analyticData);
+                    $$("type-count-pie").refresh();
+                },
+                function (error) {
+                    webix.message(error.message);
+                }
+        );
+
+    }
+function refreshSendCountPieData() {
+
+        var station = $$("send-count-station").getValue();
+
+        var startDate = $$("send-count-from-date").getValue().trim();
+        var endDate = $$("send-count-to-date").getValue().trim();
+
+        if (!startDate || !endDate) {
+            webix.message("لطفا بازه زماني گزارش را انتخاب کنيد.");
+            return;
+        }
+
+        ajaxCall(
+                "/report/send-count-report/",
+                {
+                    stationIds: station,
+                    startDate: startDate,
+                    endDate: endDate
+                },
+                "GET",
+                function (response) {
+                    var analyticData = [];
+                    if (response.analyticDTOs.length !== 0) {
+                        $.each(response.analyticDTOs, function (index, dto) {
+                            analyticData.push({name: dto.name, percent: dto.percent, color: getRandomColor()});
+                        });
+                    } else {
+                        webix.message("داده ای یافت نشد");
+                    }
+
+                    $$("send-count-pie").clearAll();
+                    $$("send-count-pie").parse(analyticData);
+                    $$("send-count-pie").refresh();
+                },
+                function (error) {
+                    webix.message(error.message);
+                }
+        );
+
+    }
+
+
+    var main_content = {
+        gravity: 3,
+        type: "clean",
+        rows: [
+            {
+                body: {content: "message"}, height: 36
+            },
+            {
+                view: "tabbar", multiview: true, selected: "view", options: [
+                {id: "weather-report", value: "گزارش اطلاعات هواشناسی", width: 250},
+                {id: "analytic-report", value: "گزارش تحلیلی", width: 250},
+                {id: "type-count-report", value: "گزارش درصد بر اساس نوع", width: 250},
+                {id: "send-count-report", value: "گزارش درصد ارسال ایستگاه ها", width: 250}
+            ]
+            },
+            {
+                view: "multiview",
+                cells: [
+                    {
+                        id: "weather-report",
+                        rows: [
+                            {
+                                cols: [
+                                    {
+                                        rows: [
+                                            {
+                                                id: 'weather-phenomena',
+                                                view: "multicombo",
+                                                labelWidth: 170,
+                                                label: "پدیده",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                suggest: {
+                                                    body: {
+                                                        data: phenomenas,
+                                                        template: "#abbreviation# (#description#)"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                view: "combo",
+                                                id: "weather-station",
+                                                label: 'ایستگاه هواشناسی ',
+                                                labelWidth: 150,
+                                                labelAlign: 'right',
+                                                name: "stations-combo",
+                                                value: null,
+                                                options: {
+                                                    filter: function (item, value) {
+                                                        return item.name.toString().toLowerCase().indexOf(value.toLowerCase()) != -1 || item.farsiName.toString().toLowerCase().indexOf(value.toLowerCase()) != -1;
+
+                                                    },
+                                                    body: {
+                                                        template: "#name# (#farsiName#)",
+                                                        data: comboStations,
+                                                        type: {
+                                                            height: 40
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                id: 'weather-from-date',
+                                                view: "text",
+                                                label: " از تاريخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                id: 'weather-to-date',
+                                                view: "text",
+                                                label: " تا تاريخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                view: "select",
+                                                id: "weather-type",
+                                                value: 2,
+                                                label: "نوع",
+                                                options: [
+                                                    {value: ''},
+                                                    {value: "METAR"},
+                                                    {value: "TAFOR"}
+                                                ]
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                icon: "refresh",
+                                                value: "جستجو",
+                                                align: "left",
+                                                click: function () {
+                                                    refreshWeatherGridData();
+                                                }
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                icon: "refresh",
+                                                value: "خروجی CSV",
+                                                align: "right",
+                                                click: function () {
+                                                    webix.toCSV($$("weatherGrid"), {
+                                                        filename: "گزارش اطلاعات هواشناسی",
+                                                        name: "گزارش اطلاعات هواشناسی"
+                                                    });
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {},
+                                    {}
+                                ]
+
+                            },
+                            {
+                                id: "weatherGrid",
+                                container: "weather-grid-container",
+                                view: "datatable",
+                                columns: [
+                                    {
+                                        id: "stationId",
+                                        header: ["کد", {
+                                            content: "textFilter",
+
+                                            placeholder: "جستجو",
+                                            colspan: 10
+                                        }]
+                                    },
+                                    {id: "farsiName", header: ["نام ايستگاه", null]},
+                                    {id: "time", header: ["ساعت", null]},
+                                    {id: "windDirection", header: ["سمت باد", null]},
+                                    {id: "windSpeed", header: ["سرعت باد", null]},
+                                    {id: "visibility", header: ["ديد", null]},
+                                    {id: "temperature", header: ["دما", null]},
+                                    {id: "dewPoint", header: ["نقطه شبنم", null]},
+                                    {id: "pressure", header: ["فشار", null]},
+                                    {id: "metar", header: ["اصل متار", null], width: 500}
+                                ],
+                                select: false,
+                                tooltip: true,
+                                navigation: true,
+                                autowidth: false,
+                                autoheight: false,
+                                scroll: true,
+                                data: gridBaseData
+                            }
+                        ]
+                    },
+                    {
+                        id: "analytic-report",
+                        rows: [
+                            {
+                                cols: [
+                                    {
+                                        rows: [
+
+                                            {
+                                                view: "combo",
+                                                id: "analytic-station",
+                                                label: 'ایستگاه هواشناسی ',
+                                                labelWidth: 150,
+                                                labelAlign: 'right',
+                                                name: "stations-combo",
+                                                value: null,
+                                                options: {
+                                                    filter: function (item, value) {
+                                                        return item.name.toString().toLowerCase().indexOf(value.toLowerCase()) != -1 || item.farsiName.toString().toLowerCase().indexOf(value.toLowerCase()) != -1;
+
+                                                    },
+                                                    body: {
+                                                        template: "#name# (#farsiName#)",
+                                                        data: comboStations,
+                                                        type: {
+                                                            height: 40
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                id: 'analytic-from-date',
+                                                view: "text",
+                                                label: " از تاريخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                id: 'analytic-to-date',
+                                                view: "text",
+                                                label: " تا تاريخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                value: "جستجو",
+                                                align: "left",
+                                                click: function () {
+                                                    refreshAnalyticPieData();
+                                                }
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                icon: "refresh",
+                                                value: "خروجی CSV",
+                                                align: "right",
+                                                click: function () {
+                                                    webix.toCSV($$("analytic-pie"), {
+                                                        filename: "گزارش تحلیلی",
+                                                        name: "گزارش تحلیلی"
+                                                    });
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {},
+                                    {}
+                                ]
+
+                            },
+                            {
+                                id: "analytic-pie",
+                                view: "chart",
+                                type: "pie3D",
+                                container: "analytic-pie-container",
+                                value: "#percent#",
+                                color: "#color#",
+                                label: "#name#",
+                                pieInnerText: "% #percent# ",
+                                shadow: 0,
+                                data: []
+                            }
+
+                        ]
+                    },
+                    {
+                        id: "type-count-report",
+                        rows: [
+                            {
+                                cols: [
+                                    {
+                                        rows: [
+
+                                            {
+                                                view: "combo",
+                                                id: "type-count-station",
+                                                label: 'ایستگاه هواشناسی ',
+                                                labelWidth: 150,
+                                                labelAlign: 'right',
+                                                name: "stations-combo",
+                                                value: null,
+                                                options: {
+                                                    filter: function (item, value) {
+                                                        return item.name.toString().toLowerCase().indexOf(value.toLowerCase()) != -1 || item.farsiName.toString().toLowerCase().indexOf(value.toLowerCase()) != -1;
+
+                                                    },
+                                                    body: {
+                                                        template: "#name# (#farsiName#)",
+                                                        data: comboStations,
+                                                        type: {
+                                                            height: 40
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                id: 'type-count-from-date',
+                                                view: "text",
+                                                label: " از تاريخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                id: 'type-count-to-date',
+                                                view: "text",
+                                                label: " تا تاريخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                value: "جستجو",
+                                                align: "left",
+                                                click: function () {
+                                                    refreshTypeCountPieData();
+                                                }
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                icon: "refresh",
+                                                value: "خروجی CSV",
+                                                align: "right",
+                                                click: function () {
+                                                    webix.toCSV($$("type-count-pie"), {
+                                                        filename: "گزارش درصد بر اساس نوع",
+                                                        name: "گزارش درصد بر اساس نوع"
+                                                    });
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {},
+                                    {}
+                                ]
+
+                            },
+                            {
+                                id: "type-count-pie",
+                                view: "chart",
+                                type: "pie3D",
+                                container: "type-count-pie-container",
+                                value: "#percent#",
+                                color: "#color#",
+                                label: "#name#",
+                                pieInnerText: "% #percent# ",
+                                shadow: 0,
+                                data: []
+                            }
+                        ]
+                    },
+                    {
+                        id: "send-count-report",
+                        rows: [
+                            {
+                                cols: [
+                                    {
+                                        rows: [
+                                            {
+                                                view: "multicombo",
+                                                id: "send-count-station",
+                                                label: 'ایستگاه هواشناسی ',
+                                                labelWidth: 150,
+                                                labelAlign: 'right',
+                                                name: "stations-combo",
+                                                value: null,
+                                                options: {
+                                                    filter: function (item, value) {
+                                                        return item.name.toString().toLowerCase().indexOf(value.toLowerCase()) != -1 || item.farsiName.toString().toLowerCase().indexOf(value.toLowerCase()) != -1;
+
+                                                    },
+                                                    body: {
+                                                        template: "#name# (#farsiName#)",
+                                                        data: comboStations,
+                                                        type: {
+                                                            height: 40
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                id: 'send-count-from-date',
+                                                view: "text",
+                                                label: " از تاريخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                id: 'send-count-to-date',
+                                                view: "text",
+                                                label: " تا تاريخ (روز/ماه/سال)",
+                                                labelAlign: 'right',
+                                                textAlign: 'right',
+                                                value: [[${currentDate}]],
+                                                labelWidth: 150
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                value: "جستجو",
+                                                align: "left",
+                                                click: function () {
+                                                    refreshSendCountPieData();
+                                                }
+                                            },
+                                            {
+                                                inputWidth: 100,
+                                                view: "button",
+                                                type: "form",
+                                                icon: "refresh",
+                                                value: "خروجی CSV",
+                                                align: "right",
+                                                click: function () {
+                                                    webix.toCSV($$("send-count-pie"), {
+                                                        filename: "گزارش درصد ارسال ایستگاه",
+                                                        name: "گزارش درصد ارسال ایستگاه"
+                                                    });
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {},
+                                    {}
+                                ]
+
+                            },
+                            {
+                                id: "send-count-pie",
+                                view: "chart",
+                                type: "pie3D",
+                                container: "send-count-pie-container",
+                                value: "#percent#",
+                                color: "#color#",
+                                label: "#name#",
+                                pieInnerText: "% #percent# ",
+                                shadow: 0,
+                                data: []
+                            }
+                        ]
+                    }
+
+                ]
+            }
+        ]
+    };
+
+    /*]]>*/
+
+</script>
+<!--/*/ <th:block th:include="partials/footer :: footer"></th:block> /*/-->
+</body>
+</html>
