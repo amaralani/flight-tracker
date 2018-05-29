@@ -40,31 +40,30 @@ public class BulletinController extends BaseController {
                                     ModelMap map, HttpSession session) {
         map.put("provinces", provinceService.getAll());
         map.put("provinceId", provinceId);
-        if (provinceId != null) {
-            List<Bulletin> bulletins = bulletinService.getListByProvinceAndForecastDate(provinceId, new Date());
-            for (int i = 0; i < bulletins.size(); i++) {
-                Bulletin currentBulletin = bulletins.get(i);
-                currentBulletin.setForecastDateString(DateUtils.convertJulianToPersianForUi(currentBulletin.getForecastDate()));
-                currentBulletin.setTitle(((i + 1) * 24) + " ساعت آینده");
-            }
-            map.put("bulletins", bulletins);
-        }
-        map.put("successMessage", session.getAttribute("successMessage"));
+        List<Bulletin> bulletins = bulletinService.getListByProvinceAndForecastDate(provinceId, new Date());
+
+        prepareBulletins(bulletins);
+        map.put("bulletins", bulletins);
         map.put("errorMessage", session.getAttribute("errorMessage"));
         session.removeAttribute("successMessage");
         session.removeAttribute("errorMessage");
         return "province-bulletin";
     }
 
-    @ResponseBody
-    @RequestMapping(value = "/get/", method = RequestMethod.GET)
-    public JSONMessage getProvinceForecasts(@RequestParam(name = "provinceId") Long provinceId) {
-        List<Bulletin> bulletins = bulletinService.getListByProvinceAndForecastDate(provinceId, new Date());
+    private void prepareBulletins(List<Bulletin> bulletins) {
         for (Bulletin currentBulletin : bulletins) {
             currentBulletin.setForecastDateString(DateUtils.convertJulianToPersianForUi(currentBulletin.getForecastDate()));
             long hoursDifference = (DateUtils.differenceInDays(new Date(), currentBulletin.getForecastDate()) + 1) * 24; // we do not want 0 hours
             currentBulletin.setTitle(hoursDifference + " ساعت آینده");
+            currentBulletin.setProvinceName(currentBulletin.getProvince().getName());
         }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/get/", method = RequestMethod.GET)
+    public JSONMessage getProvinceForecasts(@RequestParam(name = "provinceId") Long provinceId) {
+        List<Bulletin> bulletins = bulletinService.getListByProvinceAndForecastDate(provinceId, new Date());
+        prepareBulletins(bulletins);
         Map<String, Object> map = new HashMap<>();
         map.put("bulletins", bulletins);
         return JSONMessage.Success("success", map);
@@ -80,8 +79,8 @@ public class BulletinController extends BaseController {
                                HttpSession session,
                                HttpServletRequest request,
                                Authentication authentication) {
-        Map<String,String> descriptionMap = new HashMap<>();
-        descriptionMap.put("Entity","Bulletin");
+        Map<String, String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity", "Bulletin");
         descriptionMap.put("provinceId", String.valueOf(provinceId));
         descriptionMap.put("minTemperature", String.valueOf(minTemperature));
         descriptionMap.put("maxTemperature", String.valueOf(maxTemperature));
@@ -109,7 +108,7 @@ public class BulletinController extends BaseController {
             flag = Event.Flag.FAILURE;
         }
 
-        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(),request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.ADD_EDIT, Event.SubType.NEW_DATA, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.ADD_EDIT, Event.SubType.NEW_DATA, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return "redirect:/bulletin/view?provinceId=" + provinceId;
     }
 
@@ -118,21 +117,21 @@ public class BulletinController extends BaseController {
                                HttpSession session,
                                HttpServletRequest request,
                                Authentication authentication) {
-        Map<String,String> descriptionMap = new HashMap<>();
-        descriptionMap.put("Entity","Bulletin");
+        Map<String, String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity", "Bulletin");
         descriptionMap.put("bulletinId", String.valueOf(bulletinId));
         Bulletin bulletin = bulletinService.getById(bulletinId);
         Event.Flag flag;
         try {
             bulletinService.remove(bulletin);
-            session.setAttribute("successMessage", "حذف اطلاعات با موفقیت انجام شد.");
+            session.setAttribute("successMessage", "حذف پیش بینی با موفقیت انجام شد.");
             flag = Event.Flag.SUCCESS;
         } catch (Exception e) {
             e.printStackTrace();
             session.setAttribute("errorMessage", "خطا در حذف اطلاعات.");
             flag = Event.Flag.FAILURE;
         }
-        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(),request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.DELETE, Event.SubType.DELETE_FROM_DB, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.DELETE, Event.SubType.DELETE_FROM_DB, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return "redirect:/bulletin/view?provinceId=" + bulletin.getProvince().getId();
     }
 }

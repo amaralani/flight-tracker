@@ -34,6 +34,8 @@ public class Bulletin extends BaseModel {
     private String forecastDateString;
     @Transient
     private String title;
+    @Transient
+    private String provinceName;
 
     public Float getMaxTemperature() {
         return maxTemperature;
@@ -106,6 +108,14 @@ public class Bulletin extends BaseModel {
 
     public void setForecastDateString(String forecastDateString) {
         this.forecastDateString = forecastDateString;
+    }
+
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
     }
 
     @Override
