@@ -16,7 +16,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
@@ -47,11 +49,20 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
             default:
                 request.getSession().setAttribute("loginError", "login-error");
         }
+
+
+
         String username = request.getParameter("username");
         request.getSession().setAttribute("clientIP", request.getRemoteAddr());
         request.getSession().setAttribute("clientHostName", request.getRemoteHost());
         loginFailureLogService.createLog(username, request.getRemoteAddr());
-        eventService.addEvent(request.getRemoteAddr(),request.getRemoteHost(),request.getRequestURI(),request.getParameter("username"), Event.ActionType.LOGIN_LOGOUT, Event.SubType.UNSUCCESS_LOGIN, Event.Flag.FAILURE,null, Event.Sensitivity.NOTIFICATION);
+
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Action","Unsuccessful Login");
+        descriptionMap.put("username", username);
+
+
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), request.getParameter("username"), Event.ActionType.LOGIN_LOGOUT, Event.SubType.UNSUCCESS_LOGIN, Event.Flag.FAILURE, descriptionMap, Event.Sensitivity.NOTIFICATION);
         Long countUserLoginFailure = loginFailureLogService.countUserLogsSinceLastLogin(username);
         List<Configuration> configurationList = configurationService.getAll();
         if (!configurationList.isEmpty()) {
@@ -61,7 +72,9 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
                 if (user != null) {
                     user.setLocked(true);
                     userService.save(user);
-                    eventService.addEvent(request.getRemoteAddr(),request.getRemoteHost(),request.getRequestURI(),request.getParameter("username"), Event.ActionType.USER_MANAGEMENT, Event.SubType.BLOCK_USER, Event.Flag.FAILURE,null, Event.Sensitivity.ALARM);
+                    descriptionMap.put("Action","Block User");
+                    descriptionMap.put("username", username);
+                    eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), request.getParameter("username"), Event.ActionType.USER_MANAGEMENT, Event.SubType.BLOCK_USER, Event.Flag.FAILURE, descriptionMap, Event.Sensitivity.ALARM);
                 }
             }
         }

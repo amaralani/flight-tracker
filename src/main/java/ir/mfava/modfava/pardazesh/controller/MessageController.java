@@ -4,14 +4,18 @@ import ir.mfava.modfava.pardazesh.model.Constants;
 import ir.mfava.modfava.pardazesh.model.DTO.JSONMessage;
 import ir.mfava.modfava.pardazesh.model.DTO.MessageDTO;
 import ir.mfava.modfava.pardazesh.model.Message;
+import ir.mfava.modfava.pardazesh.model.report.event.Event;
 import ir.mfava.modfava.pardazesh.service.MessageService;
 import ir.mfava.modfava.pardazesh.service.UserGroupService;
 import ir.mfava.modfava.pardazesh.service.UserService;
+import ir.mfava.modfava.pardazesh.service.report.event.EventService;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,6 +35,8 @@ public class MessageController extends BaseController {
     private UserService userService;
     @Autowired
     private UserGroupService userGroupService;
+    @Autowired
+    private EventService eventService;
 
     @RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
     public String viewMessagesPage(ModelMap map, HttpSession session, Authentication authentication) {
@@ -56,7 +62,15 @@ public class MessageController extends BaseController {
                               @RequestParam(name = "subject") String subject,
                               @RequestParam(name = "text") String text,
                               Authentication authentication,
+                              HttpServletRequest request,
                               HttpSession session) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity","Message");
+        descriptionMap.put("receiverIds", commaSeparatedReceiverIds);
+        descriptionMap.put("userGroupIds", userGroupIds);
+        descriptionMap.put("subject", subject);
+        descriptionMap.put("text", text);
+
         String[] stringReceiverIds =  commaSeparatedReceiverIds.split(",");
         String[] stringUserGroupIds =  userGroupIds.split(",");
 
@@ -67,36 +81,53 @@ public class MessageController extends BaseController {
         message.setRead(false);
         message.setText(text);
         message.setSubject(subject);
+        Event.Flag flag;
         try {
             messageService.sendMessage(stringReceiverIds,message, stringUserGroupIds);
             session.setAttribute("successMessage", "پیام با موفقیت ارسال شد.");
+            flag = Event.Flag.SUCCESS;
         } catch (Exception ex) {
             ex.printStackTrace();
             session.setAttribute("errorMessage", "خطا در ارسال پیام.");
+            flag = Event.Flag.FAILURE;
         }
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(),request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.ADD_EDIT, Event.SubType.NEW_DATA, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return "redirect:/message/";
     }
 
     @ResponseBody
     @RequestMapping(value = "/read", method = RequestMethod.POST)
-    public JSONMessage readMessage(@RequestParam(name = "messageId") Long messageId) {
+    public JSONMessage readMessage(@RequestParam(name = "messageId") Long messageId,
+                                   HttpServletRequest request,
+                                   Authentication authentication) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity","Message");
+        descriptionMap.put("messageId", String.valueOf(messageId));
         Message message = messageService.getById(messageId);
         if (message == null) {
             return JSONMessage.Error("message.not.exists");
         }
         message.setRead(true);
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(),request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.ADD_EDIT, Event.SubType.EDIT_DATA, Event.Flag.SUCCESS, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return saveMessage(message);
     }
 
 
     @ResponseBody
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
-    public JSONMessage deleteMessage(@RequestParam(name = "messageId") Long messageId) {
+    public JSONMessage deleteMessage(@RequestParam(name = "messageId") Long messageId,
+                                     HttpServletRequest request,
+                                     Authentication authentication) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity","Message");
+        descriptionMap.put("messageId", String.valueOf(messageId));
+
         Message message = messageService.getById(messageId);
         if (message == null) {
             return JSONMessage.Error("message.not.exists");
         }
         message.setDeleted(true);
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(),request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.DELETE, Event.SubType.EDIT_DATA, Event.Flag.SUCCESS, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return saveMessage(message);
     }
 

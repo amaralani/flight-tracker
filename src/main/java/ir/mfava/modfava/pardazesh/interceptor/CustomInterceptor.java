@@ -33,34 +33,36 @@ public class CustomInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        HttpSession session = request.getSession();
-        int sessionCount = 0;
+        if(!response.isCommitted()) {
+            HttpSession session = request.getSession();
+            int sessionCount = 0;
 
-        for (final Object principal : sessionRegistry.getAllPrincipals()) {
-            List<SessionInformation> activeUserSessions =
-                    sessionRegistry.getAllSessions(principal,/* includeExpiredSessions */ false);
-            for (SessionInformation sessionInformation : activeUserSessions) {
-                if (!sessionInformation.isExpired() && sessionInformation.getLastRequest().getTime() < (new Date().getTime() - (60 * 5 * 1000))) {
-                    sessionInformation.expireNow();
+            for (final Object principal : sessionRegistry.getAllPrincipals()) {
+                List<SessionInformation> activeUserSessions =
+                        sessionRegistry.getAllSessions(principal,/* includeExpiredSessions */ false);
+                for (SessionInformation sessionInformation : activeUserSessions) {
+                    if (!sessionInformation.isExpired() && sessionInformation.getLastRequest().getTime() < (new Date().getTime() - (60 * 5 * 1000))) {
+                        sessionInformation.expireNow();
+                    }
+                }
+                activeUserSessions = sessionRegistry.getAllSessions(principal,/* includeExpiredSessions */ false);
+
+                if (!activeUserSessions.isEmpty()) {
+                    sessionCount++;
                 }
             }
-            activeUserSessions = sessionRegistry.getAllSessions(principal,/* includeExpiredSessions */ false);
+            session.setAttribute("onlineUserCount", sessionCount);
 
-            if (!activeUserSessions.isEmpty()) {
-                sessionCount++;
+            if (request.getUserPrincipal() != null) {
+                User user = userService.findByUsername(request.getUserPrincipal().getName());
+                List<Message> messageList = messageService.getUserMessagesByType(user.getId(), Constants.MessageStatus.UNREAD);
+                session.setAttribute("hasUnreadMessage", !messageList.isEmpty());
             }
-        }
-        session.setAttribute("onlineUserCount", sessionCount);
 
-        if (request.getUserPrincipal() != null) {
-            User user = userService.findByUsername(request.getUserPrincipal().getName());
-            List<Message> messageList = messageService.getUserMessagesByType(user.getId(), Constants.MessageStatus.UNREAD);
-            session.setAttribute("hasUnreadMessage", !messageList.isEmpty());
-        }
-
-        ContentText contentText = contentTextService.getByTextContext(ContentText.TextContext.BANNER);
-        if (contentText != null && !contentText.getText().isEmpty()) {
-            session.setAttribute("bannerText", contentText.getText());
+            ContentText contentText = contentTextService.getByTextContext(ContentText.TextContext.BANNER);
+            if (contentText != null && !contentText.getText().isEmpty()) {
+                session.setAttribute("bannerText", contentText.getText());
+            }
         }
         super.postHandle(request, response, handler, modelAndView);
     }

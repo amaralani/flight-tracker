@@ -2,10 +2,13 @@ package ir.mfava.modfava.pardazesh.controller;
 
 import ir.mfava.modfava.pardazesh.model.DTO.JSONMessage;
 import ir.mfava.modfava.pardazesh.model.Defactor;
+import ir.mfava.modfava.pardazesh.model.report.event.Event;
 import ir.mfava.modfava.pardazesh.service.DefactorService;
 import ir.mfava.modfava.pardazesh.service.ProvinceService;
+import ir.mfava.modfava.pardazesh.service.report.event.EventService;
 import ir.mfava.modfava.pardazesh.util.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,28 +16,29 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/defactor")
-public class DefactorController {
+public class DefactorController extends BaseController {
 
     @Autowired
     private DefactorService defactorService;
     @Autowired
     private ProvinceService provinceService;
+    @Autowired
+    private EventService eventService;
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     public String showDefactors(ModelMap map, HttpSession session) {
         map.put("defactors", defactorService.getAll());
         map.put("provinces", provinceService.getAll());
 
-        map.put("currentDate",DateUtils.convertJulianToPersian(new Date(),"yyyy/MM/dd"));
+        map.put("currentDate", DateUtils.convertJulianToPersian(new Date(), "yyyy/MM/dd"));
         map.put("successMessage", session.getAttribute("successMessage"));
         map.put("errorMessage", session.getAttribute("errorMessage"));
         session.removeAttribute("successMessage");
@@ -47,7 +51,7 @@ public class DefactorController {
     public JSONMessage getDefactor(@RequestParam(name = "defactorId") Long defactorId) {
         Defactor defactor = defactorService.getById(defactorId);
         Map<String, Object> map = new HashMap<>();
-        map.put("defactor",defactor);
+        map.put("defactor", defactor);
         return JSONMessage.Success("success", map);
     }
 
@@ -70,7 +74,29 @@ public class DefactorController {
                                @RequestParam(name = "windDirection700") Integer windDirection700,
                                @RequestParam(name = "id", required = false) Long id,
                                @RequestParam(name = "isNew", required = false) Boolean isNew,
-                               HttpSession session)  {
+                               HttpSession session,
+                               HttpServletRequest request,
+                               Authentication authentication) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity","Defactor");
+        descriptionMap.put("provinceId", String.valueOf(provinceId));
+        descriptionMap.put("date", date);
+        descriptionMap.put("hoursFrom", String.valueOf(hoursFrom));
+        descriptionMap.put("hoursTo", String.valueOf(hoursTo));
+        descriptionMap.put("height300", String.valueOf(height300));
+        descriptionMap.put("temperature300", String.valueOf(temperature300));
+        descriptionMap.put("windSpeed300", String.valueOf(windSpeed300));
+        descriptionMap.put("windDirection300", String.valueOf(windDirection300));
+        descriptionMap.put("height500", String.valueOf(height500));
+        descriptionMap.put("temperature500", String.valueOf(temperature500));
+        descriptionMap.put("windSpeed500", String.valueOf(windSpeed500));
+        descriptionMap.put("windDirection500", String.valueOf(windDirection500));
+        descriptionMap.put("height700", String.valueOf(height700));
+        descriptionMap.put("temperature700", String.valueOf(temperature700));
+        descriptionMap.put("windSpeed700", String.valueOf(windSpeed700));
+        descriptionMap.put("windDirection700", String.valueOf(windDirection700));
+        descriptionMap.put("id", String.valueOf(id));
+        descriptionMap.put("isNew", String.valueOf(isNew));
 
         Defactor defactor;
         if (isNew) {
@@ -79,10 +105,11 @@ public class DefactorController {
             defactor = defactorService.getById(id);
         }
         Date realDate;
-        if(date != null && !date.isEmpty()) {
+        Event.Flag flag;
+        if (date != null && !date.isEmpty()) {
             try {
                 realDate = DateUtils.convertPersianToJulian(date);
-                if(realDate == null) throw new Exception("bad format");
+                if (realDate == null) throw new Exception("bad format");
 
                 defactor.setDate(realDate);
             } catch (Exception e) {
@@ -112,37 +139,59 @@ public class DefactorController {
         try {
             defactorService.save(defactor);
             session.setAttribute("successMessage", "ثبت اطلاعات با موفقیت انجام شد.");
+            flag = Event.Flag.SUCCESS;
         } catch (Exception ex) {
             session.setAttribute("errorMessage", "خطا در ثبت اطلاعات.");
+            flag = Event.Flag.FAILURE;
         }
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.ADD_EDIT, isNew ? Event.SubType.NEW_DATA : Event.SubType.EDIT_DATA, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return "redirect:/defactor/view";
     }
 
     @RequestMapping(value = "/remove")
     public String removeDefactor(@RequestParam(name = "defactorId") Long defactorId,
-                                 HttpSession session) {
+                                 HttpSession session,
+                                 HttpServletRequest request,
+                                 Authentication authentication) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity","Defactor");
+        descriptionMap.put("defactorId", String.valueOf(defactorId));
+
         Defactor defactor = defactorService.getById(defactorId);
+        Event.Flag flag;
         try {
             defactorService.remove(defactor);
             session.setAttribute("successMessage", "حذف اطلاعات با موفقیت انجام شد.");
+            flag = Event.Flag.SUCCESS;
         } catch (Exception ex) {
             ex.printStackTrace();
             session.setAttribute("errorMessage", "خطا در حذف اطلاعات.");
+            flag = Event.Flag.FAILURE;
         }
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.DELETE, Event.SubType.DELETE_FROM_DB, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return "redirect:/defactor/view";
     }
 
     @RequestMapping(value = "/hide")
     public String hideDefactor(@RequestParam(name = "defactorId") Long defactorId,
-                               HttpSession session) {
+                               HttpSession session,
+                               HttpServletRequest request,
+                               Authentication authentication) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity","Defactor");
+        descriptionMap.put("defactorId", String.valueOf(defactorId));
         Defactor defactor = defactorService.getById(defactorId);
         defactor.setVisible(false);
+        Event.Flag flag;
         try {
             defactorService.save(defactor);
             session.setAttribute("successMessage", "ثبت اطلاعات با موفقیت انجام شد.");
+            flag = Event.Flag.SUCCESS;
         } catch (Exception ex) {
             session.setAttribute("errorMessage", "خطا در ثبت اطلاعات.");
+            flag = Event.Flag.FAILURE;
         }
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.ADD_EDIT, Event.SubType.EDIT_DATA, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return "redirect:/defactor/view";
     }
 }

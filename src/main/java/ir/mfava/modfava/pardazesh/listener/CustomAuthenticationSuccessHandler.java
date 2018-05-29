@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
@@ -36,9 +38,12 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
             request.getSession().setAttribute("passwordComplexity", configuration.getPasswordComplexity().ordinal());
             request.getSession().setAttribute("passwordLength", configuration.getPasswordLength());
         }
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Action","Successful Login");
+        descriptionMap.put("username", authentication.getName());
 
         userSessionInformationService.createUserSessionInformation(request.getSession().getId(), authentication.getName(), request.getRemoteAddr());
-        eventService.addEvent(request.getRemoteAddr(),request.getRemoteHost(),request.getRequestURI(),authentication.getName(), Event.ActionType.LOGIN_LOGOUT, Event.SubType.USER_LOGIN_LOGOUT, Event.Flag.SUCCESS,null, Event.Sensitivity.NOTIFICATION);
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(),request.getRemoteHost(), request.getRequestURI(), authentication.getName(), Event.ActionType.LOGIN_LOGOUT, Event.SubType.USER_LOGIN_LOGOUT, Event.Flag.SUCCESS, descriptionMap, Event.Sensitivity.NOTIFICATION);
         DefaultSavedRequest defaultSavedRequest = (DefaultSavedRequest) request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
         if (defaultSavedRequest != null) {
             String targetURL = defaultSavedRequest.getRedirectUrl();

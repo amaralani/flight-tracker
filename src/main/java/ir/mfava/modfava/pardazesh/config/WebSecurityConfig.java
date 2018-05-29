@@ -62,6 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/history/**").hasRole("VIEW_LOGIN_HISTORY")
                 .antMatchers("/upload/**").hasRole("UPLOAD_FILES")
                 .antMatchers("/report/**").hasRole("REPORT")
+                .antMatchers("/sec/**").anonymous()
                 .antMatchers("/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
@@ -76,6 +77,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf();
 
+        http.csrf().ignoringAntMatchers("/sec/**");
         http.sessionManagement().maximumSessions(1).sessionRegistry(sessionRegistry());
     }
 

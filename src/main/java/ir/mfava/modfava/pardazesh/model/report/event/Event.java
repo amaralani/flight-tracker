@@ -33,6 +33,7 @@ public class Event implements Serializable {
     @Enumerated(EnumType.STRING)
     private Flag flag;
 
+    @Column(length = 1500)
     private String description;
 
 

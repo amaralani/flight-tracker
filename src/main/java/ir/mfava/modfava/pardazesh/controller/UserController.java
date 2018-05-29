@@ -6,10 +6,13 @@ import ir.mfava.modfava.pardazesh.model.DTO.JSONMessage;
 import ir.mfava.modfava.pardazesh.model.Role;
 import ir.mfava.modfava.pardazesh.model.User;
 import ir.mfava.modfava.pardazesh.model.UserGroup;
+import ir.mfava.modfava.pardazesh.model.report.event.Event;
 import ir.mfava.modfava.pardazesh.security.SecurityService;
 import ir.mfava.modfava.pardazesh.service.*;
+import ir.mfava.modfava.pardazesh.service.report.event.EventService;
 import ir.mfava.modfava.pardazesh.util.ValidatorUtils;
 import ir.mfava.modfava.pardazesh.validator.UserValidator;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.session.SessionInformation;
@@ -33,10 +36,8 @@ public class UserController extends BaseController {
     private UserService userService;
     @Autowired
     private RoleService roleService;
-
     @Autowired
     private SecurityService securityService;
-
     @Autowired
     private UserValidator userValidator;
     @Autowired
@@ -49,6 +50,8 @@ public class UserController extends BaseController {
     private UserSessionInformationService userSessionInformationService;
     @Autowired
     private UserGroupService userGroupService;
+    @Autowired
+    private EventService eventService;
 
     @RequestMapping(value = {"/base-info/user"}, method = RequestMethod.GET)
     public String getAllUsers(ModelMap map, HttpSession session) {
@@ -74,7 +77,19 @@ public class UserController extends BaseController {
                            @RequestParam(name = "re-password", required = false) String newPasswordRepeat,
                            @RequestParam(name = "userGroup") Long userGroupId,
                            @RequestParam(name = "isNew", required = false) Boolean isNew,
-                           HttpSession session) {
+                           HttpSession session,
+                           HttpServletRequest request,
+                           Authentication authentication) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity","User");
+        descriptionMap.put("username",username);
+        descriptionMap.put("firstName", firstName);
+        descriptionMap.put("lastName", lastName);
+        descriptionMap.put("nationalCode", nationalCode);
+        descriptionMap.put("personNumber", personNumber);
+        descriptionMap.put("enabled", String.valueOf(enabled));
+        descriptionMap.put("locked", String.valueOf(locked));
+        descriptionMap.put("userGroupId", String.valueOf(userGroupId));
         User user;
         if (isNew) {
             user = new User();
@@ -97,6 +112,7 @@ public class UserController extends BaseController {
             Configuration configuration = configurationList.get(0);
             if (newPassword.length() < configuration.getPasswordLength()) {
                 session.setAttribute("errorMessage", "رمز عبور باید حداقل " + configuration.getPasswordLength() + "  کاراکتر باشد.");
+                eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.USER_MANAGEMENT, Event.SubType.CHANGE_PASSWORD, Event.Flag.FAILURE, descriptionMap, Event.Sensitivity.NOTIFICATION);
                 return "redirect:/base-info/user";
             }
             try {
@@ -121,6 +137,7 @@ public class UserController extends BaseController {
                         break;
                 }
                 session.setAttribute("errorMessage", errorMessage);
+                eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.USER_MANAGEMENT, Event.SubType.CHANGE_PASSWORD, Event.Flag.FAILURE, descriptionMap, Event.Sensitivity.NOTIFICATION);
                 return "redirect:/base-info/user";
             }
         }
@@ -135,9 +152,11 @@ public class UserController extends BaseController {
                 }
             } else {
                 session.setAttribute("errorMessage", "رمز عبور با تکرار رمز عبور همسان نیست.");
+                eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.USER_MANAGEMENT, Event.SubType.CHANGE_PASSWORD, Event.Flag.FAILURE, descriptionMap, Event.Sensitivity.NOTIFICATION);
                 return "redirect:/base-info/user";
             }
         }
+        Event.Flag flag;
         try {
             if (isNew) {
                 userService.addNewUser(user);
@@ -145,10 +164,13 @@ public class UserController extends BaseController {
                 userService.save(user);
             }
             session.setAttribute("successMessage", "ثبت اطلاعات با موفقیت انجام شد.");
+            flag = Event.Flag.SUCCESS;
         } catch (Exception ex) {
             ex.printStackTrace();
             session.setAttribute("errorMessage", "خطا در ثبت اطلاعات.");
+            flag = Event.Flag.FAILURE;
         }
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.USER_MANAGEMENT, isNew ? Event.SubType.ADD_NEW_USER : Event.SubType.EDIT_DATA, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return "redirect:/base-info/user";
     }
 
@@ -156,41 +178,64 @@ public class UserController extends BaseController {
     public String saveUserGroup(@RequestParam(name = "name") String name,
                                 @RequestParam(name = "userGroupId", required = false) Long id,
                                 @RequestParam(name = "isNew", required = false) Boolean isNew,
-                                HttpSession session) {
+                                HttpSession session,
+                                HttpServletRequest request,
+                                Authentication authentication) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity","usergroup");
+        descriptionMap.put("name",name);
+        descriptionMap.put("userGroupId", String.valueOf(id));
+
         UserGroup userGroup;
+        Event.SubType subType;
+        Event.Flag flag;
         if (isNew) {
             userGroup = new UserGroup();
+            subType = Event.SubType.ADD_GROUP;
         } else {
             userGroup = userGroupService.getById(id);
+            subType = Event.SubType.EDIT_GROUP;
         }
         userGroup.setName(name);
         try {
             userGroupService.save(userGroup);
             session.setAttribute("successMessage", "ثبت گروه کاربری با موفقیت انجام شد.");
+            flag = Event.Flag.SUCCESS;
         } catch (Exception ex) {
             ex.printStackTrace();
             session.setAttribute("errorMessage", "خطا در ثبت اطلاعات.");
+            flag = Event.Flag.FAILURE;
         }
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.USER_MANAGEMENT, subType, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return "redirect:/base-info/user";
     }
 
     @RequestMapping(value = {"/base-info/user/group/delete"}, method = RequestMethod.DELETE)
     public String deleteUserGroup(@RequestParam(name = "id", required = false) Long id,
-                                  HttpSession session) {
+                                  HttpSession session,
+                                  HttpServletRequest request,
+                                  Authentication authentication) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("Entity","usergroup");
+        descriptionMap.put("userGroupId", String.valueOf(id));
         UserGroup userGroup = userGroupService.getById(id);
+        Event.Flag flag;
         User user = new User();
         user.setUserGroupId(userGroup.getId());
         if (userService.exists(user)) {
             session.setAttribute("errorMessage", "کاربر عضو این گروه موجود است و امکان حذف آن وجود ندارد.");
+            eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.DELETE, Event.SubType.DELETE_FROM_DB, Event.Flag.FAILURE, descriptionMap, Event.Sensitivity.NOTIFICATION);
         } else {
             try {
                 userGroupService.remove(userGroup);
                 session.setAttribute("successMessage", "حذف گروه کاربری با موفقیت انجام شد.");
-
+                flag = Event.Flag.SUCCESS;
             } catch (Exception ex) {
                 ex.printStackTrace();
                 session.setAttribute("errorMessage", "خطا در حذف اطلاعات.");
+                flag = Event.Flag.FAILURE;
             }
+            eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.DELETE, Event.SubType.DELETE_FROM_DB, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
         }
         return "redirect:/base-info/user";
     }
@@ -208,7 +253,15 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/base-info/grant/role", method = RequestMethod.POST)
     public JSONMessage grantRole(@RequestParam(name = "userId") Long userId,
                                  @RequestParam(name = "roleId") Long roleId,
-                                 @RequestParam(name = "grant") Boolean grant) {
+                                 @RequestParam(name = "grant") Boolean grant,
+                                 HttpServletRequest request,
+                                 Authentication authentication) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("action","assign role to user");
+        descriptionMap.put("userId", String.valueOf(userId));
+        descriptionMap.put("roleId", String.valueOf(roleId));
+        descriptionMap.put("grant", String.valueOf(grant));
+
         User user = userService.getById(userId);
         Role role = roleService.getById(roleId);
         Set<Role> userRoles = user.getRoles();
@@ -224,8 +277,10 @@ public class UserController extends BaseController {
             }
             user.setRoles(userRoles);
             userService.save(user);
+            eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.USER_MANAGEMENT, Event.SubType.CHANGE_USER_ACCESS, Event.Flag.SUCCESS, descriptionMap, Event.Sensitivity.NOTIFICATION);
         } catch (Exception ex) {
             ex.printStackTrace();
+            eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.USER_MANAGEMENT, Event.SubType.CHANGE_USER_ACCESS, Event.Flag.FAILURE, descriptionMap, Event.Sensitivity.NOTIFICATION);
             return JSONMessage.Error("unknown.exception");
         }
 
@@ -234,15 +289,24 @@ public class UserController extends BaseController {
 
     @RequestMapping(value = {"/base-info/user/remove"}, method = RequestMethod.POST)
     public String removeUser(@RequestParam(name = "username") String username,
-                             HttpSession session) {
+                             HttpSession session,
+                             HttpServletRequest request,
+                             Authentication authentication) {
+        Map<String,String> descriptionMap = new HashMap<>();
+        descriptionMap.put("action","remove user");
+        descriptionMap.put("username", username);
+        Event.Flag flag;
         try {
             User user = userService.findByUsername(username);
             userService.remove(user);
             session.setAttribute("successMessage", "حذف کاربر با موفقیت انجام شد.");
+            flag = Event.Flag.SUCCESS;
         } catch (Exception ex) {
             ex.printStackTrace();
             session.setAttribute("errorMessage", "خطا در حذف اطلاعات.");
+            flag = Event.Flag.FAILURE;
         }
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.USER_MANAGEMENT, Event.SubType.DELETE_USER, flag, descriptionMap, Event.Sensitivity.NOTIFICATION);
         return "redirect:/base-info/user";
     }
 
@@ -269,7 +333,11 @@ public class UserController extends BaseController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String login(Model model, String error, String logout) {
+    public String login(Model model,
+                        String error,
+                        String logout,
+                        HttpServletRequest request,
+                        Authentication authentication) {
 
         // TODO : There's a problem with this method, fix it (error message is not shown)
 
@@ -286,7 +354,7 @@ public class UserController extends BaseController {
     public String logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         new SecurityContextLogoutHandler().logout(request, response, authentication);
         List<SessionInformation> infos = sessionRegistry.getAllSessions(authentication.getPrincipal(), false);
-
+        eventService.addEvent(request.getLocalAddr(), request.getLocalName(), request.getRemoteAddr(), request.getRemoteHost(), request.getRequestURI(), getUser(authentication).getUsername(), Event.ActionType.LOGIN_LOGOUT, Event.SubType.USER_LOGIN_LOGOUT, Event.Flag.SUCCESS, null, Event.Sensitivity.NOTIFICATION);
         for (SessionInformation info : infos) {
             info.expireNow(); //expire the session
         }

@@ -1,15 +1,28 @@
 package ir.mfava.modfava.pardazesh.repository.report.event;
 
-import ir.mfava.modfava.pardazesh.model.report.event.ActionImportance;
 import ir.mfava.modfava.pardazesh.model.report.event.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface EventRepository extends JpaRepository<Event,Long> {
+import java.util.List;
 
-    @Query("from ActionImportance where actionType = :actionType ")
-    ActionImportance getActionImportanceByActionType(@Param("actionType") Event.ActionType actionType);
+@Repository
+public interface EventRepository extends JpaRepository<Event, Long> {
+
+    @Query("from Event e " +
+            " where (:fromDate is null or :fromDate <= e.time) " +
+            " and (:toDate is null or :toDate >= e.time) " +
+            " and (:actionType is null or :actionType = e.actionType) " +
+            " and (:subType is null or :subType = e.subType) " +
+            " and (:sensitivity is null or :sensitivity = e.sensitivity) " +
+            " and (:importance is null or :importance = e.importance) " +
+            " order by e.time asc ")
+    List<Event> searchEvents(@Param("fromDate") Long fromDate,
+                             @Param("toDate") Long toDate,
+                             @Param("actionType") Event.ActionType actionType,
+                             @Param("subType") Event.SubType subType,
+                             @Param("sensitivity") Event.Sensitivity sensitivity,
+                             @Param("importance") Event.Importance importance);
 }
