@@ -51,59 +51,62 @@ if (isLoginPage) {
 
 }
 
+var body = [];
+body.push({
+    view: "toolbar",
+    height: 40,
+    elements: [
+        {view: "label", template: "<span class='main_title'>سامانه اطلاعات پرواز</span>"}, {},
+        {view: "icon", width: 40, icon: "cog", popup: "config"}
+
+    ]
+});
+if(!isLoginPage){
+    body.push({
+        css: "time-and-marquee-section",
+        rows: [
+            {
+                view: "label",
+                template: "<marquee class='marquee-text' behavior='scroll' direction='right'>" + bannerText + "</marquee>"
+            }
+        ]
+    })
+}
+body.push({
+    autoheight: true, type: "wide", cols: cols
+});
+body.push({
+    view: "toolbar",
+    height: 60,
+    elements: [
+        {
+            rows: [
+                {
+                    view: "label",
+                    template: "<span id='footer_label' class='footer_title'> تعداد کاربران آنلاین : " + onlineUsersCount + "</span>"
+                },
+                {
+                    cols: [
+                        {width: 50},
+                        {
+                            view: "label",
+                            template: "<div style='text-align: center'><span id='footer_label' class='footer_title'> </span></div>"
+                        },
+                        {width: 50}
+                    ]
+                }
+
+            ]
+        }
+
+    ]
+});
+
 var ui = {
     view: "scrollview",
     body: {
         type: "space",
-        rows: [
-            {
-                view: "toolbar",
-                height: 40,
-                elements: [
-                    {view: "label", template: "<span class='main_title'>سامانه اطلاعات پرواز</span>"}, {},
-                    {view: "icon", width: 40, icon: "cog", popup: "config"}
-
-                ]
-            },
-            {
-                css: "time-and-marquee-section",
-                rows: [
-                    {
-                        view: "label",
-                        template: "<marquee class='marquee-text' behavior='scroll' direction='right'>" + bannerText + "</marquee>"
-                    }
-                ]
-            },
-            {
-                autoheight: true, type: "wide", cols: cols
-            },
-            {
-                view: "toolbar",
-                height: 60,
-                elements: [
-                    {
-                        rows: [
-                            {
-                                view: "label",
-                                template: "<span id='footer_label' class='footer_title'> تعداد کاربران آنلاین : " + onlineUsersCount + "</span>"
-                            },
-                            {
-                                cols: [
-                                    {width: 50},
-                                    {
-                                        view: "label",
-                                        template: "<div style='text-align: center'><span id='footer_label' class='footer_title'> </span></div>"
-                                    },
-                                    {width: 50}
-                                ]
-                            }
-
-                        ]
-                    }
-
-                ]
-            }
-        ]
+        rows: body
     }
 };
 

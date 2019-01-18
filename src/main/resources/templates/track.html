@@ -48,6 +48,7 @@
     var icons = [[${icons}]];
     var weatherList = [[${weatherList}]];
     var forecastList = [[${forecasts}]];
+    var cumulonimbusReport = [];
 
     var map = L.map('container').setView([33.63321, 55.12988], 6);
 
@@ -137,7 +138,7 @@
                                     iconUrl: '/tracks/image/plane',
                                     iconSize: [iconSize, iconSize]
                                 }),
-                                rotationAngle: - feature.properties.heading
+                                rotationAngle:  feature.properties.heading
                             });
                         }
                     });
@@ -153,6 +154,9 @@
 
     var weatherPoints = [];
     $.each(weatherList, function (index, point) {
+        if (point.isCumulonimbus){
+            cumulonimbusReport.push(point);
+        }
         weatherPoints.push({
             "geometry": {
                 "type": "Point",
@@ -182,6 +186,9 @@
 
     var currentWeatherMarkers;
     function showWeathers() {
+        if(cumulonimbusReport.length > 0){
+            showCumulonimbusReport(); // FIXME
+        }
         if (weatherMarkers) {
             map.removeLayer(weatherMarkers);
         }

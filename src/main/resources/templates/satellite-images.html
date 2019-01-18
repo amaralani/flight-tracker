@@ -129,26 +129,6 @@
 
     </style>
     <script src="/js/jquery.slides.min.js" type="text/javascript" charset="utf-8"></script>
-    <!--<style th:inline="text">-->
-    <!--.hs-wrapper img:nth-child(1) {-->
-    <!--z-index: 9;-->
-    <!--}-->
-    <!--</style>-->
-    <!--<th:block th:each="imageName,iter : ${files}" >-->
-    <!--<div th:with="iteration=${iter.index+1},time=${(iter.index+1)/10},zindex=${iter.size - iter.index + 1}" th:remove="tag">-->
-
-    <!--<style type="text/css" th:inline="text">-->
-    <!--.hs-wrapper img:nth-child([[${iteration}]]) {-->
-    <!-- -webkit-animation-delay: [[${time}]]s;-->
-    <!-- -moz-animation-delay: [[${time}]]s;-->
-    <!-- -o-animation-delay: [[${time}]]s;-->
-    <!-- -ms-animation-delay: ${time}s;-->
-    <!--animation-delay: [[${time}]]s;-->
-    <!--z-index: [[${zindex}]];-->
-    <!--}-->
-    <!--</style>-->
-    <!--</div>-->
-    <!--</th:block>-->
 
 </head>
 <body>
@@ -158,10 +138,6 @@
     <span th:if="${errorMessage != null}" th:text="${errorMessage}" th:class="error-message"></span>
 </div>
 
-<!--&lt;!&ndash;/*@thymesVar id="files" type="java.lang.String"*/&ndash;&gt;-->
-<!--<div id="images-container" class="hs-wrapper" th:each="imageName : ${files}">-->
-<!--<img  th:src="/satellite/imageName/${imageName}"/>-->
-<!--</div>-->
 <div id="images-container"> 
     <div id="slides">
             <img th:src='dummy.jpg' th:style="'width : 100%; height : 100%'" src=""/>

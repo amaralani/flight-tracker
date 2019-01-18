@@ -43,10 +43,10 @@
     /*<![CDATA[*/
     var provinces = [[${provinces}]];
     var comboProvinces = [];
+    comboProvinces.push({id: ' ', value: 'انتخاب کنيد...'});
     $.each(provinces, function (index, province) {
         comboProvinces.push({id: province.id, value: province.name})
     });
-    comboProvinces.push({id: null, value: 'انتخاب کنيد...'});
     var forecasts = [];
     if ([[${bulletins}]]) {
         forecasts = [[${bulletins}]];

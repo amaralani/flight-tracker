@@ -36,17 +36,14 @@
             if (equals(obj.radar, filter)) return true;
         if (obj.source)
             if (equals(obj.source, filter)) return true;
-        if (obj.destination)
-            console.log(obj.destination);
-        console.log(equals(obj.destination, filter))
-        if (equals(obj.destination, filter)) return true;
-        return false;
+        return !!equals(obj.destination, filter);
+
     }
 
 
     /*<![CDATA[*/
 
-    var gridBaseData = [[${gridData}]];
+    var tracks = [[${tracks}]];
 
     function refreshData() {
         var trackCode = $$("trackCode").getValue();
@@ -214,9 +211,8 @@
                 autowidth: false,
                 autoheight: false,
                 scroll: true,
-                data: []
+                data: tracks
             }
-
         ]
     };
 
