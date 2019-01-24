@@ -47,9 +47,6 @@
                 icon: "id-badge"
             });
         }
-        if ([[${#httpServletRequest.isUserInRole("ROLE_UNITS_MANAGER")}]]) {
-            right_menu_base_info.push({id: 3, "name": "مديريت يگان ها", href: "/base-info/unit/", icon: "id-badge"});
-        }
         if ([[${#httpServletRequest.isUserInRole("ROLE_USER_MANAGER")}]]) {
             right_menu_base_info.push({id: 4, "name": "مديريت کاربران", href: "/base-info/user/", icon: "id-badge"});
         }

@@ -6,6 +6,8 @@ import ir.maralani.flighttracker.model.report.event.Event;
 import ir.maralani.flighttracker.service.UploadFileService;
 import ir.maralani.flighttracker.service.UploadFileTypeService;
 import ir.maralani.flighttracker.service.report.event.EventService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -35,12 +37,17 @@ import java.util.Map;
 @Controller
 public class UploadFileController extends BaseController {
 
+    Logger logger = LoggerFactory.getLogger(UploadFileController.class);
+    private final UploadFileTypeService uploadFileTypeService;
+    private final UploadFileService uploadFileService;
+    private final EventService eventService;
+
     @Autowired
-    private UploadFileTypeService uploadFileTypeService;
-    @Autowired
-    private UploadFileService uploadFileService;
-    @Autowired
-    private EventService eventService;
+    public UploadFileController(UploadFileTypeService uploadFileTypeService, UploadFileService uploadFileService, EventService eventService) {
+        this.uploadFileTypeService = uploadFileTypeService;
+        this.uploadFileService = uploadFileService;
+        this.eventService = eventService;
+    }
 
     @RequestMapping(value = {"/base-info/files/view", "/base-info/files/", "/base-info/files"}, method = RequestMethod.GET)
     public String showFilesManager(ModelMap map, HttpSession session) {
@@ -160,7 +167,7 @@ public class UploadFileController extends BaseController {
                 flag = Event.Flag.FAILURE;
             }
         } else {
-            System.out.println("Bad file");
+            logger.error("Bad file");
             session.setAttribute("errorMessage", "خطا در بارگذاری فایل.");
             flag = Event.Flag.FAILURE;
         }

@@ -186,9 +186,9 @@
 
     var currentWeatherMarkers;
     function showWeathers() {
-        if(cumulonimbusReport.length > 0){
-            showCumulonimbusReport(); // FIXME
-        }
+        // if(cumulonimbusReport.length > 0){
+        //     showCumulonimbusReport(); // TODO : if there are any comulonumbus clouds, show an alert
+        // }
         if (weatherMarkers) {
             map.removeLayer(weatherMarkers);
         }
@@ -204,7 +204,7 @@
             pointToLayer: function (feature, latlng) {
                 var iconIsAvailable = false;
                 $.each(icons, function (index, icon) {
-                    if (feature.properties.markerType + '.png' == icon) {
+                    if (feature.properties.markerType + '.png' === icon) {
                         iconIsAvailable = true;
                     }
                 });

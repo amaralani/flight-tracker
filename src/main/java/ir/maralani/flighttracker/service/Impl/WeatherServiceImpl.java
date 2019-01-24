@@ -12,6 +12,8 @@ import ir.maralani.flighttracker.service.PhenomenaService;
 import ir.maralani.flighttracker.service.WeatherService;
 import ir.maralani.flighttracker.service.WeatherStationService;
 import ir.maralani.flighttracker.util.metar.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
@@ -27,16 +29,22 @@ import java.util.*;
 @Service
 public class WeatherServiceImpl implements WeatherService {
 
+    Logger logger = LoggerFactory.getLogger(WeatherServiceImpl.class);
+
     private static Boolean PROCESS_IN_PROGRESS = false;
 
+    private final WeatherRepository weatherRepository;
+    private final WeatherStationService weatherStationService;
+    private final PhenomenaService phenomenaService;
+    private final DataFileService dataFileService;
+
     @Autowired
-    private WeatherRepository weatherRepository;
-    @Autowired
-    private WeatherStationService weatherStationService;
-    @Autowired
-    private PhenomenaService phenomenaService;
-    @Autowired
-    private DataFileService dataFileService;
+    public WeatherServiceImpl(WeatherRepository weatherRepository, WeatherStationService weatherStationService, PhenomenaService phenomenaService, DataFileService dataFileService) {
+        this.weatherRepository = weatherRepository;
+        this.weatherStationService = weatherStationService;
+        this.phenomenaService = phenomenaService;
+        this.dataFileService = dataFileService;
+    }
 
     @Override
     public boolean exists(Weather entity) {
@@ -265,7 +273,7 @@ public class WeatherServiceImpl implements WeatherService {
                 PROCESS_IN_PROGRESS = false;
                 return true;
             } catch (Exception ex) {
-                System.out.println("error in process ");
+                logger.info("error in process ");
                 ex.printStackTrace();
                 PROCESS_IN_PROGRESS = false;
                 return false;
@@ -340,8 +348,8 @@ public class WeatherServiceImpl implements WeatherService {
                         weather.setFileName(fileName);
                         save(weather);
                     } catch (Exception ex) {
-                        System.out.println("error processing record :");
-                        System.out.println("file name:" + fileName);
+                        logger.error("error processing record :");
+                        logger.error("file name:" + fileName);
                         ex.printStackTrace();
                     }
                 }

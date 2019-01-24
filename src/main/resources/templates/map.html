@@ -26,7 +26,7 @@
     L.tileLayer([[${host}]] + '/osm_tiles/{z}/{x}/{y}.png', {
 
         maxZoom: 18,
-        attribution: 'معاونت فناوري اطلاعات و ارتباطات ق‌پ‌ه‌خ‌ (ص) | مديريت فناوري اطلاعات ',
+        attribution: ' ',
         id: 'container'
     }).addTo(map);
     L.control.scale().addTo(map);
@@ -139,7 +139,6 @@
                             })
                         });
                     } else if (feature.properties.isCumulonimbus) {
-                        console.log("harchi")
                         return L.marker(latlng, {
                             icon: L.icon({
                                 iconUrl: '/icons/' + feature.properties.markerType + '.png',

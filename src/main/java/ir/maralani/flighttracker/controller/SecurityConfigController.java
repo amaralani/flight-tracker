@@ -6,6 +6,8 @@ import ir.maralani.flighttracker.model.report.event.Event;
 import ir.maralani.flighttracker.service.ConfigurationService;
 import ir.maralani.flighttracker.service.ContentTextService;
 import ir.maralani.flighttracker.service.report.event.EventService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -30,12 +32,17 @@ import java.util.Map;
 @RequestMapping(value = "/base-info/security/config")
 public class SecurityConfigController extends BaseController {
 
+    Logger logger = LoggerFactory.getLogger(SecurityConfigController.class);
+    private final ContentTextService contentTextService;
+    private final ConfigurationService configurationService;
+    private final EventService eventService;
+
     @Autowired
-    private ContentTextService contentTextService;
-    @Autowired
-    private ConfigurationService configurationService;
-    @Autowired
-    private EventService eventService;
+    public SecurityConfigController(ContentTextService contentTextService, ConfigurationService configurationService, EventService eventService) {
+        this.contentTextService = contentTextService;
+        this.configurationService = configurationService;
+        this.eventService = eventService;
+    }
 
     @RequestMapping(value = {"/", ""}, method = RequestMethod.GET)
     public String showSecurityConfigPage(ModelMap map, HttpSession session) {
@@ -176,7 +183,7 @@ public class SecurityConfigController extends BaseController {
                 session.setAttribute("errorMessage", "خطا در ثبت اطلاعات.");
             }
         } else {
-            System.out.println("Bad file");
+            logger.error("Bad file");
             session.setAttribute("errorMessage", "خطا در بارگذاری فایل.");
             return "redirect:/base-info/security/config/";
         }

@@ -803,36 +803,36 @@ public class Metar {
      * display metar data in a human-readable format
      */
     public void print() {
-        System.out.println("station id : " + getStationID());
-        System.out.println("wind dir   : " + getWindDirection() + " degrees");
-        System.out.println("wind speed : " + getWindSpeedInMPH() + " mph, " +
+        log.info("station id : " + getStationID());
+        log.info("wind dir   : " + getWindDirection() + " degrees");
+        log.info("wind speed : " + getWindSpeedInMPH() + " mph, " +
                 getWindSpeedInKnots() + " knots");
-        System.out.println("wind gusts : " + getWindGustsInMPH() + " mph, " +
+        log.info("wind gusts : " + getWindGustsInMPH() + " mph, " +
                 getWindGustsInKnots() + " knots");
         if (!getVisibilityLessThan()) {
-            System.out.println("visibility : " + getVisibility() + " mile(s)");
+            log.info("visibility : " + getVisibility() + " mile(s)");
         } else {
-            System.out.println("visibility : < " + getVisibility() + " mile(s)");
+            log.info("visibility : < " + getVisibility() + " mile(s)");
         }
 
-        System.out.println("pressure   : " + getPressure() + " in Hg");
-        System.out.println("temperaturePrecise: " +
+        log.info("pressure   : " + getPressure() + " in Hg");
+        log.info("temperaturePrecise: " +
                 getTemperaturePreciseInCelsius() + " C, " +
                 getTemperaturePreciseInFahrenheit() + " F");
-        System.out.println("temperature: " +
+        log.info("temperature: " +
                 getTemperatureInCelsius() + " C, " +
                 getTemperatureInFahrenheit() + " F");
-        System.out.println("temperatureMostPrecise: " +
+        log.info("temperatureMostPrecise: " +
                 getTemperatureMostPreciseInCelsius() + " C, " +
                 getTemperatureMostPreciseInFahrenheit() + " F");
 
-        System.out.println("dewPointPrecise: " +
+        log.info("dewPointPrecise: " +
                 getDewPointPreciseInCelsius() + " C, " +
                 getDewPointPreciseInFahrenheit() + " F");
-        System.out.println("dewPoint: " +
+        log.info("dewPoint: " +
                 getDewPointInCelsius() + " C, " +
                 getDewPointInFahrenheit() + " F");
-        System.out.println("dewPointMostPrecise: " +
+        log.info("dewPointMostPrecise: " +
                 getDewPointMostPreciseInCelsius() + " C, " +
                 getDewPointMostPreciseInFahrenheit() + " F");
 
@@ -840,14 +840,14 @@ public class Metar {
             Iterator i = getWeatherConditions().iterator();
             while (i.hasNext()) {
                 WeatherCondition weatherCondition = (WeatherCondition)i.next();
-                System.out.println(weatherCondition.getNaturalLanguageString());
+                log.info(weatherCondition.getNaturalLanguageString());
             }
         }
         if (getSkyConditions() != null) {
             Iterator i = getSkyConditions().iterator();
             while (i.hasNext()) {
                 SkyCondition skyCondition = (SkyCondition)i.next();
-                System.out.println(skyCondition.getNaturalLanguageString());
+                log.info(skyCondition.getNaturalLanguageString());
             }
         }
     }
